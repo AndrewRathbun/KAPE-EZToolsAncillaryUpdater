@@ -1,5 +1,5 @@
 # KAPE-EZToolsAncillaryUpdater
-A script that updates KAPE (using `Get-KAPEUpdate.ps1`) as well as EZ Tools (within `.\KAPE\Modules\bin`) and the ancillary files that enhance the output of those tools
+A PowerShell script that updates [KAPE](https://www.kroll.com/en/insights/publications/cyber/kroll-artifact-parser-extractor-kape) (using `Get-KAPEUpdate.ps1`) as well as [EZ Tools](https://ericzimmerman.github.io/#!index.md) (within `.\KAPE\Modules\bin`) and the ancillary files that enhance the output of those tools.
 
 ## What Does "Ancillary" mean?
 
