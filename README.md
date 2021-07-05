@@ -11,7 +11,7 @@ Used in a sentence:
     
 > the development of ancillary services to support its products
 
-In the context of this script, KAPE Targets/Modules, EvtxECmd Maps, SQLECmd Maps, and RECmd Batch files are ancillary to their respective tools. Each of these files enhance the output of the tools. Keeping them updated is often overlooked but very important to ensuring that you're benefitting from the latest features/bug fixes from Eric and the latest work from the DFIR community. 
+In the context of this script, KAPE [Targets](https://github.com/EricZimmerman/KapeFiles/tree/master/Targets)/[Modules](https://github.com/EricZimmerman/KapeFiles/tree/master/Modules), [EvtxECmd Maps](https://github.com/EricZimmerman/evtx/tree/master/evtx/Maps), [SQLECmd Maps](https://github.com/EricZimmerman/SQLECmd/tree/master/SQLMap/Maps), and [RECmd Batch files](https://github.com/EricZimmerman/RECmd/tree/master/BatchExamples) are ancillary to their respective tools. Each of these files enhance the output of their respective tools. Keeping them updated is often overlooked but very important to ensuring that you're benefitting from the latest features/bug fixes from [Eric Zimmerman](https://github.com/EricZimmerman) and the latest work from the DFIR community. 
 
 # Where Do I Run the Script From?
 
