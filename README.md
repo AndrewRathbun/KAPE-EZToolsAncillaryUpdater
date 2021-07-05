@@ -5,11 +5,11 @@ A script that updates KAPE (using Get-KAPEUpdate.ps1) as well as EZ Tools (withi
 
 Per Google, ancillary means:
   
-    providing necessary support to the primary activities or operation of an organization, institution, industry, or system.
+> providing necessary support to the primary activities or operation of an organization, institution, industry, or system.
     
 Used in a sentence:
     
-    the development of ancillary services to support its products
+> the development of ancillary services to support its products
 
 In the context of this script, KAPE Targets/Modules, EvtxECmd Maps, SQLECmd Maps, and RECmd Batch files are ancillary to their respective tools. Each of these files enhance the output of the tools. Keeping them updated is often overlooked but very important to ensuring that you're benefitting from the latest features/bug fixes from Eric and the latest work from the DFIR community. 
 
