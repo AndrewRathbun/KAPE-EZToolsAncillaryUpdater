@@ -1,5 +1,5 @@
 # KAPE-EZToolsAncillaryUpdater
-A script that updates KAPE (using Get-KAPEUpdate.ps1) as well as EZ Tools (within .\KAPE\Modules\bin) and the ancillary files that enhance the output of those tools
+A script that updates KAPE (using `Get-KAPEUpdate.ps1`) as well as EZ Tools (within `.\KAPE\Modules\bin`) and the ancillary files that enhance the output of those tools
 
 ## What Does "Ancillary" mean?
 
@@ -17,7 +17,7 @@ In the context of this script, KAPE Targets/Modules, EvtxECmd Maps, SQLECmd Maps
 
 ![ScriptLocation](https://github.com/rathbuna/KAPE-EZToolsAncillaryUpdater/blob/main/Pictures/ScriptLocation.jpg)
 
-Right-click -> Run with PowerShell and let it ride!
+Right-click -> `Run with PowerShell` and let it ride!
 
 # Improving the Script
 Do you see something that could be done better with this script? Create an issue or do a Pull Request, if so! This is the first script I've put together on my own so I have no doubts there's room for improvement. Anything that moves the ball forward and helps the DFIR community I will always be in full support of!
