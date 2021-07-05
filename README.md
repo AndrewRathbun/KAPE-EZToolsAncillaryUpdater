@@ -3,7 +3,7 @@ A script that updates KAPE (using Get-KAPEUpdate.ps1) as well as EZ Tools (withi
 
 ## What Does "Ancillary" mean?
 
-Per Google, ancillary means:
+Per Google, `ancillary` means:
   
 > providing necessary support to the primary activities or operation of an organization, institution, industry, or system.
     
@@ -16,6 +16,8 @@ In the context of this script, KAPE Targets/Modules, EvtxECmd Maps, SQLECmd Maps
 # Where Do I Run the Script From?
 
 ![ScriptLocation](https://github.com/rathbuna/KAPE-EZToolsAncillaryUpdater/blob/main/Pictures/ScriptLocation.jpg)
+
+Right-click -> Run with PowerShell and let it ride!
 
 # Improving the Script
 Do you see something that could be done better with this script? Create an issue or do a Pull Request, if so! This is the first script I've put together on my own so I have no doubts there's room for improvement. Anything that moves the ball forward and helps the DFIR community I will always be in full support of!
