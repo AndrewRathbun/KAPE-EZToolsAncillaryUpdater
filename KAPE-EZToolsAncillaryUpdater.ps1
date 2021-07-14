@@ -1,4 +1,8 @@
-﻿# Be sure to run this script from your KAPE root folder, where kape.exe, gkape.exe, Targets, Modules, and Documentation folders exists
+# Written by: Andrew Rathbun, Senior Associate, Kroll
+# Email: andrew.rathbun@kroll.com
+# Version: 1.0
+
+﻿# Be sure to run this script from your KAPE root folder, i.e., where kape.exe, gkape.exe, Targets, Modules, and Documentation folders exists
 
 Set-ExecutionPolicy Bypass -Scope Process
 
