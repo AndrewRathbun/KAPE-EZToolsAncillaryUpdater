@@ -3,7 +3,7 @@ A PowerShell script that updates [KAPE](https://www.kroll.com/en/insights/public
 
 ## What Does "Ancillary" mean?
 
-Per Google, `ancillary` means:
+Per Oxford, `ancillary` means:
   
 > providing necessary support to the primary activities or operation of an organization, institution, industry, or system.
     
