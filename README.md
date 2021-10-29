@@ -3,7 +3,7 @@ A PowerShell script that updates [KAPE](https://www.kroll.com/en/insights/public
 
 ## User Advisory
 
-[Version 1](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/1.0) of this script was very slow. However, [Version 2](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/2.0) utilizes the [Get-ZimmermanTools.ps1](https://f001.backblazeb2.com/file/EricZimmermanTools/Get-ZimmermanTools.zip) script as well as the Get-KAPEUpdate.ps1 script that comes with KAPE. 
+[Version 1](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/1.0) of this script was very slow. However, [Version 2](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/2.0) utilizes the [Get-ZimmermanTools.ps1](https://f001.backblazeb2.com/file/EricZimmermanTools/Get-ZimmermanTools.zip) script as well as the Get-KAPEUpdate.ps1 script that comes with KAPE. Performance is now much faster! Enjoy!
 
 ## What Does "Ancillary" mean?
 
