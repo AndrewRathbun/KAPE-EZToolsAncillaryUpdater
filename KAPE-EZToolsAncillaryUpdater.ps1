@@ -87,38 +87,7 @@ Set-ExecutionPolicy Bypass -Scope Process
 	.NOTES
 		Additional information about the function.
 #>
-function Get-EZToolsNET4
-{
-	[CmdletBinding()]
-	param ()
-	
-	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
-	
-	#TODO: Place script here
-}
 
-<#
-	.SYNOPSIS
-		Downloads the .NET 6 version of EZ Tools
-	
-	.DESCRIPTION
-		Downloads the .NET 6 version of EZ Tools
-	
-	.EXAMPLE
-				PS C:\> Get-EZToolsNET4
-	
-	.NOTES
-		Additional information about the function.
-#>
-function Get-EZToolsNET6
-{
-	[CmdletBinding()]
-	param ()
-	
-	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
-	
-	#TODO: Place script here
-}
 <#
 	.SYNOPSIS
 		Updates the KAPE binary (kape.exe)
@@ -132,7 +101,7 @@ function Get-EZToolsNET6
 	.NOTES
 		Additional information about the function.
 #>
-function Get-KAPEUpdate
+function Get-KAPEUpdateEXE
 {
 	[CmdletBinding()]
 	param ()
@@ -140,7 +109,7 @@ function Get-KAPEUpdate
 	if (Test-Path -Path $PSScriptRoot\Get-KAPEUpdate.ps1)
 	{
 		Log -logFilePath $logFilePath -msg "| Running Get-KAPEUpdate.ps1 to update KAPE to the latest binary"
-		.\Get-KAPEUpdate.ps1
+		& $PSScriptRoot\Get-KAPEUpdate.ps1
 	}
 	else
 	{
@@ -190,6 +159,8 @@ $ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile"
 
 Get-ZimmermanToolsScript
 
+Get-KAPEUpdateEXE
+
 # Download all EZ Tools and place in .\KAPE\Modules\bin
 
 if ($netVersion -eq "4")
@@ -207,55 +178,218 @@ elseif ($netVersion -eq "6")
 }
 
 
-# This ensures all the latest KAPE Targets and Modules are downloaded
-
-if (Test-Path -Path $PSScriptRoot\kape.exe)
+<#
+	.SYNOPSIS
+		Sync with GitHub for the latest Targets and Modules!
+	
+	.DESCRIPTION
+		This function will download the latest Targets and Modules from https://github.com/EricZimmerman/KapeFiles
+	
+	.EXAMPLE
+				PS C:\> Sync-KAPETargetsModules
+	
+	.NOTES
+		Additional information about the function.
+#>
+function Sync-KAPETargetsModules
 {
-	Log -logFilePath $logFilePath -msg "| Syncing KAPE with GitHub for the latest Targets and Modules"
-	& "$PSScriptRoot\kape.exe" --sync # works without Admin privs as of KAPE 1.0.0.3
+	[CmdletBinding()]
+	param ()
+	
+	if (Test-Path -Path $PSScriptRoot\kape.exe)
+	{
+		Log -logFilePath $logFilePath -msg "| Syncing KAPE with GitHub for the latest Targets and Modules"
+		& "$PSScriptRoot\kape.exe" --sync # works without Admin privs as of KAPE 1.0.0.3
+	}
+	else
+	{
+		Log -logFilePath $logFilePath -msg "| kape.exe not found, please go download KAPE from $kapeDownloadUrl"
+		Exit
+	}
 }
-else
+
+
+Sync-KAPETargetsModules
+
+<#
+	.SYNOPSIS
+		Sync with GitHub for the latest EvtxECmd Maps!
+	
+	.DESCRIPTION
+		This function will download the latest EvtxECmd Maps from https://github.com/EricZimmerman/evtx
+	
+	.EXAMPLE
+				PS C:\> Sync-EvtxECmdMaps
+	
+	.NOTES
+		Additional information about the function.
+#>
+function Sync-EvtxECmdMaps
 {
-	Log -logFilePath $logFilePath -msg "| kape.exe not found, please go download KAPE from $kapeDownloadUrl"
-	Exit
+	[CmdletBinding()]
+	param ()
+	
+	# This deletes the .\KAPE\Modules\bin\EvtxECmd\Maps folder so old Maps don't collide with new Maps
+	
+	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
+	
+	Remove-Item -Path "$kapeModulesBin\EvtxECmd\Maps\*" -Recurse -Force
+	
+	# This ensures all the latest EvtxECmd Maps are downloaded
+	
+	Log -logFilePath $logFilePath -msg "| Syncing EvtxECmd with GitHub for the latest Maps"
+	
+	& "$kapeModulesBin\EvtxECmd\EvtxECmd.exe" --sync
+	
+}
+
+<#
+	.SYNOPSIS
+		Sync with GitHub for the latest RECmd Batch files!
+	
+	.DESCRIPTION
+		This function will download the latest RECmd Batch Files from https://github.com/EricZimmerman/RECmd
+	
+	.EXAMPLE
+				PS C:\> Sync-RECmdBatchFiles
+	
+	.NOTES
+		Additional information about the function.
+#>
+function Sync-RECmdBatchFiles
+{
+	[CmdletBinding()]
+	param ()
+	
+	# This deletes the .\KAPE\Modules\bin\RECmd\BatchExamples folder so old Batch files don't collide with new Batch files
+	
+	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\RECmd\BatchExamples for a fresh start prior to syncing RECmd with GitHub"
+	
+	Remove-Item -Path "$kapeModulesBin\RECmd\BatchExamples\*" -Recurse -Force
+	
+	# This ensures all the latest RECmd Batch files are downloaded
+	
+	Log -logFilePath $logFilePath -msg "| Syncing RECmd with GitHub for the latest Maps"
+	
+	& "$kapeModulesBin\RECmd\RECmd.exe" --sync
+}
+
+<#
+	.SYNOPSIS
+		Sync with GitHub for the latest SQLECmd Maps!
+	
+	.DESCRIPTION
+		This function will download the latest Maps from https://github.com/EricZimmerman/SQLECmd
+
+	.EXAMPLE
+				PS C:\> Sync-SQLECmdMaps
+	
+	.NOTES
+		Additional information about the function.
+#>
+function Sync-SQLECmdMaps
+{
+	[CmdletBinding()]
+	param ()
+	
+	# This deletes the .\KAPE\Modules\bin\SQLECmd\Maps folder so old Maps don't collide with new Maps
+	
+	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
+	
+	Remove-Item -Path "$kapeModulesBin\SQLECmd\Maps\*" -Recurse -Force
+	
+	# This ensures all the latest SQLECmd Maps are downloaded
+	
+	Log -logFilePath $logFilePath -msg "| Syncing SQLECmd with GitHub for the latest Maps"
+	
+	& "$kapeModulesBin\SQLECmd\SQLECmd.exe" --sync
+}
+
+Sync-EvtxECmdMaps
+
+Sync-RECmdBatchFiles
+
+Sync-SQLECmdMaps
+
+function Get-EZToolsNET4
+{
+	[CmdletBinding()]
+	param ()
+	
+	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
+	
+	#TODO: Place script here
+}
+
+<#
+	.SYNOPSIS
+		Downloads the .NET 6 version of EZ Tools
+	
+	.DESCRIPTION
+		Downloads the .NET 6 version of EZ Tools
+	
+	.EXAMPLE
+				PS C:\> Get-EZToolsNET4
+	
+	.NOTES
+		Additional information about the function.
+#>
+function Get-EZToolsNET6
+{
+	[CmdletBinding()]
+	param ()
+	
+	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
+	
+	#TODO: Place script here
 }
 
 
-# This deletes the .\KAPE\Modules\bin\EvtxECmd\Maps folder so old Maps don't collide with new Maps
 
-Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
 
-Remove-Item -Path "$kapeModulesBin\EvtxECmd\Maps\*" -Recurse -Force
+<#
+	.SYNOPSIS
+		Set up KAPE for use with .NET 6 EZ Tools!
+	
+	.DESCRIPTION
+		blah
+	
+	.EXAMPLE
+				PS C:\> Move-EZToolsNET6
+	
+	.NOTES
+		Additional information about the function.
+#>
+function Move-EZToolsNET6
+{
+	[CmdletBinding()]
+	param ()
+	
+	#TODO: Place script here
+}
 
-# This ensures all the latest EvtxECmd Maps are downloaded
+<#
+	.SYNOPSIS
+		blah
+	
+	.DESCRIPTION
+		blah
+	
+	.EXAMPLE
+				PS C:\> Move-Move-EZToolsNET4
+	
+	.NOTES
+		Additional information about the function.
+#>
+function Move-Move-EZToolsNET4
+{
+	[CmdletBinding()]
+	param ()
+	
+	#TODO: Place script here
+}
 
-Log -logFilePath $logFilePath -msg "| Syncing EvtxECmd with GitHub for the latest Maps"
 
-& "$kapeModulesBin\EvtxECmd\EvtxECmd.exe" --sync
-
-# This deletes the .\KAPE\Modules\bin\RECmd\BatchExamples folder so old Batch files don't collide with new Batch files
-
-Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\RECmd\BatchExamples for a fresh start prior to syncing RECmd with GitHub"
-
-Remove-Item -Path "$kapeModulesBin\RECmd\BatchExamples\*" -Recurse -Force
-
-# This ensures all the latest RECmd Batch files are downloaded
-
-Log -logFilePath $logFilePath -msg "| Syncing RECmd with GitHub for the latest Maps"
-
-& "$kapeModulesBin\RECmd\RECmd.exe" --sync
-
-# This deletes the .\KAPE\Modules\bin\SQLECmd\Maps folder so old Maps don't collide with new Maps
-
-Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
-
-Remove-Item -Path "$kapeModulesBin\SQLECmd\Maps\*" -Recurse -Force
-
-# This ensures all the latest SQLECmd Maps are downloaded
-
-Log -logFilePath $logFilePath -msg "| Syncing SQLECmd with GitHub for the latest Maps"
-
-& "$kapeModulesBin\SQLECmd\SQLECmd.exe" --sync
 
 # Copies tools that require subfolders for Maps, Batch Files, etc
 
