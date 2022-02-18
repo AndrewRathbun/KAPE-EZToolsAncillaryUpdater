@@ -5,12 +5,12 @@
 	.DESCRIPTION
 		Updates the following:
 		
-		KAPE binary - https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape
-		KAPE Targets (.tkape) - https://github.com/EricZimmerman/KapeFiles/tree/master/Targets
-		KAPE Modules (.mkape) - https://github.com/EricZimmerman/KapeFiles/tree/master/Modules
-		RECmd Batch Files (.reb) - https://github.com/EricZimmerman/RECmd/tree/master/BatchExamples
-		EvtxECmd Maps (.map) - https://github.com/EricZimmerman/evtx/tree/master/evtx/Maps
-		SQLECmd Maps (.smap) - https://github.com/EricZimmerman/SQLECmd/tree/master/SQLMap/Maps
+		KAPE binary (.KAPE\kape.exe) - https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape
+		KAPE Targets (.\KAPE\Targets\*.tkape) - https://github.com/EricZimmerman/KapeFiles/tree/master/Targets
+		KAPE Modules (.\KAPE\Modules\*.mkape) - https://github.com/EricZimmerman/KapeFiles/tree/master/Modules
+		RECmd Batch Files (.\KAPE\Modules\bin\RECmd\BatchExamples\*.reb) - https://github.com/EricZimmerman/RECmd/tree/master/BatchExamples
+		EvtxECmd Maps (.\KAPE\Modules\bin\EvtxECmd\Maps\*.map) - https://github.com/EricZimmerman/evtx/tree/master/evtx/Maps
+		SQLECmd Maps (.\KAPE\Modules\bin\SQLECmd\Maps\*.smap) - https://github.com/EricZimmerman/SQLECmd/tree/master/SQLMap/Maps
 	
 	.PARAMETER netVersion
 		Please specify which .NET version of EZ Tools you want to download. 
