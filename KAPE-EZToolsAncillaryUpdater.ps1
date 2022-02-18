@@ -365,7 +365,42 @@ function Move-EZToolsNET6
 	[CmdletBinding()]
 	param ()
 	
-	#TODO: Place script here
+	# Copies tools that require subfolders for Maps, Batch Files, etc
+	
+	Log -logFilePath $logFilePath -msg "| Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
+	
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\EvtxExplorer -Destination $binPath\EvtxECmd -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RegistryExplorer -Destination $binPath\RECmd -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SQLECmd -Destination $binPath\SQLECmd -Recurse -Force
+	
+	Log -logFilePath $logFilePath -msg "| Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to .\KAPE\Modules\bin successfully"
+	
+	# Copies tools that don't require subfolders
+	
+	Log -logFilePath $logFilePath -msg "| Copying remaining EZ Tools binaries to $kapeModulesBin"
+	
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\AmcacheParser.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\AppCompatCacheParser.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\bstrings.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\JLECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\LECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\MFTECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\PECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RBCmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RecentFileCacheParser.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\ShellBagsExplorer\SBECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SrumECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SumECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\WxTCmd.exe -Destination $binPath\ -Recurse -Force
+	
+	Log -logFilePath $logFilePath -msg "| Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
+	
+	# need to remove all .net4 tools from here
+	
+	# This removes GUI tools and other files/folders that the CLI tools don't utilize within the KAPE\Modules\bin folder
+	
+	Log -logFilePath $logFilePath -msg "| Removing unnecessary files (GUI tools/unused files) from $kapeModulesBin"
+	
 }
 
 <#
@@ -386,44 +421,45 @@ function Move-Move-EZToolsNET4
 	[CmdletBinding()]
 	param ()
 	
-	#TODO: Place script here
+	# Copies tools that require subfolders for Maps, Batch Files, etc
+	
+	Log -logFilePath $logFilePath -msg "| Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
+	
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\EvtxExplorer -Destination $binPath\EvtxECmd -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RegistryExplorer -Destination $binPath\RECmd -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SQLECmd -Destination $binPath\SQLECmd -Recurse -Force
+	
+	Log -logFilePath $logFilePath -msg "| Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to .\KAPE\Modules\bin successfully"
+	
+	# Copies tools that don't require subfolders
+	
+	Log -logFilePath $logFilePath -msg "| Copying remaining EZ Tools binaries to $kapeModulesBin"
+	
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\AmcacheParser.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\AppCompatCacheParser.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\bstrings.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\JLECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\LECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\MFTECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\PECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RBCmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RecentFileCacheParser.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\ShellBagsExplorer\SBECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SrumECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SumECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\WxTCmd.exe -Destination $binPath\ -Recurse -Force
+	
+	Log -logFilePath $logFilePath -msg "| Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
+	
+	#need to remove all .net6 tools here
+	
+	# This removes GUI tools and other files/folders that the CLI tools don't utilize within the KAPE\Modules\bin folder
+	
+	Log -logFilePath $logFilePath -msg "| Removing unnecessary files (GUI tools/unused files) from $kapeModulesBin"
 }
 
 
 
-# Copies tools that require subfolders for Maps, Batch Files, etc
-
-Log -logFilePath $logFilePath -msg "| Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to .\KAPE\Modules\bin"
-
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\EvtxExplorer -Destination $binPath\EvtxECmd -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\RegistryExplorer -Destination $binPath\RECmd -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\SQLECmd -Destination $binPath\SQLECmd -Recurse -Force
-
-Log -logFilePath $logFilePath -msg "| Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to .\KAPE\Modules\bin successfully"
-
-# Copies tools that don't require subfolders
-
-Log -logFilePath $logFilePath -msg "| Copying remaining EZ Tools binaries to .\KAPE\Modules\bin"
-
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\AmcacheParser.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\AppCompatCacheParser.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\bstrings.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\JLECmd.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\LECmd.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\MFTECmd.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\PECmd.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\RBCmd.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\RecentFileCacheParser.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\ShellBagsExplorer\SBECmd.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\SrumECmd.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\SumECmd.exe -Destination $binPath\ -Recurse -Force
-& Copy-Item -Path $PSScriptRoot\ZimmermanTools\WxTCmd.exe -Destination $binPath\ -Recurse -Force
-
-Log -logFilePath $logFilePath -msg "| Copied remaining EZ Tools binaries to .\KAPE\Modules\bin successfully"
-
-# This removes GUI tools and other files/folders that the CLI tools don't utilize within the KAPE\Modules\bin folder
-
-Log -logFilePath $logFilePath -msg "| Removing unnecessary files (GUI tools/unused files) from .\KAPE\Modules\bin"
 
 $RECmdBookmarks = "$binPath\RECmd\Bookmarks"
 if (Test-Path -Path $RECmdBookmarks)
