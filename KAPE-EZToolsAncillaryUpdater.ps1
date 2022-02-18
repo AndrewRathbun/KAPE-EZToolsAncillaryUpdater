@@ -418,7 +418,7 @@ function Move-EZToolsNET6
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\WxTCmd.dll -Destination $kapeModulesBin\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\WxTCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\WxTCmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-		
+	
 	Log -logFilePath $logFilePath -msg "| Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
 	
 	# need to remove all .net4 tools from here
@@ -554,7 +554,8 @@ function Remove-UnnecessaryFiles
 	
 	& Remove-Item -Path $PSScriptRoot\Get-ZimmermanTools.zip -Recurse -Force
 	
-	Log -logFilePath $logFilePath -msg "| Removed .\KAPE\Get-ZimmermanTools.zip successfully"}
+	Log -logFilePath $logFilePath -msg "| Removed .\KAPE\Get-ZimmermanTools.zip successfully"
+}
 
 
 
