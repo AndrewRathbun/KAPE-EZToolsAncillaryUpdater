@@ -369,9 +369,9 @@ function Move-EZToolsNET6
 	
 	Log -logFilePath $logFilePath -msg "| Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
 	
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\EvtxExplorer -Destination $binPath\EvtxECmd -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RegistryExplorer -Destination $binPath\RECmd -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SQLECmd -Destination $binPath\SQLECmd -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\EvtxECmd -Destination $kapeModulesBin\EvtxECmd -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RECmd -Destination $kapeModulesBin\RECmd -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SQLECmd -Destination $kapeModulesBin\SQLECmd -Recurse -Force
 	
 	Log -logFilePath $logFilePath -msg "| Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to .\KAPE\Modules\bin successfully"
 	
@@ -483,62 +483,81 @@ function Move-EZToolsNET4
 	
 	Log -logFilePath $logFilePath -msg "| Removing unnecessary files (GUI tools/unused files) from $kapeModulesBin"
 }
-
-
-
-
-$RECmdBookmarks = "$binPath\RECmd\Bookmarks"
-if (Test-Path -Path $RECmdBookmarks)
+<#
+	.SYNOPSIS
+		d
+	
+	.DESCRIPTION
+		d
+	
+	.EXAMPLE
+				PS C:\> Remove-UnnecessaryFiles
+	
+	.NOTES
+		Additional information about the function.
+#>
+function Remove-UnnecessaryFiles
 {
-	Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Bookmarks exists! These files are not needed for RECmd and will be deleted"
-	Remove-Item -Path $binPath\RECmd\Bookmarks -Recurse -Force
-}
-else
-{
-	Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Bookmarks does not exist. No further action needed"
-}
+	[CmdletBinding()]
+	param ()
+	
+	# need to clean this up, maybe do if -netVersion4 [] and same with 6
+	
+	$RECmdBookmarks = "$binPath\RECmd\Bookmarks"
+	if (Test-Path -Path $RECmdBookmarks)
+	{
+		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Bookmarks exists! These files are not needed for RECmd and will be deleted"
+		Remove-Item -Path $binPath\RECmd\Bookmarks -Recurse -Force
+	}
+	else
+	{
+		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Bookmarks does not exist. No further action needed"
+	}
+	
+	$RECmdSettings = "$binPath\RECmd\Settings"
+	if (Test-Path -Path $RECmdSettings)
+	{
+		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Settings exists! These files are not needed for RECmd and will be deleted"
+		Remove-Item -Path $binPath\RECmd\Settings -Recurse -Force
+	}
+	else
+	{
+		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Settings does not exist. No further action needed"
+	}
+	
+	$RECmdRegistryExplorerGUI = "$binPath\RECmd\RegistryExplorer.exe"
+	if (Test-Path -Path $RECmdRegistryExplorerGUI)
+	{
+		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorer.exe exists! This is a GUI tool and is not needed"
+		Remove-Item -Path $binPath\RECmd\RegistryExplorer.exe -Recurse -Force
+	}
+	else
+	{
+		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorer.exe does not exist. No further action needed"
+	}
+	
+	$RECmdRegistryExplorerManual = "$binPath\RECmd\RegistryExplorerManual.pdf"
+	if (Test-Path -Path $RECmdRegistryExplorerManual)
+	{
+		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorerManual.pdf exists! This is not needed by KAPE and will be deleted"
+		Remove-Item -Path $binPath\RECmd\RegistryExplorerManual.pdf -Recurse -Force
+	}
+	else
+	{
+		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorerManual.pdf does not exist. No further action needed"
+	}
+	
+	Log -logFilePath $logFilePath -msg "| Removed unnecessary files (GUI tools/unused files) from .\KAPE\Modules\bin successfully"
+	
+	# & Remove-Item -Path $PSScriptRoot\ZimmermanTools -Recurse -Force # Remove comment if you want the ZimmermanTools folder to be gone
+	# Log -logFilePath $logFilePath -msg "| Removed .\KAPE\ZimmermanTools and all its contents successfully"
+	
+	& Remove-Item -Path $PSScriptRoot\Get-ZimmermanTools.zip -Recurse -Force
+	
+	Log -logFilePath $logFilePath -msg "| Removed .\KAPE\Get-ZimmermanTools.zip successfully"}
 
-$RECmdSettings = "$binPath\RECmd\Settings"
-if (Test-Path -Path $RECmdSettings)
-{
-	Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Settings exists! These files are not needed for RECmd and will be deleted"
-	Remove-Item -Path $binPath\RECmd\Settings -Recurse -Force
-}
-else
-{
-	Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Settings does not exist. No further action needed"
-}
 
-$RECmdRegistryExplorerGUI = "$binPath\RECmd\RegistryExplorer.exe"
-if (Test-Path -Path $RECmdRegistryExplorerGUI)
-{
-	Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorer.exe exists! This is a GUI tool and is not needed"
-	Remove-Item -Path $binPath\RECmd\RegistryExplorer.exe -Recurse -Force
-}
-else
-{
-	Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorer.exe does not exist. No further action needed"
-}
 
-$RECmdRegistryExplorerManual = "$binPath\RECmd\RegistryExplorerManual.pdf"
-if (Test-Path -Path $RECmdRegistryExplorerManual)
-{
-	Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorerManual.pdf exists! This is not needed by KAPE and will be deleted"
-	Remove-Item -Path $binPath\RECmd\RegistryExplorerManual.pdf -Recurse -Force
-}
-else
-{
-	Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorerManual.pdf does not exist. No further action needed"
-}
-
-Log -logFilePath $logFilePath -msg "| Removed unnecessary files (GUI tools/unused files) from .\KAPE\Modules\bin successfully"
-
-# & Remove-Item -Path $PSScriptRoot\ZimmermanTools -Recurse -Force # Remove comment if you want the ZimmermanTools folder to be gone
-# Log -logFilePath $logFilePath -msg "| Removed .\KAPE\ZimmermanTools and all its contents successfully"
-
-& Remove-Item -Path $PSScriptRoot\Get-ZimmermanTools.zip -Recurse -Force
-
-Log -logFilePath $logFilePath -msg "| Removed .\KAPE\Get-ZimmermanTools.zip successfully"
 
 Log -logFilePath $logFilePath -msg "| Thank you for keeping this instance of KAPE updated! Please be sure to run this script on a regular basis and follow the GitHub repositories associated with KAPE and EZ Tools!"
 
