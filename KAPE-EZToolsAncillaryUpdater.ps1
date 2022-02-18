@@ -1,6 +1,6 @@
 <#
 	.SYNOPSIS
-		Keep KAPE and all the tools that make it work updated!
+		Keep KAPE and all the included EZ Tools updated!
 	
 	.DESCRIPTION
 		Updates the following:
@@ -16,14 +16,28 @@
 		Please specify which .NET version of EZ Tools you want to download. 
 		
 		Valid parameters: 4 or 6
+
+	.USAGE		
+		Update KAPE and use .NET 4 version of EZ Tools:
+		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 4
+
+		Update KAPE and use .NET 6 version of EZ Tools:
+		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 6
 	
+	.CHANGELOG
+		1.0 - (Sep 09, 2021) Initial release
+		2.0 - (Oct 22, 2021) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which leverages Get-KAPEUpdate.ps1 and Get-ZimmermanTools.ps1 as well as other various --sync commands to keep all of KAPE and the command line EZ Tools updated to their fullest potential with minimal effort. Signed script with certificate.
+		3.0 - Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less change for issues. Added changelog.
+
+
 	.NOTES
 		===========================================================================
 		Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2022 v5.8.200
 		Created on:   	2022-02-13 23:29
 		Created by:   	Andrew Rathbun
 		Organization: 	Kroll Cyber Risk
-		Filename:
+		Filename:		KAPE-EZToolsAncillaryUpdater.ps1
+		Version:		3.0
 		===========================================================================
 #>
 param
@@ -78,6 +92,8 @@ function Get-EZToolsNET4
 	[CmdletBinding()]
 	param ()
 	
+	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
+	
 	#TODO: Place script here
 }
 
@@ -99,24 +115,68 @@ function Get-EZToolsNET6
 	[CmdletBinding()]
 	param ()
 	
+	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
+	
 	#TODO: Place script here
 }
-
-
-
-
-
-
-if (Test-Path -Path $PSScriptRoot\Get-KAPEUpdate.ps1)
+<#
+	.SYNOPSIS
+		Updates the KAPE binary (kape.exe)
+	
+	.DESCRIPTION
+		A detailed description of the Get-KAPEUpdate function.
+	
+	.EXAMPLE
+				PS C:\> Get-KAPEUpdate
+	
+	.NOTES
+		Additional information about the function.
+#>
+function Get-KAPEUpdate
 {
-	Log -logFilePath $logFilePath -msg "| Running Get-KAPEUpdate.ps1 to update KAPE to the latest binary"
-	.\Get-KAPEUpdate.ps1
+	[CmdletBinding()]
+	param ()
+	
+	if (Test-Path -Path $PSScriptRoot\Get-KAPEUpdate.ps1)
+	{
+		Log -logFilePath $logFilePath -msg "| Running Get-KAPEUpdate.ps1 to update KAPE to the latest binary"
+		.\Get-KAPEUpdate.ps1
+	}
+	else
+	{
+		Log -logFilePath $logFilePath -msg "| Get-KAPEUpdate.ps1 not found, please go download KAPE from $kapeDownloadUrl"
+		Exit
+	}
 }
-else
+
+<#
+	.SYNOPSIS
+		Downloads all EZ Tools!
+	
+	.DESCRIPTION
+		Downloads Get-ZimmermanTools.zip, extracts Get-ZimmermanTools.ps1 from the ZIP file into .\KAPE\Modules\bin. 
+	
+	.EXAMPLE
+				PS C:\> Get-ZimmermanTools
+	
+	.NOTES
+		Additional information about the function.
+#>
+function Get-ZimmermanToolsScript
 {
-	Log -logFilePath $logFilePath -msg "| Get-KAPEUpdate.ps1 not found, please go download KAPE from $kapeDownloadUrl"
-	Exit
+	[CmdletBinding()]
+	param ()
+	
+	Log -logFilePath $logFilePath -msg "| Downloading $ZTZipFile from $ZTdlUrl to $kapeModulesBin"
+	
+	Start-BitsTransfer -Source $ZTdlUrl -Destination $kapeModulesBin
+	
+	Expand-Archive -Path $kapeModulesBin -DestinationPath $kapeModulesBin -Force -ErrorAction:Stop
 }
+
+# Let's update KAPE first
+
+Get-KAPEUpdate
 
 # Setting variables the script relies on
 
@@ -126,13 +186,9 @@ $ZTZipFile = 'Get-ZimmermanTools.zip'
 
 $ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile"
 
-# Download Get-ZimmermanTools.zip and extract from archive
+# Let's download Get-ZimmermanTools.zip and extract Get-ZimmermanTools.ps1
 
-Log -logFilePath $logFilePath -msg "| Downloading $ZTZipFile from $ZTdlUrl to $kapeModulesBin"
-
-Start-BitsTransfer -Source $ZTdlUrl -Destination $kapeModulesBin
-
-Expand-Archive -Path $kapeModulesBin -DestinationPath $kapeModulesBin -Force -ErrorAction:Stop
+Get-ZimmermanToolsScript
 
 # Download all EZ Tools and place in .\KAPE\Modules\bin
 
@@ -150,8 +206,6 @@ elseif ($netVersion -eq "6")
 	
 }
 
-
-& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
 
 # This ensures all the latest KAPE Targets and Modules are downloaded
 
