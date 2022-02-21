@@ -1,6 +1,6 @@
 <#
 	.SYNOPSIS
-		Keep KAPE and all the included EZ Tools updated!
+		Keep KAPE and all the included EZ Tools updated! Be sure to run this script from the root of your KAPE folder, i.e., where kape.exe, gkape.exe, Targets, Modules, and Documentation folders exists
 	
 	.DESCRIPTION
 		Updates the following:
@@ -13,30 +13,30 @@
 		SQLECmd Maps (.\KAPE\Modules\bin\SQLECmd\Maps\*.smap) - https://github.com/EricZimmerman/SQLECmd/tree/master/SQLMap/Maps
 	
 	.PARAMETER netVersion
-		Please specify which .NET version of EZ Tools you want to download. 
+		Please specify which .NET version of EZ Tools you want to download.
 		
 		Valid parameters: 4 or 6
-
-	.USAGE		
+		
+	.USAGE
 		Update KAPE and use .NET 4 version of EZ Tools:
 		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 4
-
+		
 		Update KAPE and use .NET 6 version of EZ Tools:
 		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 6
-	
+		
 	.CHANGELOG
 		1.0 - (Sep 09, 2021) Initial release
 		2.0 - (Oct 22, 2021) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which leverages Get-KAPEUpdate.ps1 and Get-ZimmermanTools.ps1 as well as other various --sync commands to keep all of KAPE and the command line EZ Tools updated to their fullest potential with minimal effort. Signed script with certificate.
-		3.0 - Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less change for issues. Added changelog.
-
-
+		3.0 - (DATE HERE) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less change for issues. Added changelog.
+	
 	.NOTES
 		===========================================================================
-		Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2022 v5.8.200
+		Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2022 v5.8.201
 		Created on:   	2022-02-13 23:29
 		Created by:   	Andrew Rathbun
 		Organization: 	Kroll Cyber Risk
 		Filename:		KAPE-EZToolsAncillaryUpdater.ps1
+		GitHub:			https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
 		Version:		3.0
 		===========================================================================
 #>
@@ -46,9 +46,6 @@ param
 	[ValidateSet('4', '6')]
 	[ValidateSet]$netVersion
 )
-# GitHub: https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
-# This script requires Get-KAPEUpdate.ps1 and kape.exe to be present. If you don't have those, download them from here: https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape
-# Be sure to run this script from your KAPE root folder, i.e., where kape.exe, gkape.exe, Targets, Modules, and Documentation folders exists
 
 function Get-TimeStamp
 {
@@ -314,7 +311,11 @@ Sync-SQLECmdMaps
 function Get-EZToolsNET4
 {
 	[CmdletBinding()]
-	param ()
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$Netversion
+	)
 	
 	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
 	
@@ -337,7 +338,11 @@ function Get-EZToolsNET4
 function Get-EZToolsNET6
 {
 	[CmdletBinding()]
-	param ()
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[string]$Netversion
+	)
 	
 	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
 	
@@ -373,7 +378,7 @@ function Move-EZToolsNET6
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RECmd -Destination $kapeModulesBin\RECmd -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SQLECmd -Destination $kapeModulesBin\SQLECmd -Recurse -Force
 	
-	Log -logFilePath $logFilePath -msg "| Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to .\KAPE\Modules\bin successfully"
+	Log -logFilePath $logFilePath -msg "| Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
 	
 	# Copies tools that don't require subfolders
 	
@@ -408,7 +413,7 @@ function Move-EZToolsNET6
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RecentFileCacheParser.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SBECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SBECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\ShellBagsExplorer\SBECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SBECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SrumECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SrumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SrumECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
@@ -421,11 +426,11 @@ function Move-EZToolsNET6
 	
 	Log -logFilePath $logFilePath -msg "| Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
 	
-	# need to remove all .net4 tools from here
+	# This removes the downloaded EZ Tools that we no longer need to reside on diskr
 	
-	# This removes GUI tools and other files/folders that the CLI tools don't utilize within the KAPE\Modules\bin folder
+	& Remove-Item -Path $kapeModulesBin\ZimmermanTools -Recurse -Force
 	
-	Log -logFilePath $logFilePath -msg "| Removing unnecessary files (GUI tools/unused files) from $kapeModulesBin"
+	Log -logFilePath $logFilePath -msg "| Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
 	
 }
 
@@ -451,11 +456,11 @@ function Move-EZToolsNET4
 	
 	Log -logFilePath $logFilePath -msg "| Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
 	
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\EvtxExplorer -Destination $binPath\EvtxECmd -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RegistryExplorer -Destination $binPath\RECmd -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SQLECmd -Destination $binPath\SQLECmd -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\EvtxECmd -Destination $kapeModulesBin\EvtxECmd -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RECmd -Destination $kapeModulesBin\RECmd -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SQLECmd -Destination $kapeModulesBin\SQLECmd -Recurse -Force
 	
-	Log -logFilePath $logFilePath -msg "| Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to .\KAPE\Modules\bin successfully"
+	Log -logFilePath $logFilePath -msg "| Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
 	
 	# Copies tools that don't require subfolders
 	
@@ -470,18 +475,22 @@ function Move-EZToolsNET4
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\PECmd.exe -Destination $binPath\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RBCmd.exe -Destination $binPath\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RecentFileCacheParser.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\ShellBagsExplorer\SBECmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SBECmd.exe -Destination $binPath\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SrumECmd.exe -Destination $binPath\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SumECmd.exe -Destination $binPath\ -Recurse -Force
 	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\WxTCmd.exe -Destination $binPath\ -Recurse -Force
 	
 	Log -logFilePath $logFilePath -msg "| Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
 	
-	#need to remove all .net6 tools here
+	# This removes the downloaded EZ Tools that we no longer need to reside on diskr
 	
-	# This removes GUI tools and other files/folders that the CLI tools don't utilize within the KAPE\Modules\bin folder
+	& Remove-Item -Path $kapeModulesBin\ZimmermanTools -Recurse -Force
 	
-	Log -logFilePath $logFilePath -msg "| Removing unnecessary files (GUI tools/unused files) from $kapeModulesBin"
+	Log -logFilePath $logFilePath -msg "| Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
+	
+	& Remove-Item -Path $PSScriptRoot\Get-ZimmermanTools.zip -Recurse -Force
+	
+	Log -logFilePath $logFilePath -msg "| Removed .\KAPE\Get-ZimmermanTools.zip successfully"
 }
 <#
 	.SYNOPSIS
@@ -496,6 +505,7 @@ function Move-EZToolsNET4
 	.NOTES
 		Additional information about the function.
 #>
+<#
 function Remove-UnnecessaryFiles
 {
 	[CmdletBinding()]
@@ -552,20 +562,18 @@ function Remove-UnnecessaryFiles
 	# & Remove-Item -Path $PSScriptRoot\ZimmermanTools -Recurse -Force # Remove comment if you want the ZimmermanTools folder to be gone
 	# Log -logFilePath $logFilePath -msg "| Removed .\KAPE\ZimmermanTools and all its contents successfully"
 	
-	& Remove-Item -Path $PSScriptRoot\Get-ZimmermanTools.zip -Recurse -Force
-	
-	Log -logFilePath $logFilePath -msg "| Removed .\KAPE\Get-ZimmermanTools.zip successfully"
+
 }
-
-
-
+#>
 
 Log -logFilePath $logFilePath -msg "| Thank you for keeping this instance of KAPE updated! Please be sure to run this script on a regular basis and follow the GitHub repositories associated with KAPE and EZ Tools!"
 
-
 Log -logFilePath $logFilePath -msg "Processing Time:" $stopwatch.Elapsed | Out-File $logFileNamePath -Append
+
 $stopwatch.stop()
+
 Log -logFilePath $logFilePath -msg "Finished | Script completed in " $stopwatch.Elapsed | Out-File $logFileNamePath -Append
+
 Log -logFilePath $logFilePath -msg "--- End of session --- |" Out-File $logFileNamePath -Append
 
 Pause
