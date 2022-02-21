@@ -1,4 +1,4 @@
-<#
+                                                                                                                                   <#
 	.SYNOPSIS
 		Keep KAPE and all the included EZ Tools updated! Be sure to run this script from the root of your KAPE folder, i.e., where kape.exe, gkape.exe, Targets, Modules, and Documentation folders exists
 	
@@ -17,14 +17,14 @@
 		
 		Valid parameters: 4 or 6
 		
-	.USAGE
+		.USAGE
 		Update KAPE and use .NET 4 version of EZ Tools:
 		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 4
 		
 		Update KAPE and use .NET 6 version of EZ Tools:
 		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 6
 		
-	.CHANGELOG
+		.CHANGELOG
 		1.0 - (Sep 09, 2021) Initial release
 		2.0 - (Oct 22, 2021) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which leverages Get-KAPEUpdate.ps1 and Get-ZimmermanTools.ps1 as well as other various --sync commands to keep all of KAPE and the command line EZ Tools updated to their fullest potential with minimal effort. Signed script with certificate.
 		3.0 - (DATE HERE) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less change for issues. Added changelog.
@@ -42,9 +42,11 @@
 #>
 param
 (
-	[Parameter(Mandatory = $true)]
+	[Parameter(Mandatory = $true,
+			   Position = 1,
+			   HelpMessage = '.NET version of EZ Tools (Options: 4 or 6)')]
 	[ValidateSet('4', '6')]
-	[ValidateSet]$netVersion
+	[String]$netVersion
 )
 
 function Get-TimeStamp
@@ -70,6 +72,15 @@ $stopwatch = [system.diagnostics.stopwatch]::StartNew()
 Log -logFilePath $logFilePath -msg "--- Beginning of session --- |"
 
 Set-ExecutionPolicy Bypass -Scope Process
+
+# Setting variables the script relies on
+
+$kapeModulesBin = "$PSScriptRoot\Modules\bin"
+
+$ZTZipFile = 'Get-ZimmermanTools.zip'
+
+$ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile"
+
 
 <#
 	.SYNOPSIS
@@ -103,7 +114,7 @@ function Get-KAPEUpdateEXE
 	[CmdletBinding()]
 	param ()
 	
-	if (Test-Path -Path $PSScriptRoot\Get-KAPEUpdate.ps1)
+	if (Test-Path -Path "$PSScriptRoot\Get-KAPEUpdate.ps1")
 	{
 		Log -logFilePath $logFilePath -msg "| Running Get-KAPEUpdate.ps1 to update KAPE to the latest binary"
 		& $PSScriptRoot\Get-KAPEUpdate.ps1
@@ -137,43 +148,38 @@ function Get-ZimmermanToolsScript
 	
 	Start-BitsTransfer -Source $ZTdlUrl -Destination $kapeModulesBin
 	
-	Expand-Archive -Path $kapeModulesBin -DestinationPath $kapeModulesBin -Force -ErrorAction:Stop
+	Expand-Archive -Path "$kapeModulesBin\$ZTZipFile" -DestinationPath $kapeModulesBin -Force
+	
+	& Start-Process -FilePath powershell -ArgumentList "$kapeModulesBin\Get-ZimmermanTools.ps1 -netVersion $Netversion"
 }
 
-# Let's update KAPE first
-
-Get-KAPEUpdate
-
-# Setting variables the script relies on
-
-$kapeModulesBin = "$PSScriptRoot\Modules\bin"
-
-$ZTZipFile = 'Get-ZimmermanTools.zip'
-
-$ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile"
-
-# Let's download Get-ZimmermanTools.zip and extract Get-ZimmermanTools.ps1
-
-Get-ZimmermanToolsScript
-
-Get-KAPEUpdateEXE
-
-# Download all EZ Tools and place in .\KAPE\Modules\bin
-
-if ($netVersion -eq "4")
+function Get-EZToolsNET4
 {
-	
-	Get-EZToolsNET4
-	
+	& Start-Process -FilePath powershell -ArgumentList "$kapeModulesBin\Get-ZimmermanTools.ps1 -netVersion $Netversion"
+
 }
 
-elseif ($netVersion -eq "6")
+<#
+	.SYNOPSIS
+		Downloads the .NET 6 version of EZ Tools
+	
+	.DESCRIPTION
+		Downloads the .NET 6 version of EZ Tools
+	
+	.EXAMPLE
+				PS C:\> Get-EZToolsNET4
+	
+	.NOTES
+		Additional information about the function.
+#>
+
+function Get-EZToolsNET6
 {
-	
-	Get-EZToolsNET6
-	
-}
 
+	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList $Netversion
+	
+	#TODO: Place script here
+}
 
 <#
 	.SYNOPSIS
@@ -204,9 +210,6 @@ function Sync-KAPETargetsModules
 		Exit
 	}
 }
-
-
-Sync-KAPETargetsModules
 
 <#
 	.SYNOPSIS
@@ -301,56 +304,6 @@ function Sync-SQLECmdMaps
 	
 	& "$kapeModulesBin\SQLECmd\SQLECmd.exe" --sync
 }
-
-Sync-EvtxECmdMaps
-
-Sync-RECmdBatchFiles
-
-Sync-SQLECmdMaps
-
-function Get-EZToolsNET4
-{
-	[CmdletBinding()]
-	param
-	(
-		[Parameter(Mandatory = $true)]
-		[string]$Netversion
-	)
-	
-	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
-	
-	#TODO: Place script here
-}
-
-<#
-	.SYNOPSIS
-		Downloads the .NET 6 version of EZ Tools
-	
-	.DESCRIPTION
-		Downloads the .NET 6 version of EZ Tools
-	
-	.EXAMPLE
-				PS C:\> Get-EZToolsNET4
-	
-	.NOTES
-		Additional information about the function.
-#>
-function Get-EZToolsNET6
-{
-	[CmdletBinding()]
-	param
-	(
-		[Parameter(Mandatory = $true)]
-		[string]$Netversion
-	)
-	
-	& Start-Process -FilePath "$kapeModulesBin\Get-ZimmermanTools.ps1" -ArgumentList "$Netversion"
-	
-	#TODO: Place script here
-}
-
-
-
 
 <#
 	.SYNOPSIS
@@ -492,6 +445,38 @@ function Move-EZToolsNET4
 	
 	Log -logFilePath $logFilePath -msg "| Removed .\KAPE\Get-ZimmermanTools.zip successfully"
 }
+
+
+# Let's update KAPE first
+
+& Get-KAPEUpdateEXE
+
+# Let's download Get-ZimmermanTools.zip and extract Get-ZimmermanTools.ps1
+
+& Get-ZimmermanToolsScript
+
+# Download all EZ Tools and place in .\KAPE\Modules\bin
+<#
+if ($netVersion -eq '4')
+{
+	
+	Get-EZToolsNET4
+	Move-EZToolsNET4
+}
+
+elseif ($netVersion -eq '6')
+{
+	
+	Get-EZToolsNET6
+	Move-EZToolsNET6
+	
+}
+#>
+& Sync-KAPETargetsModules
+& Sync-EvtxECmdMaps
+& Sync-RECmdBatchFiles
+& Sync-SQLECmdMaps
+
 <#
 	.SYNOPSIS
 		d
