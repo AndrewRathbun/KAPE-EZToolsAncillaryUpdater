@@ -19,15 +19,19 @@
 		
 		.USAGE
 		Update KAPE and use .NET 4 version of EZ Tools:
-		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 4
+		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 4 
+		OR 
+		KAPE-EZToolsAncillaryUpdater.ps1 4
 		
 		Update KAPE and use .NET 6 version of EZ Tools:
 		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 6
+		OR
+		KAPE-EZToolsAncillaryUpdater.ps1 6
 		
 		.CHANGELOG
 		1.0 - (Sep 09, 2021) Initial release
 		2.0 - (Oct 22, 2021) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which leverages Get-KAPEUpdate.ps1 and Get-ZimmermanTools.ps1 as well as other various --sync commands to keep all of KAPE and the command line EZ Tools updated to their fullest potential with minimal effort. Signed script with certificate.
-		3.0 - (February 02, 2022) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less change for issues. Added changelog. Added logging capabilities.
+		3.0 - (Feb 22, 2022) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less change for issues. Added changelog. Added logging capabilities.
 	
 	.NOTES
 		===========================================================================
@@ -156,6 +160,9 @@ function Get-ZimmermanTools
 	
 	.DESCRIPTION
 		This function will download the latest KAPE Targets and Modules from https://github.com/EricZimmerman/KapeFiles
+	
+	.NOTES
+		Sync works without Admin privileges as of KAPE 1.0.0.3
 #>
 function Sync-KAPETargetsModules
 {
@@ -165,8 +172,8 @@ function Sync-KAPETargetsModules
 	if (Test-Path -Path $PSScriptRoot\kape.exe)
 	{
 		Log -logFilePath $logFilePath -msg "Syncing KAPE with GitHub for the latest Targets and Modules"
-		& "$PSScriptRoot\kape.exe" --sync --debug # works without Admin privs as of KAPE 1.0.0.3
-		
+		Set-Location $PSScriptRoot
+		.\kape.exe --sync
 		Start-Sleep -Seconds 3
 	}
 	else
