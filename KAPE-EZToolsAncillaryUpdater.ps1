@@ -1,4 +1,4 @@
-                                                                             <#
+                                                                                                             <#
 	.SYNOPSIS
 		Keep KAPE and all the included EZ Tools updated! Be sure to run this script from the root of your KAPE folder, i.e., where kape.exe, gkape.exe, Targets, Modules, and Documentation folders exists
 	
@@ -69,7 +69,9 @@ function Log
 
 $stopwatch = [system.diagnostics.stopwatch]::StartNew()
 
-Log -logFilePath $logFilePath -msg "--- Beginning of session --- |"
+$Stopwatch.Start()
+
+Log -logFilePath $logFilePath -msg "| --- Beginning of session --- |"
 
 Set-ExecutionPolicy Bypass -Scope Process
 
@@ -134,7 +136,7 @@ function Get-ZimmermanTools
 		
 		Log -logFilePath $logFilePath -msg "| Get-ZimmermanTools.ps1 already exists! Downloading EZ Tools now to $kapeModulesBin\ZimmermanTools"
 		
-		Write-Host "Downloading .NET $netVersion of EZ Tools to $kapeModulesBin\ZimmermanTools"
+		Write-Host "Downloading .NET $netVersion version of EZ Tools to $kapeModulesBin\ZimmermanTools"
 		
 		& "$kapeModulesBin\Get-ZimmermanTools.ps1" -netVersion $netVersion -Dest $kapeModulesBin\ZimmermanTools
 		
@@ -167,7 +169,7 @@ function Sync-KAPETargetsModules
 	if (Test-Path -Path $PSScriptRoot\kape.exe)
 	{
 		Log -logFilePath $logFilePath -msg "| Syncing KAPE with GitHub for the latest Targets and Modules"
-		& "$PSScriptRoot\kape.exe" --sync # works without Admin privs as of KAPE 1.0.0.3
+		& "$PSScriptRoot\kape.exe" --sync --debug # works without Admin privs as of KAPE 1.0.0.3
 		
 		Start-Sleep -Seconds 5
 	}
@@ -198,15 +200,15 @@ function Sync-EvtxECmdMaps
 	
 	# This deletes the .\KAPE\Modules\bin\EvtxECmd\Maps folder so old Maps don't collide with new Maps
 	
-	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\ZimmermanTools\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
+	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
 	
-	Remove-Item -Path "$kapeModulesBin\ZimmermanTools\EvtxECmd\Maps\*" -Recurse -Force
+	Remove-Item -Path "$kapeModulesBin\EvtxECmd\Maps" -Recurse -Force
 	
 	# This ensures all the latest EvtxECmd Maps are downloaded
 	
 	Log -logFilePath $logFilePath -msg "| Syncing EvtxECmd with GitHub for the latest Maps"
 	
-	& "$kapeModulesBin\ZimmermanTools\EvtxECmd\EvtxECmd.exe" --sync
+	& "$kapeModulesBin\EvtxECmd\EvtxECmd.exe" --sync
 	
 	Start-Sleep -Seconds 5
 	
@@ -232,15 +234,15 @@ function Sync-RECmdBatchFiles
 	
 	# This deletes the .\KAPE\Modules\bin\RECmd\BatchExamples folder so old Batch files don't collide with new Batch files
 	
-	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\ZimmermanTools\RECmd\BatchExamples for a fresh start prior to syncing RECmd with GitHub"
+	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\RECmd\BatchExamples for a fresh start prior to syncing RECmd with GitHub"
 	
-	Remove-Item -Path "$kapeModulesBin\ZimmermanTools\RECmd\BatchExamples\*" -Recurse -Force
+	Remove-Item -Path "$kapeModulesBin\RECmd\BatchExamples\*" -Recurse -Force
 	
 	# This ensures all the latest RECmd Batch files are downloaded
 	
 	Log -logFilePath $logFilePath -msg "| Syncing RECmd with GitHub for the latest Maps"
 	
-	& "$kapeModulesBin\ZimmermanTools\RECmd\RECmd.exe" --sync
+	& "$kapeModulesBin\RECmd\RECmd.exe" --sync
 	
 	Start-Sleep -Seconds 5
 }
@@ -265,15 +267,15 @@ function Sync-SQLECmdMaps
 	
 	# This deletes the .\KAPE\Modules\bin\SQLECmd\Maps folder so old Maps don't collide with new Maps
 	
-	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\ZimmermanTools\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
+	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
 	
-	Remove-Item -Path "$kapeModulesBin\ZimmermanTools\SQLECmd\Maps\*" -Recurse -Force
+	Remove-Item -Path "$kapeModulesBin\SQLECmd\Maps\*" -Recurse -Force
 	
 	# This ensures all the latest SQLECmd Maps are downloaded
 	
 	Log -logFilePath $logFilePath -msg "| Syncing SQLECmd with GitHub for the latest Maps"
 	
-	& "$kapeModulesBin\ZimmermanTools\SQLECmd\SQLECmd.exe" --sync
+	& "$kapeModulesBin\SQLECmd\SQLECmd.exe" --sync
 	
 	Start-Sleep -Seconds 5
 }
@@ -352,9 +354,9 @@ function Move-EZToolsNET6
 	
 	Log -logFilePath $logFilePath -msg "| Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
 	
-	# This removes the downloaded EZ Tools that we no longer need to reside on diskr
+	# This removes the downloaded EZ Tools that we no longer need to reside on disk
 	
-	& Remove-Item -Path $kapeModulesBin\ZimmermanTools -Recurse -Force
+	& Remove-Item -Path $kapeModulesBin\ZimmermanTools\net6 -Recurse -Force
 	
 	Log -logFilePath $logFilePath -msg "| Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
 	
@@ -408,17 +410,16 @@ function Move-EZToolsNET4
 	
 	Log -logFilePath $logFilePath -msg "| Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
 	
-	# This removes the downloaded EZ Tools that we no longer need to reside on diskr
+	# This removes the downloaded EZ Tools that we no longer need to reside on disk
 	
-	& Remove-Item -Path $kapeModulesBin\ZimmermanTools -Recurse -Force
+	& Remove-Item -Path $kapeModulesBin\ZimmermanTools\* -Exclude Get-ZimmermanTools.ps1 -Recurse -Force
 	
 	Log -logFilePath $logFilePath -msg "| Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
 	
-	& Remove-Item -Path $kapeModulesBin\Get-ZimmermanTools.zip -Recurse -Force
+	# & Remove-Item -Path $kapeModulesBin\Get-ZimmermanTools.zip -Recurse -Force TODO MAYBE DELETE THIS?
 	
-	Log -logFilePath $logFilePath -msg "| Removed .\KAPE\Get-ZimmermanTools.zip successfully"
+	Log -logFilePath $logFilePath -msg "| Removed .\KAPE\Modules\bin\ZimmermanTools\Get-ZimmermanTools.zip successfully"
 }
-
 
 # Let's update KAPE first
 
@@ -428,16 +429,30 @@ function Move-EZToolsNET4
 
 & Get-ZimmermanTools
 
-# Download all EZ Tools and place in .\KAPE\Modules\bin
+# Let's move all EZ Tools and place them into .\KAPE\Modules\bin
 
 if ($netVersion -eq '4')
 {
-	& Move-EZToolsNET4
+	if (Test-Path -Path $kapeModulesBin -Include *runtimeconfig.json)
+	{
+		& Remove-Item -Path $kapeModulesBin -Include *runtimeconfig.json -Force
+		& Remove-Item -Path $kapeModulesBin -Include *.dll -Force
+		& Move-EZToolsNET4
+	}
+	else
+	{
+		& Move-EZToolsNET4
+	}
+	
 }
 
 elseif ($netVersion -eq '6')
 {
 	& Move-EZToolsNET6
+}
+else
+{
+	Write-Host "If you're seeing this message, please let Andrew Rathbun know so he can troubleshoot!"
 }
 
 & Sync-KAPETargetsModules
@@ -578,10 +593,10 @@ Log -logFilePath $logFilePath -msg "| Thank you for keeping this instance of KAP
 
 $stopwatch.stop()
 
-Log -logFilePath $logFilePath -msg "Processing Time:" $stopwatch.Elapsed | Out-File $logFileNamePath -Append
+Log -logFilePath $logFilePath -msg "Processing Time: " $stopwatch.Elapsed.TotalSeconds # | Out-File $logFilePath -Append
 
-Log -logFilePath $logFilePath -msg "Finished | Script completed in " $stopwatch.Elapsed | Out-File $logFileNamePath -Append
+Log -logFilePath $logFilePath -msg "Finished | Script completed in " $stopwatch.Elapsed.TotalSeconds # | Out-File $logFilePath -Append
 
-Log -logFilePath $logFilePath -msg "--- End of session --- |" Out-File $logFileNamePath -Append
+Log -logFilePath $logFilePath -msg "| --- End of session --- |" Out-File $logFilePath -Append
 
 Pause
