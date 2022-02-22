@@ -279,17 +279,18 @@ function Move-EZToolsNET4
 	
 	# Let's remove files no longer needed if you're switching from .NET 6 to .NET 4 version of EZ Tools
 	
-	if (Test-Path -Path $kapeModulesBin -Include *runtimeconfig.json)
+	if ((Test-Path -Path $kapeModulesBin\*runtimeconfig.json) -and (Test-Path -Path $kapeModulesBin\*.dll))
 	{
-		Log -logFilePath $logFilePath -msg "Removing leftover .dll and .json files from the .NET 6 version of EZ Tools from $kapeModulesBin"
-		Remove-Item -Path $kapeModulesBin -Include *runtimeconfig.json -Recurse -Force
-		& Remove-Item -Path $kapeModulesBin -Include *.dll -Recurse -Force
+		Log -logFilePath $logFilePath -msg ".NET 6 EZ Tools lefovers detected! Removing unnecessary .dll and .json files from $kapeModulesBin"
+		Remove-Item -Path $kapeModulesBin\*runtimeconfig.json -Recurse -Force
+		Remove-Item -Path $kapeModulesBin\*.dll -Recurse -Force
 		Start-Sleep -Seconds 2
 	}
 	else
 	{
 		Log -logFilePath $logFilePath -msg "No indication of leftover files from the .NET 6 version of EZ Tools from $kapeModulesBin"
 	}
+	
 	# Copies tools that require subfolders for Maps, Batch Files, etc
 	
 	Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
@@ -419,21 +420,12 @@ function Move-EZToolsNET6
 
 if ($netVersion -eq '4')
 {
-	if ((Test-Path -Path $kapeModulesBin\*runtimeconfig.json) -and (Test-Path -Path $kapeModulesBin\*.dll))
-	{
-		Remove-Item -Path $kapeModulesBin\*runtimeconfig.json -Recurse -Force
-		Remove-Item -Path $kapeModulesBin\*.dll -Recurse -Force
-		Move-EZToolsNET4
-	}
-	else
-	{
-		Move-EZToolsNET4
-	}
+	Move-EZToolsNET4
 }
 
-elseif ($netVersion -eq '6')
+if ($netVersion -eq '6')
 {
-	& Move-EZToolsNET6
+	Move-EZToolsNET6
 }
 else
 {
