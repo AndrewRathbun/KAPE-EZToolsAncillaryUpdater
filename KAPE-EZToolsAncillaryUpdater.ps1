@@ -81,9 +81,6 @@ $ZTZipFile = 'Get-ZimmermanTools.zip'
 
 $ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile"
 
-
-
-
 <#
 	.SYNOPSIS
 		Updates the KAPE binary (kape.exe)
@@ -137,6 +134,8 @@ function Get-ZimmermanTools
 		
 		Log -logFilePath $logFilePath -msg "| Get-ZimmermanTools.ps1 already exists! Downloading EZ Tools now to $kapeModulesBin\ZimmermanTools"
 		
+		Write-Host "Downloading .NET $netVersion of EZ Tools to $kapeModulesBin\ZimmermanTools"
+		
 		& "$kapeModulesBin\Get-ZimmermanTools.ps1" -netVersion $netVersion -Dest $kapeModulesBin\ZimmermanTools
 		
 		Start-Sleep -Seconds 5
@@ -146,6 +145,8 @@ function Get-ZimmermanTools
 	{
 		
 		Log -logFilePath $logFilePath -msg "| Downloading $ZTZipFile from $ZTdlUrl to $kapeModulesBin"
+		
+		Write-Host "Downloading .NET $netVersion of EZ Tools to $kapeModulesBin\ZimmermanTools"
 		
 		Start-BitsTransfer -Source $ZTdlUrl -Destination $kapeModulesBin
 		
@@ -197,15 +198,15 @@ function Sync-EvtxECmdMaps
 	
 	# This deletes the .\KAPE\Modules\bin\EvtxECmd\Maps folder so old Maps don't collide with new Maps
 	
-	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
+	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\ZimmermanTools\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
 	
-	Remove-Item -Path "$kapeModulesBin\EvtxECmd\Maps\*" -Recurse -Force
+	Remove-Item -Path "$kapeModulesBin\ZimmermanTools\EvtxECmd\Maps\*" -Recurse -Force
 	
 	# This ensures all the latest EvtxECmd Maps are downloaded
 	
 	Log -logFilePath $logFilePath -msg "| Syncing EvtxECmd with GitHub for the latest Maps"
 	
-	& "$kapeModulesBin\EvtxECmd\EvtxECmd.exe" --sync
+	& "$kapeModulesBin\ZimmermanTools\EvtxECmd\EvtxECmd.exe" --sync
 	
 	Start-Sleep -Seconds 5
 	
@@ -231,15 +232,15 @@ function Sync-RECmdBatchFiles
 	
 	# This deletes the .\KAPE\Modules\bin\RECmd\BatchExamples folder so old Batch files don't collide with new Batch files
 	
-	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\RECmd\BatchExamples for a fresh start prior to syncing RECmd with GitHub"
+	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\ZimmermanTools\RECmd\BatchExamples for a fresh start prior to syncing RECmd with GitHub"
 	
-	Remove-Item -Path "$kapeModulesBin\RECmd\BatchExamples\*" -Recurse -Force
+	Remove-Item -Path "$kapeModulesBin\ZimmermanTools\RECmd\BatchExamples\*" -Recurse -Force
 	
 	# This ensures all the latest RECmd Batch files are downloaded
 	
 	Log -logFilePath $logFilePath -msg "| Syncing RECmd with GitHub for the latest Maps"
 	
-	& "$kapeModulesBin\RECmd\RECmd.exe" --sync
+	& "$kapeModulesBin\ZimmermanTools\RECmd\RECmd.exe" --sync
 	
 	Start-Sleep -Seconds 5
 }
@@ -264,15 +265,15 @@ function Sync-SQLECmdMaps
 	
 	# This deletes the .\KAPE\Modules\bin\SQLECmd\Maps folder so old Maps don't collide with new Maps
 	
-	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
+	Log -logFilePath $logFilePath -msg "| Deleting $kapeModulesBin\ZimmermanTools\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
 	
-	Remove-Item -Path "$kapeModulesBin\SQLECmd\Maps\*" -Recurse -Force
+	Remove-Item -Path "$kapeModulesBin\ZimmermanTools\SQLECmd\Maps\*" -Recurse -Force
 	
 	# This ensures all the latest SQLECmd Maps are downloaded
 	
 	Log -logFilePath $logFilePath -msg "| Syncing SQLECmd with GitHub for the latest Maps"
 	
-	& "$kapeModulesBin\SQLECmd\SQLECmd.exe" --sync
+	& "$kapeModulesBin\ZimmermanTools\SQLECmd\SQLECmd.exe" --sync
 	
 	Start-Sleep -Seconds 5
 }
@@ -391,19 +392,19 @@ function Move-EZToolsNET4
 	
 	Log -logFilePath $logFilePath -msg "| Copying remaining EZ Tools binaries to $kapeModulesBin"
 	
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\AmcacheParser.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\AppCompatCacheParser.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\bstrings.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\JLECmd.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\LECmd.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\MFTECmd.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\PECmd.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RBCmd.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RecentFileCacheParser.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SBECmd.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SrumECmd.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SumECmd.exe -Destination $binPath\ -Recurse -Force
-	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\WxTCmd.exe -Destination $binPath\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\AmcacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\AppCompatCacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\bstrings.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\JLECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\LECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\MFTECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\PECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RBCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RecentFileCacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SBECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SrumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\WxTCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
 	
 	Log -logFilePath $logFilePath -msg "| Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
 	
@@ -413,7 +414,7 @@ function Move-EZToolsNET4
 	
 	Log -logFilePath $logFilePath -msg "| Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
 	
-	& Remove-Item -Path $PSScriptRoot\Get-ZimmermanTools.zip -Recurse -Force
+	& Remove-Item -Path $kapeModulesBin\Get-ZimmermanTools.zip -Recurse -Force
 	
 	Log -logFilePath $logFilePath -msg "| Removed .\KAPE\Get-ZimmermanTools.zip successfully"
 }
@@ -421,33 +422,28 @@ function Move-EZToolsNET4
 
 # Let's update KAPE first
 
-Get-KAPEUpdateEXE
+& Get-KAPEUpdateEXE
 
 # Let's download Get-ZimmermanTools.zip and extract Get-ZimmermanTools.ps1
 
-Get-ZimmermanTools
+& Get-ZimmermanTools
 
 # Download all EZ Tools and place in .\KAPE\Modules\bin
 
 if ($netVersion -eq '4')
 {
-	
-	Get-EZToolsNET4
-	Move-EZToolsNET4
+	& Move-EZToolsNET4
 }
 
 elseif ($netVersion -eq '6')
 {
-	
-	Get-EZToolsNET6
-	Move-EZToolsNET6
-	
+	& Move-EZToolsNET6
 }
 
-Sync-KAPETargetsModules
-Sync-EvtxECmdMaps
-Sync-RECmdBatchFiles
-Sync-SQLECmdMaps
+& Sync-KAPETargetsModules
+& Sync-EvtxECmdMaps
+& Sync-RECmdBatchFiles
+& Sync-SQLECmdMaps
 
 <#
 	.SYNOPSIS
@@ -470,44 +466,44 @@ function Remove-UnnecessaryFiles
 	
 	# need to clean this up, maybe do if -netVersion4 [] and same with 6
 	
-	$RECmdBookmarks = "$binPath\RECmd\Bookmarks"
+	$RECmdBookmarks = "$kapeModulesBin\RECmd\Bookmarks"
 	if (Test-Path -Path $RECmdBookmarks)
 	{
 		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Bookmarks exists! These files are not needed for RECmd and will be deleted"
-		Remove-Item -Path $binPath\RECmd\Bookmarks -Recurse -Force
+		Remove-Item -Path $kapeModulesBin\RECmd\Bookmarks -Recurse -Force
 	}
 	else
 	{
 		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Bookmarks does not exist. No further action needed"
 	}
 	
-	$RECmdSettings = "$binPath\RECmd\Settings"
+	$RECmdSettings = "$kapeModulesBin\RECmd\Settings"
 	if (Test-Path -Path $RECmdSettings)
 	{
 		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Settings exists! These files are not needed for RECmd and will be deleted"
-		Remove-Item -Path $binPath\RECmd\Settings -Recurse -Force
+		Remove-Item -Path $kapeModulesBin\RECmd\Settings -Recurse -Force
 	}
 	else
 	{
 		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\Settings does not exist. No further action needed"
 	}
 	
-	$RECmdRegistryExplorerGUI = "$binPath\RECmd\RegistryExplorer.exe"
+	$RECmdRegistryExplorerGUI = "$kapeModulesBin\RECmd\RegistryExplorer.exe"
 	if (Test-Path -Path $RECmdRegistryExplorerGUI)
 	{
 		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorer.exe exists! This is a GUI tool and is not needed"
-		Remove-Item -Path $binPath\RECmd\RegistryExplorer.exe -Recurse -Force
+		Remove-Item -Path $kapeModulesBin\RECmd\RegistryExplorer.exe -Recurse -Force
 	}
 	else
 	{
 		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorer.exe does not exist. No further action needed"
 	}
 	
-	$RECmdRegistryExplorerManual = "$binPath\RECmd\RegistryExplorerManual.pdf"
+	$RECmdRegistryExplorerManual = "$kapeModulesBin\RECmd\RegistryExplorerManual.pdf"
 	if (Test-Path -Path $RECmdRegistryExplorerManual)
 	{
 		Log -logFilePath $logFilePath -msg "| .\KAPE\Modules\bin\RECmd\RegistryExplorerManual.pdf exists! This is not needed by KAPE and will be deleted"
-		Remove-Item -Path $binPath\RECmd\RegistryExplorerManual.pdf -Recurse -Force
+		Remove-Item -Path $kapeModulesBin\RECmd\RegistryExplorerManual.pdf -Recurse -Force
 	}
 	else
 	{
@@ -578,13 +574,11 @@ function Get-EZToolsNET6
 		Additional information about the function.
 #>
 
-#>
-
 Log -logFilePath $logFilePath -msg "| Thank you for keeping this instance of KAPE updated! Please be sure to run this script on a regular basis and follow the GitHub repositories associated with KAPE and EZ Tools!"
 
-Log -logFilePath $logFilePath -msg "Processing Time:" $stopwatch.Elapsed | Out-File $logFileNamePath -Append
-
 $stopwatch.stop()
+
+Log -logFilePath $logFilePath -msg "Processing Time:" $stopwatch.Elapsed | Out-File $logFileNamePath -Append
 
 Log -logFilePath $logFilePath -msg "Finished | Script completed in " $stopwatch.Elapsed | Out-File $logFileNamePath -Append
 
