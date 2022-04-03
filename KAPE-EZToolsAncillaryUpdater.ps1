@@ -439,7 +439,7 @@ elseif ($netVersion -eq '6')
 }
 else
 {
-    Write-Host "Cannot validate whether the .NET version is 4 or 6. Please let Andrew Rathbun know of this message if you see it!"
+   Write-Host "Cannot validate whether the .NET version is 4 or 6. Please let Andrew Rathbun know of this message if you see it!"
 }
 
 & Sync-KAPETargetsModules
