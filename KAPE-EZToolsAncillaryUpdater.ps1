@@ -1,83 +1,70 @@
-                                                                                                                                                       <#
-    .SYNOPSIS
-        Keep KAPE and all the included EZ Tools updated! Be sure to run this script from the root of your KAPE folder, i.e., where kape.exe, gkape.exe, Targets, Modules, and Documentation folders exists
-    
-    .DESCRIPTION
-        Updates the following:
-        
-        KAPE binary (.KAPE\kape.exe) - https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape
-        KAPE Targets (.\KAPE\Targets\*.tkape) - https://github.com/EricZimmerman/KapeFiles/tree/master/Targets
-        KAPE Modules (.\KAPE\Modules\*.mkape) - https://github.com/EricZimmerman/KapeFiles/tree/master/Modules
-        RECmd Batch Files (.\KAPE\Modules\bin\RECmd\BatchExamples\*.reb) - https://github.com/EricZimmerman/RECmd/tree/master/BatchExamples
-        EvtxECmd Maps (.\KAPE\Modules\bin\EvtxECmd\Maps\*.map) - https://github.com/EricZimmerman/evtx/tree/master/evtx/Maps
-        SQLECmd Maps (.\KAPE\Modules\bin\SQLECmd\Maps\*.smap) - https://github.com/EricZimmerman/SQLECmd/tree/master/SQLMap/Maps
-    
-    .PARAMETER netVersion
-        Please specify which .NET version of EZ Tools you want to download.
-        
-        Valid parameters: 4 or 6
-        
-        .USAGE
-        Update KAPE and use .NET 4 version of EZ Tools:
-        KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 4
-        OR
-        KAPE-EZToolsAncillaryUpdater.ps1 4
-        
-        Update KAPE and use .NET 6 version of EZ Tools:
-        KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 6
-        OR
-        KAPE-EZToolsAncillaryUpdater.ps1 6
-        
-        .CHANGELOG
-        1.0 - (Sep 09, 2021) Initial release
-        2.0 - (Oct 22, 2021) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which leverages Get-KAPEUpdate.ps1 and Get-ZimmermanTools.ps1 as well as other various --sync commands to keep all of KAPE and the command line EZ Tools updated to their fullest potential with minimal effort. Signed script with certificate.
-        3.0 - (Feb 22, 2022) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less chance for issues. Added changelog. Added logging capabilities.
-        3.1 - (Mar 17, 2022) Added a "silent" parameter that disables the progress bar and exits the script without pausing in the end.
-    
-    .PARAMETER silent
-        Disable the progress bar and exit the script without pausing in the end
-    
-    .NOTES
-        ===========================================================================
-        Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2022 v5.8.201
-        Created on:   	2022-02-22 23:29
-        Created by:   	Andrew Rathbun
-        Organization: 	Kroll
-        Filename:		KAPE-EZToolsAncillaryUpdater.ps1
-        GitHub:			https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
-        Version:		3.1
-        ===========================================================================
+<#
+	.SYNOPSIS
+		Keep KAPE and all the included EZ Tools updated! Be sure to run this script from the root of your KAPE folder, i.e., where kape.exe, gkape.exe, Targets, Modules, and Documentation folders exists
+
+	.DESCRIPTION
+		Updates the following:
+
+		KAPE binary (.KAPE\kape.exe) - https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape
+		KAPE Targets (.\KAPE\Targets\*.tkape) - https://github.com/EricZimmerman/KapeFiles/tree/master/Targets
+		KAPE Modules (.\KAPE\Modules\*.mkape) - https://github.com/EricZimmerman/KapeFiles/tree/master/Modules
+		RECmd Batch Files (.\KAPE\Modules\bin\RECmd\BatchExamples\*.reb) - https://github.com/EricZimmerman/RECmd/tree/master/BatchExamples
+		EvtxECmd Maps (.\KAPE\Modules\bin\EvtxECmd\Maps\*.map) - https://github.com/EricZimmerman/evtx/tree/master/evtx/Maps
+		SQLECmd Maps (.\KAPE\Modules\bin\SQLECmd\Maps\*.smap) - https://github.com/EricZimmerman/SQLECmd/tree/master/SQLMap/Maps
+
+	.PARAMETER netVersion
+		Please specify which .NET version of EZ Tools you want to download.
+
+		Valid parameters: 4 or 6
+
+		.USAGE
+		Update KAPE and use .NET 4 version of EZ Tools:
+		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 4
+		OR
+		KAPE-EZToolsAncillaryUpdater.ps1 4
+
+		Update KAPE and use .NET 6 version of EZ Tools:
+		KAPE-EZToolsAncillaryUpdater.ps1 -netVersion 6
+		OR
+		KAPE-EZToolsAncillaryUpdater.ps1 6
+
+		.CHANGELOG
+		1.0 - (Sep 09, 2021) Initial release
+		2.0 - (Oct 22, 2021) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which leverages Get-KAPEUpdate.ps1 and Get-ZimmermanTools.ps1 as well as other various --sync commands to keep all of KAPE and the command line EZ Tools updated to their fullest potential with minimal effort. Signed script with certificate.
+		3.0 - (Feb 22, 2022) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less chance for issues. Added changelog. Added logging capabilities.
+
+	.NOTES
+		===========================================================================
+		Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2022 v5.8.201
+		Created on:   	2022-02-22 23:29
+		Created by:   	Andrew Rathbun
+		Organization: 	Kroll Cyber Risk
+		Filename:		KAPE-EZToolsAncillaryUpdater.ps1
+		GitHub:			https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
+		Version:		3.0
+		===========================================================================
 #>
 param
 (
-    [Parameter(Mandatory = $true,
-               Position = 1,
-               HelpMessage = '.NET version of EZ Tools (Options: 4 or 6)')]
-    [ValidateSet('4', '6')]
-    [String]$netVersion,
-    [Parameter(Position = 2,
-               HelpMessage = 'Disable the progress bar and exit the script without pausing in the end')]
-    [Switch]$silent
+	[Parameter(Mandatory = $true,
+		Position = 1,
+		HelpMessage = '.NET version of EZ Tools (Options: 4 or 6)')]
+	[ValidateSet('4', '6')]
+	[String]$netVersion
 )
-
-function Get-TimeStamp
-{
-    return "[{0:yyyy/MM/dd} {0:HH:mm:ss}]" -f (Get-Date)
+function Get-TimeStamp {
+	return '[{0:yyyy/MM/dd} {0:HH:mm:ss}]' -f (Get-Date)
 }
 
 $logFilePath = "$PSScriptRoot\KAPEUpdateLog.log"
-$kapeDownloadUrl = "https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape"
-if ($silent)
-{
-    $ProgressPreference = 'SilentlyContinue'
-}
-function Log
-{
-    param ([string]$logFilePath,
-        [string]$msg)
-    $msg = Write-Output "$(Get-TimeStamp) | $msg"
-    Out-File $logFilePath -Append -InputObject $msg -encoding ASCII
-    Write-Host $msg
+$kapeDownloadUrl = 'https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape'
+
+function Log {
+	param ([string]$logFilePath,
+		[string]$msg)
+	$msg = Write-Output "$(Get-TimeStamp) | $msg"
+	Out-File $logFilePath -Append -InputObject $msg -Encoding ASCII
+	Write-Host $msg
 }
 
 # Establishes stopwatch to keep track of execution duration of this script
@@ -86,7 +73,7 @@ $stopwatch = [system.diagnostics.stopwatch]::StartNew()
 
 $Stopwatch.Start()
 
-Log -logFilePath $logFilePath -msg " --- Beginning of session ---"
+Log -logFilePath $logFilePath -msg ' --- Beginning of session ---'
 
 Set-ExecutionPolicy Bypass -Scope Process
 
@@ -105,21 +92,17 @@ $ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile"
 	.DESCRIPTION
 		Uses the preexisting .\Get-KAPEUpdate.ps1 script to update the KAPE binary (kape.exe)
 #>
-function Get-KAPEUpdateEXE
-{
-    [CmdletBinding()]
-    param ()
-    
-    if (Test-Path -Path "$PSScriptRoot\Get-KAPEUpdate.ps1")
-    {
-        Log -logFilePath $logFilePath -msg "Running Get-KAPEUpdate.ps1 to update KAPE to the latest binary"
-        & $PSScriptRoot\Get-KAPEUpdate.ps1
-    }
-    else
-    {
-        Log -logFilePath $logFilePath -msg "Get-KAPEUpdate.ps1 not found, please go download KAPE from $kapeDownloadUrl"
-        Exit
-    }
+function Get-KAPEUpdateEXE {
+	[CmdletBinding()]
+	param ()
+
+	if (Test-Path -Path "$PSScriptRoot\Get-KAPEUpdate.ps1") {
+		Log -logFilePath $logFilePath -msg 'Running Get-KAPEUpdate.ps1 to update KAPE to the latest binary'
+		& $PSScriptRoot\Get-KAPEUpdate.ps1
+	} else {
+		Log -logFilePath $logFilePath -msg "Get-KAPEUpdate.ps1 not found, please go download KAPE from $kapeDownloadUrl"
+		Exit
+	}
 }
 
 <#
@@ -129,39 +112,35 @@ function Get-KAPEUpdateEXE
 	.DESCRIPTION
 		Downloads Get-ZimmermanTools.zip, extracts Get-ZimmermanTools.ps1 from the ZIP file into .\KAPE\Modules\bin\ZimmermanTools
 #>
-function Get-ZimmermanTools
-{
-    [CmdletBinding()]
-    param ()
-    
-    if (Test-Path -Path "$kapeModulesBin\Get-ZimmermanTools.ps1")
-    {
-        
-        Log -logFilePath $logFilePath -msg "Get-ZimmermanTools.ps1 already exists! Downloading .NET $netVersion version of EZ Tools to $kapeModulesBin\ZimmermanTools"
-        
-        & "$kapeModulesBin\Get-ZimmermanTools.ps1" -netVersion $netVersion -Dest $kapeModulesBin\ZimmermanTools
-        
-        Start-Sleep -Seconds 3
-        
-    }
-    else
-    {
-        
-        Log -logFilePath $logFilePath -msg "Downloading $ZTZipFile from $ZTdlUrl to $kapeModulesBin"
-        
-        Start-BitsTransfer -Source $ZTdlUrl -Destination $kapeModulesBin
-        
-        Log -logFilePath $logFilePath -msg "Extracting $ZTZipFile from $kapeModulesBin to $kapeModulesBin"
-        
-        Expand-Archive -Path "$kapeModulesBin\$ZTZipFile" -DestinationPath "$kapeModulesBin" -Force
-        
-        Log -logFilePath $logFilePath -msg "Running Get-ZimmermanTools.ps1! Downloading .NET $netVersion version of EZ Tools to $kapeModulesBin\ZimmermanTools"
-        
-        & "$kapeModulesBin\Get-ZimmermanTools.ps1" -netVersion $netVersion -Dest $kapeModulesBin\ZimmermanTools
-        
-        Start-Sleep -Seconds 3
-        
-    }
+function Get-ZimmermanTools {
+	[CmdletBinding()]
+	param ()
+
+	if (Test-Path -Path "$kapeModulesBin\Get-ZimmermanTools.ps1") {
+
+		Log -logFilePath $logFilePath -msg "Get-ZimmermanTools.ps1 already exists! Downloading .NET $netVersion version of EZ Tools to $kapeModulesBin\ZimmermanTools"
+
+		& "$kapeModulesBin\Get-ZimmermanTools.ps1" -netVersion $netVersion -Dest $kapeModulesBin\ZimmermanTools
+
+		Start-Sleep -Seconds 3
+
+	} else {
+
+		Log -logFilePath $logFilePath -msg "Downloading $ZTZipFile from $ZTdlUrl to $kapeModulesBin"
+
+		Start-BitsTransfer -Source $ZTdlUrl -Destination $kapeModulesBin
+
+		Log -logFilePath $logFilePath -msg "Extracting $ZTZipFile from $kapeModulesBin to $kapeModulesBin"
+
+		Expand-Archive -Path "$kapeModulesBin\$ZTZipFile" -DestinationPath "$kapeModulesBin" -Force
+
+		Log -logFilePath $logFilePath -msg "Running Get-ZimmermanTools.ps1! Downloading .NET $netVersion version of EZ Tools to $kapeModulesBin\ZimmermanTools"
+
+		& "$kapeModulesBin\Get-ZimmermanTools.ps1" -netVersion $netVersion -Dest $kapeModulesBin\ZimmermanTools
+
+		Start-Sleep -Seconds 3
+
+	}
 }
 
 <#
@@ -174,23 +153,19 @@ function Get-ZimmermanTools
 	.NOTES
 		Sync works without Admin privileges as of KAPE 1.0.0.3
 #>
-function Sync-KAPETargetsModules
-{
-    [CmdletBinding()]
-    param ()
-    
-    if (Test-Path -Path $PSScriptRoot\kape.exe)
-    {
-        Log -logFilePath $logFilePath -msg "Syncing KAPE with GitHub for the latest Targets and Modules"
-        Set-Location $PSScriptRoot
-        .\kape.exe --sync
-        Start-Sleep -Seconds 3
-    }
-    else
-    {
-        Log -logFilePath $logFilePath -msg "kape.exe not found, please go download KAPE from $kapeDownloadUrl"
-        Exit
-    }
+function Sync-KAPETargetsModules {
+	[CmdletBinding()]
+	param ()
+
+	if (Test-Path -Path $PSScriptRoot\kape.exe) {
+		Log -logFilePath $logFilePath -msg 'Syncing KAPE with GitHub for the latest Targets and Modules'
+		Set-Location $PSScriptRoot
+		.\kape.exe --sync
+		Start-Sleep -Seconds 3
+	} else {
+		Log -logFilePath $logFilePath -msg "kape.exe not found, please go download KAPE from $kapeDownloadUrl"
+		Exit
+	}
 }
 
 <#
@@ -200,25 +175,24 @@ function Sync-KAPETargetsModules
 	.DESCRIPTION
 		This function will download the latest EvtxECmd Maps from https://github.com/EricZimmerman/evtx
 #>
-function Sync-EvtxECmdMaps
-{
-    [CmdletBinding()]
-    param ()
-    
-    # This deletes the .\KAPE\Modules\bin\EvtxECmd\Maps folder so old Maps don't collide with new Maps
-    
-    Log -logFilePath $logFilePath -msg "Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
-    
-    Remove-Item -Path "$kapeModulesBin\EvtxECmd\Maps" -Recurse -Force
-    
-    # This ensures all the latest EvtxECmd Maps are downloaded
-    
-    Log -logFilePath $logFilePath -msg "Syncing EvtxECmd with GitHub for the latest Maps"
-    
-    & "$kapeModulesBin\EvtxECmd\EvtxECmd.exe" --sync
-    
-    Start-Sleep -Seconds 3
-    
+function Sync-EvtxECmdMaps {
+	[CmdletBinding()]
+	param ()
+
+	# This deletes the .\KAPE\Modules\bin\EvtxECmd\Maps folder so old Maps don't collide with new Maps
+
+	Log -logFilePath $logFilePath -msg "Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
+
+	Remove-Item -Path "$kapeModulesBin\EvtxECmd\Maps" -Recurse -Force
+
+	# This ensures all the latest EvtxECmd Maps are downloaded
+
+	Log -logFilePath $logFilePath -msg 'Syncing EvtxECmd with GitHub for the latest Maps'
+
+	& "$kapeModulesBin\EvtxECmd\EvtxECmd.exe" --sync
+
+	Start-Sleep -Seconds 3
+
 }
 
 <#
@@ -228,24 +202,23 @@ function Sync-EvtxECmdMaps
 	.DESCRIPTION
 		This function will download the latest RECmd Batch Files from https://github.com/EricZimmerman/RECmd
 #>
-function Sync-RECmdBatchFiles
-{
-    [CmdletBinding()]
-    param ()
-    
-    # This deletes the .\KAPE\Modules\bin\RECmd\BatchExamples folder so old Batch files don't collide with new Batch files
-    
-    Log -logFilePath $logFilePath -msg "Deleting $kapeModulesBin\RECmd\BatchExamples for a fresh start prior to syncing RECmd with GitHub"
-    
-    Remove-Item -Path "$kapeModulesBin\RECmd\BatchExamples\*" -Recurse -Force
-    
-    # This ensures all the latest RECmd Batch files are downloaded
-    
-    Log -logFilePath $logFilePath -msg "Syncing RECmd with GitHub for the latest Maps"
-    
-    & "$kapeModulesBin\RECmd\RECmd.exe" --sync
-    
-    Start-Sleep -Seconds 3
+function Sync-RECmdBatchFiles {
+	[CmdletBinding()]
+	param ()
+
+	# This deletes the .\KAPE\Modules\bin\RECmd\BatchExamples folder so old Batch files don't collide with new Batch files
+
+	Log -logFilePath $logFilePath -msg "Deleting $kapeModulesBin\RECmd\BatchExamples for a fresh start prior to syncing RECmd with GitHub"
+
+	Remove-Item -Path "$kapeModulesBin\RECmd\BatchExamples\*" -Recurse -Force
+
+	# This ensures all the latest RECmd Batch files are downloaded
+
+	Log -logFilePath $logFilePath -msg 'Syncing RECmd with GitHub for the latest Maps'
+
+	& "$kapeModulesBin\RECmd\RECmd.exe" --sync
+
+	Start-Sleep -Seconds 3
 }
 
 <#
@@ -255,24 +228,23 @@ function Sync-RECmdBatchFiles
 	.DESCRIPTION
 		This function will download the latest Maps from https://github.com/EricZimmerman/SQLECmd
 #>
-function Sync-SQLECmdMaps
-{
-    [CmdletBinding()]
-    param ()
-    
-    # This deletes the .\KAPE\Modules\bin\SQLECmd\Maps folder so old Maps don't collide with new Maps
-    
-    Log -logFilePath $logFilePath -msg "Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
-    
-    Remove-Item -Path "$kapeModulesBin\SQLECmd\Maps\*" -Recurse -Force
-    
-    # This ensures all the latest SQLECmd Maps are downloaded
-    
-    Log -logFilePath $logFilePath -msg "Syncing SQLECmd with GitHub for the latest Maps"
-    
-    & "$kapeModulesBin\SQLECmd\SQLECmd.exe" --sync
-    
-    Start-Sleep -Seconds 3
+function Sync-SQLECmdMaps {
+	[CmdletBinding()]
+	param ()
+
+	# This deletes the .\KAPE\Modules\bin\SQLECmd\Maps folder so old Maps don't collide with new Maps
+
+	Log -logFilePath $logFilePath -msg "Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
+
+	Remove-Item -Path "$kapeModulesBin\SQLECmd\Maps\*" -Recurse -Force
+
+	# This ensures all the latest SQLECmd Maps are downloaded
+
+	Log -logFilePath $logFilePath -msg 'Syncing SQLECmd with GitHub for the latest Maps'
+
+	& "$kapeModulesBin\SQLECmd\SQLECmd.exe" --sync
+
+	Start-Sleep -Seconds 3
 }
 
 <#
@@ -282,64 +254,60 @@ function Sync-SQLECmdMaps
 	.DESCRIPTION
 		Ensures all .NET 4 EZ Tools that were downloaded using Get-ZimmermanTools.ps1 are copied into the correct folders within .\KAPE\Modules\bin
 #>
-function Move-EZToolsNET4
-{
-    [CmdletBinding()]
-    param ()
-    
-    # Let's remove files no longer needed if you're switching from .NET 6 to .NET 4 version of EZ Tools
-    
-    if ((Test-Path -Path $kapeModulesBin\*runtimeconfig.json) -and (Test-Path -Path $kapeModulesBin\*.dll))
-    {
-        Log -logFilePath $logFilePath -msg ".NET 6 EZ Tools lefovers detected! Removing unnecessary .dll and .json files from $kapeModulesBin"
-        Remove-Item -Path $kapeModulesBin\*runtimeconfig.json -Recurse -Force
-        Remove-Item -Path $kapeModulesBin\*.dll -Recurse -Force
-        Start-Sleep -Seconds 2
-    }
-    else
-    {
-        Log -logFilePath $logFilePath -msg "No indication of leftover files from the .NET 6 version of EZ Tools from $kapeModulesBin"
-    }
-    
-    # Copies tools that require subfolders for Maps, Batch Files, etc
-    
-    Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
-    
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\EvtxECmd -Destination $kapeModulesBin -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\RECmd -Destination $kapeModulesBin -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\SQLECmd -Destination $kapeModulesBin -Recurse -Force
-    
-    Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
-    
-    # Copies tools that don't require subfolders
-    
-    Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
-    
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\AmcacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\AppCompatCacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\bstrings.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\JLECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\LECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\MFTECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\PECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\RBCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\RecentFileCacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\SBECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\SrumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\SumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\WxTCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    
-    Log -logFilePath $logFilePath -msg "Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
-    
-    # This removes the downloaded EZ Tools that we no longer need to reside on disk
-    
-    & Remove-Item -Path $kapeModulesBin\ZimmermanTools\* -Exclude Get-ZimmermanTools.ps1 -Recurse -Force
-    
-    Log -logFilePath $logFilePath -msg "Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
-    
-    # & Remove-Item -Path $kapeModulesBin\Get-ZimmermanTools.zip -Recurse -Force TODO MAYBE DELETE THIS?
-    
-    Log -logFilePath $logFilePath -msg "Removed .\KAPE\Modules\bin\ZimmermanTools\Get-ZimmermanTools.zip successfully"
+function Move-EZToolsNET4 {
+	[CmdletBinding()]
+	param ()
+
+	# Let's remove files no longer needed if you're switching from .NET 6 to .NET 4 version of EZ Tools
+
+	if ((Test-Path -Path $kapeModulesBin\*runtimeconfig.json) -and (Test-Path -Path $kapeModulesBin\*.dll)) {
+		Log -logFilePath $logFilePath -msg ".NET 6 EZ Tools lefovers detected! Removing unnecessary .dll and .json files from $kapeModulesBin"
+		Remove-Item -Path $kapeModulesBin\*runtimeconfig.json -Recurse -Force
+		Remove-Item -Path $kapeModulesBin\*.dll -Recurse -Force
+		Start-Sleep -Seconds 2
+	} else {
+		Log -logFilePath $logFilePath -msg "No indication of leftover files from the .NET 6 version of EZ Tools from $kapeModulesBin"
+	}
+
+	# Copies tools that require subfolders for Maps, Batch Files, etc
+
+	Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
+
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\EvtxECmd -Destination $kapeModulesBin -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RECmd -Destination $kapeModulesBin -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SQLECmd -Destination $kapeModulesBin -Recurse -Force
+
+	Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
+
+	# Copies tools that don't require subfolders
+
+	Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
+
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\AmcacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\AppCompatCacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\bstrings.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\JLECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\LECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\MFTECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\PECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RBCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\RecentFileCacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SBECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SrumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\SumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+	& Copy-Item -Path $kapeModulesBin\ZimmermanTools\WxTCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
+
+	Log -logFilePath $logFilePath -msg "Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
+
+	# This removes the downloaded EZ Tools that we no longer need to reside on disk
+
+	& Remove-Item -Path $kapeModulesBin\ZimmermanTools\* -Exclude Get-ZimmermanTools.ps1 -Recurse -Force
+
+	Log -logFilePath $logFilePath -msg "Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
+
+	# & Remove-Item -Path $kapeModulesBin\Get-ZimmermanTools.zip -Recurse -Force TODO MAYBE DELETE THIS?
+
+	Log -logFilePath $logFilePath -msg 'Removed .\KAPE\Modules\bin\ZimmermanTools\Get-ZimmermanTools.zip successfully'
 }
 
 <#
@@ -349,105 +317,140 @@ function Move-EZToolsNET4
 	.DESCRIPTION
 		Ensures all .NET 6 EZ Tools that were downloaded using Get-ZimmermanTools.ps1 are copied into the correct folders within .\KAPE\Modules\bin
 #>
-function Move-EZToolsNET6
+function Move-EZToolsNET6 {
+	[CmdletBinding()]
+	param ()
+
+
+# Only copy if Get-ZimmermanTools.ps1 has downloaded new net6 tools, otherwise continue on.
+if(Test-Path -path "$kapeModulesBin\ZimmermanTools\net6"){ 
+
+	# Copies tools that require subfolders for Maps, Batch Files, etc
+
+	Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
+
+
+	#create array of folders
+	$folders = @(
+		"$kapeModulesBin\ZimmermanTools\net6\EvtxECmd",
+		"$kapeModulesBin\ZimmermanTools\net6\RECmd",
+		"$kapeModulesBin\ZimmermanTools\net6\SQLECmd"
+	)
+
+	#Copy contents of each folder
+	foreach ($folder in $folders) {
+		Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
+	}
+
+	Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
+
+	# Copies tools that don't require subfolders
+
+	Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
+
+
+	# Create an array of the files to copy (can use glob search pattern, TODO check with Andrew)
+
+$files = @(
+
+    'AmcacheParser.dll',
+    'AmcacheParser.exe',
+    'AmcacheParser.runtimeconfig.json',
+    'AppCompatCacheParser.dll',
+    'AppCompatCacheParser.exe',
+    'AppCompatCacheParser.runtimeconfig.json',
+    'bstrings.dll',
+    'bstrings.exe',
+    'bstrings.runtimeconfig.json',
+    'JLECmd.dll',
+    'JLECmd.exe',
+    'JLECmd.runtimeconfig.json',
+    'LECmd.dll',
+    'LECmd.exe',
+    'LECmd.runtimeconfig.json',
+    'MFTECmd.dll',
+    'MFTECmd.exe',
+    'MFTECmd.runtimeconfig.json',
+    'PECmd.dll',
+    'PECmd.exe',
+    'PECmd.runtimeconfig.json',
+    'RBCmd.dll',
+    'RBCmd.exe',
+    'RBCmd.runtimeconfig.json',
+    'RecentFileCacheParser.dll',
+    'RecentFileCacheParser.exe',
+    'RecentFileCacheParser.runtimeconfig.json',
+    'SBECmd.dll',
+    'SBECmd.exe',
+    'SBECmd.runtimeconfig.json',
+    'SrumECmd.dll',
+    'SrumECmd.exe',
+    'SrumECmd.runtimeconfig.json',
+    'SumECmd.dll',
+    'SumECmd.exe',
+    'SumECmd.runtimeconfig.json',
+    'WxTCmd.dll',
+    'WxTCmd.exe',
+    'WxTCmd.runtimeconfig.json'
+    )
+
+
+#Copy the files to the destination
+foreach ($file in $files)
 {
-    [CmdletBinding()]
-    param ()
-    
-    # Copies tools that require subfolders for Maps, Batch Files, etc
-    
-    Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
-    
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\EvtxECmd -Destination $kapeModulesBin -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RECmd -Destination $kapeModulesBin -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SQLECmd -Destination $kapeModulesBin -Recurse -Force
-    
-    Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
-    
-    # Copies tools that don't require subfolders
-    
-    Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
-    
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AmcacheParser.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AmcacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AmcacheParser.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AppCompatCacheParser.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AppCompatCacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AppCompatCacheParser.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\bstrings.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\bstrings.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\bstrings.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\JLECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\JLECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\JLECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\LECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\LECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\LECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\MFTECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\MFTECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\MFTECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\PECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\PECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\PECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RBCmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RBCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RBCmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RecentFileCacheParser.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RecentFileCacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RecentFileCacheParser.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SBECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SBECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SBECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SrumECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SrumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SrumECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SumECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SumECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\WxTCmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\WxTCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\WxTCmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    
-    Log -logFilePath $logFilePath -msg "Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
-    
-    # This removes the downloaded EZ Tools that we no longer need to reside on disk
-    
-    & Remove-Item -Path $kapeModulesBin\ZimmermanTools\net6 -Recurse -Force
-    
-    Log -logFilePath $logFilePath -msg "Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
-    
+    if (Test-Path $kapeModulesBin\ZimmermanTools\net6\$file)
+    {
+        Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\$file -Destination $kapeModulesBin -Recurse -Force
+    }
+    else
+    {
+       Log -logFilePath $logFilePath -msg "$file not found." 
+	   Log -logFilePath $logFilePath -msg "If this continues to happen, try deleting $kapeModulesBin\ZimmermanTools\!!!RemoteFileDetails.csv and re-running this script"
+    }
+}
+Log -logFilePath $logFilePath -msg "Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
+
+}
+else{
+
+	Log -logFilePath $logFilePath -msg "No new Net6 EZ tools were downloaded. Continuing on."
+}
+	# This removes the downloaded EZ Tools that we no longer need to reside on disk
+
+	Log -logFilePath $logFilePath -msg "Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
+
+
+	Remove-Item -Path $kapeModulesBin\ZimmermanTools\net6 -Recurse -Force -ErrorAction SilentlyContinue
+
+	
 }
 
 # Let's update KAPE first
 
-& Get-KAPEUpdateEXE
+Get-KAPEUpdateEXE
 
 # Let's download Get-ZimmermanTools.zip and extract Get-ZimmermanTools.ps1
 
-& Get-ZimmermanTools
+Get-ZimmermanTools
 
 # Let's move all EZ Tools and place them into .\KAPE\Modules\bin
 
-if ($netVersion -eq '4')
-{
-    Move-EZToolsNET4
+if ($netVersion -eq '4') {
+	Move-EZToolsNET4
 }
 
-elseif ($netVersion -eq '6')
-{
-    Move-EZToolsNET6
-}
-else
-{
-   Write-Host "Cannot validate whether the .NET version is 4 or 6. Please let Andrew Rathbun know of this message if you see it!"
+elseif ($netVersion -eq '6') {
+	Move-EZToolsNET6
+} else {
+	Write-Host 'Cannot validate whether the .NET version is 4 or 6. Please let Andrew Rathbun know of this message if you see it!'
 }
 
-& Sync-KAPETargetsModules
-& Sync-EvtxECmdMaps
-& Sync-RECmdBatchFiles
-& Sync-SQLECmdMaps
+Sync-KAPETargetsModules
+Sync-EvtxECmdMaps
+Sync-RECmdBatchFiles
+Sync-SQLECmdMaps
 
-Log -logFilePath $logFilePath -msg "Thank you for keeping this instance of KAPE updated! Please be sure to run this script on a regular basis and follow the GitHub repositories associated with KAPE and EZ Tools!"
+Log -logFilePath $logFilePath -msg 'Thank you for keeping this instance of KAPE updated! Please be sure to run this script on a regular basis and follow the GitHub repositories associated with KAPE and EZ Tools!'
 
 $stopwatch.stop()
 
@@ -455,17 +458,16 @@ $Elapsed = $stopwatch.Elapsed.TotalSeconds
 
 Log -logFilePath $logFilePath -msg "Total Processing Time: $Elapsed seconds"
 
-Log -logFilePath $logFilePath -msg " --- End of session ---"
+Log -logFilePath $logFilePath -msg ' --- End of session ---'
 
-if (-not $silent)
-{
-    Pause
-}
+Write-Output -InputObject $output
+Pause
+
 # SIG # Begin signature block
 # MIIpSAYJKoZIhvcNAQcCoIIpOTCCKTUCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDfWWhM4Fc0MJNi
-# RVSUpdy2jovNmddUBhqxD6LOmrDTmaCCEgowggVvMIIEV6ADAgECAhBI/JO0YFWU
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCfOHfs+KFBg18R
+# CGmfmREznHO8zIUtKKE9eaYgsPoMq6CCEgowggVvMIIEV6ADAgECAhBI/JO0YFWU
 # jTanyYqJ1pQWMA0GCSqGSIb3DQEBDAUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQI
 # DBJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoM
 # EUNvbW9kbyBDQSBMaW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2Vy
@@ -566,23 +568,23 @@ if (-not $silent)
 # VQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1nosluv9R
 # C3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoHwwEAYKKwYBBAGCNwIBDDECMAAwGQYJ
 # KoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQB
-# gjcCARUwLwYJKoZIhvcNAQkEMSIEIPOkv5Kxo55a2TwrvME8qPLSLf47y5efef/t
-# ry7eK+kBMA0GCSqGSIb3DQEBAQUABIICAF+trfGazgYoJwz13B2Sxqt2aKhuWWqc
-# NJv01GndrIxQuOhfW4NxHpHDeLK64h5slvABdydPgzmr8QYnPegJp3TIoAVyv30d
-# QZ3FTu+pP9sYarYj/Ui9J7Ue1/JZxUU1CjO4ZTQGC615f8140oH8HdIyzZ3sQ5aM
-# JrZvrj2j+ud5A7dUysr5MK0uOHAOkinsJ1OqhcnH31WaVMKyuIh7vFI/Sso51YaP
-# BsqR9hJBeTd6dyT3A5LbfTvo5QOvrRyykrfP131EXkWyZLAdmXt0/XoYVjlISH8J
-# 9PY74PHN4hokfs2ej9a2FYqw05gRSBc8AM1vKbuIdAh4658z1+G890FAQ3xW+yIG
-# 0wHgZ6f34fTcwZBjuSFaDnC4jNfgW5bwtunXfcv8badgcXZMelSlcMSJZNulkDbo
-# CMDms39OEjGg/yt14nqjDi9nXeqM8c4NHYF17C1amnl7LNNMFlqbPTAp9vE75RCl
-# s7ueDVJUasfr6YoPkdO7uU2//ahvwNwv/de8LunuNxwnCiW65pAaRhFArp/FQAJq
-# CqN/3PpcE1CBgZ13AgD/72YBiTfPFGV0Qd7x0LBOK1yivbmgi5+RMGKHEDWng2DT
-# nMBmZdrsvZ+L6el0Sm1Khcl4+2hQ7pNm6KwPg9cssUsGSmreSQo4UFtHbKE9j98Q
-# w5u7kyHUGx//oYITfzCCE3sGCisGAQQBgjcDAwExghNrMIITZwYJKoZIhvcNAQcC
+# gjcCARUwLwYJKoZIhvcNAQkEMSIEID1c9nwLL7+bBbOYcHIOu/gIY5eutM0kZxwR
+# 1+iIN10TMA0GCSqGSIb3DQEBAQUABIICAAIKczO7PhSrAuuTU/iFmctQJN7R2qdK
+# 4rPAS/t1tODLg3cx6wpM25ZYKys2zPcq9SAEEtHYSHw43X9qiqz/H0BjnWg2caMx
+# N9MANnH5UXg6vJocroKOs5fYYtO6loxma9JO7JicCBbyZXzUQshh8slcP0KTjeqL
+# k5qgPXdMxXmOQNIFjD49BF42YVqBe7xX75JgYkqmxh3fzEeAPmw+x8Z8fi+FoW+q
+# McL8BoYQvJ1pvnhMQcm0tZzAQL3ZrDs+L1tRrUtVJDDt98Nfy5zNkkd6OEyI+VyJ
+# j5bXn0NuSloubgp448rYwDJ1GPEEE5VynL6AA1NdDwjXgv4GgV/JYev3VBgAqnP9
+# /EBpC9Zl9Icht2NuE3nfvHyHyEidyx48av5n90fRwHi0G2qGJEZBwc7113W0mh5t
+# O7wKShtg1ilnDtzwwD414/Iun+FzyNO6dyB+Rkm4HqF9MDp1M6GGMQ0LyFIw2jkr
+# P0okAMj8UgPlbrCXsMxFINy/YKUvhVwxnAmGahMut9NeYAZlc7DTrPXwY5fSHrvO
+# rzXAzkcisD+Rr4fyqSfzj4hC+PovtrdkG2yxRksgoLUwGR0RSm07Y4g76lVFrAL5
+# uw/IavKKok7rNrEY8wsIorMlqrySFecSp7K1mywqbudvq0lB02bKXTtBlj27dKnK
+# cPLDH6e8FrvsoYITfzCCE3sGCisGAQQBgjcDAwExghNrMIITZwYJKoZIhvcNAQcC
 # oIITWDCCE1QCAQMxDzANBglghkgBZQMEAgIFADCCAQwGCyqGSIb3DQEJEAEEoIH8
-# BIH5MIH2AgEBBgorBgEEAbIxAgEBMDEwDQYJYIZIAWUDBAIBBQAEIKpUXcSY/2Ve
-# jr/Qcj5BFS9F8Z4SvutQKJxnIsjPNd7UAhQHiAgeRnWV9UnWlkyKFEQ+9nmaWBgP
-# MjAyMjAzMTkwMzEwNDJaoIGKpIGHMIGEMQswCQYDVQQGEwJHQjEbMBkGA1UECBMS
+# BIH5MIH2AgEBBgorBgEEAbIxAgEBMDEwDQYJYIZIAWUDBAIBBQAEICWlVrBStpiq
+# NdCF+10BtqzYQcV/PQajXykDBR6ktGK6AhQzbRuuOho4Sm1jdG6ldPYwPOqVfRgP
+# MjAyMjAyMjUyMTU1MDhaoIGKpIGHMIGEMQswCQYDVQQGEwJHQjEbMBkGA1UECBMS
 # R3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9T
 # ZWN0aWdvIExpbWl0ZWQxLDAqBgNVBAMMI1NlY3RpZ28gUlNBIFRpbWUgU3RhbXBp
 # bmcgU2lnbmVyICMyoIIN+zCCBwcwggTvoAMCAQICEQCMd6AAj/TRsMY9nzpIg41r
@@ -664,23 +666,23 @@ if (-not $silent)
 # ZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGltaXRl
 # ZDElMCMGA1UEAxMcU2VjdGlnbyBSU0EgVGltZSBTdGFtcGluZyBDQQIRAIx3oACP
 # 9NGwxj2fOkiDjWswDQYJYIZIAWUDBAICBQCgggFrMBoGCSqGSIb3DQEJAzENBgsq
-# hkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjIwMzE5MDMxMDQyWjA/BgkqhkiG
-# 9w0BCQQxMgQwzMW0lDV0Vu62kxPGWpoLHbOZ20T780QJ0nyoZLeeSKLI9d5g2Dpg
-# ewJYAfq5VvQFMIHtBgsqhkiG9w0BCRACDDGB3TCB2jCB1zAWBBSVETcQHYgvMb1R
+# hkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjIwMjI1MjE1NTA4WjA/BgkqhkiG
+# 9w0BCQQxMgQwiWf+uNIz6/ofw7BixHCeau/6bqmQCnxpU8/Lm4EVrKEU7Po/XfrB
+# 0o7xt4Y5M0FSMIHtBgsqhkiG9w0BCRACDDGB3TCB2jCB1zAWBBSVETcQHYgvMb1R
 # P5Sa2kxorYwI9TCBvAQUAtZbleKDcMFXAJX6iPkj3ZN/rY8wgaMwgY6kgYswgYgx
 # CzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcgSmVyc2V5MRQwEgYDVQQHEwtKZXJz
 # ZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3b3JrMS4wLAYDVQQD
 # EyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5AhAwD2+s3WaY
-# dHypRjaneC25MA0GCSqGSIb3DQEBAQUABIICAJBE2aIxaWmLv2iw7xa/cQC9XHhr
-# G1uOzjIkMIHDlbxn/au+uaIqPAiyf9NP2hTTCwD1uaw1LgEQcAVxP6IuB/r/SrWe
-# NNhNkm5s0nTyd8WDgK4jgReP6L+3LANJxtWlBdjGW0nw56ouZ6vZ36PIaLgZDKbK
-# 9MIHwyDusHhVC5k7jJ7A9LmyKB2pNmJEVo5DEfBlRGwsacqFoZaqq8SYlnG4dI1A
-# RrPkagu+SpOVjNbIGyTA0luTWApd6Y7rVMR3FuMMWSUZkQoJQTU1psE9hAFGT5rL
-# tAfou0YuBwSz5D+QsySDeydhOgmCRd3I3UHiU/Hxsz8/2WAO7bkpshL9vJ545DJa
-# o6qay08vQsFs4c7EyXYawiDpvyAVdp5ChloUC4RSFIq+xXH2RNI9U+n6UPUFaKwZ
-# klU5w0gaOLgUUPq1IJcYAVSD0MzRk62rXiWtAkGy3igA1ihxEe/HNdx6HqvFYLFh
-# tARHaoRM1XztBhTjjkQU9ymBAX2C/nwSb48ROmOLRNLupJjmRXUK9FrBJwClUCGS
-# 0IwtqjblnqwWUhbcuemBmezKybdjoKMUGluHLhmC5wtFUuDUQ/TL8RFY1GX8Popu
-# F+va7vTdUVfDCRBn9Fqwi1VwBYusGrbgfhaujojTlIHxNvEPBfagZnymJCfxI9Ub
-# XM3Ga+M2mNp+TCtA
+# dHypRjaneC25MA0GCSqGSIb3DQEBAQUABIICADWvUpP1bN04wqD4aN6CKb7zUF2x
+# 0xp0Ko19/7ozeaoFVVVK9RMOepIs7jPjlGIijG0DX8f/MFCyTGhY/vAlT54/xZPF
+# C0R5WisHJKi/z+l+xFN78fR2okPRs6uTfZmNW2ly/QkvGgSQqy16d4Yuc1ONrIsF
+# wVYKhaVkVEO61RVRWCyAPVN8luWFJjOI4wnkBNmGMmuUTPUBy5M3oBsqhqqxsOWQ
+# So5NP6wRRheWmu13y5tAvpF5MN2l5k+NM/ngd3vd5/9Hw1ItzW0B6uuqGSKEPktm
+# m6jUwFMZUKHrRzPINy5zjrFKPV5gZy6T5s1z6NtuuA3L+6k+J+JRhb5zEnc04b7v
+# 5tPx6c3A9W+/n+9ltgsVlLk1KH22jCOgILVRJX4Nd6E2K6NCeoruXtHABX7lsS+0
+# WJWzfCtxtJS49gxMtl53Iu1fTd4Jt1OHg9go8/YcYfC6aCKaSNX+Gv29NLxJKyXP
+# XknScuxHLI0Iai7g1rV7uyNfT43WjBJjSPLaHAz6S8606ITqFH2OetjDIh0kH8nZ
+# k5uG0lsrmPXvLry8Mpflb4cJPel7v8IHwDoaNBrrrKL6lj+4xTV1eS8Ts4hVvzye
+# gHxDMOGCUc+EpPVvNa3ZIUIKZA/0RsaM64Eza478A+2deb89EOUcD5rspTC0MvqT
+# Ez4L+n9ZG4cZyacG
 # SIG # End signature block
