@@ -349,73 +349,68 @@ function Move-EZToolsNET4
 	.DESCRIPTION
 		Ensures all .NET 6 EZ Tools that were downloaded using Get-ZimmermanTools.ps1 are copied into the correct folders within .\KAPE\Modules\bin
 #>
-function Move-EZToolsNET6
+function Move-EZToolsNET6 {
+	[CmdletBinding()]
+	param ()
+
+
+# Only copy if Get-ZimmermanTools.ps1 has downloaded new net6 tools, otherwise continue on.
+if(Test-Path -path "$kapeModulesBin\ZimmermanTools\net6"){ 
+
+	# Copies tools that require subfolders for Maps, Batch Files, etc
+
+	Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
+
+
+	#create array of folders
+	$folders = @(
+		"$kapeModulesBin\ZimmermanTools\net6\EvtxECmd",
+		"$kapeModulesBin\ZimmermanTools\net6\RECmd",
+		"$kapeModulesBin\ZimmermanTools\net6\SQLECmd"
+	)
+
+	#Copy contents of each folder
+	foreach ($folder in $folders) {
+		Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
+	}
+
+	Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
+
+	# Copies tools that don't require subfolders
+
+	Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
+
+
+# Create an array of the files to copy
+$files = @("*.dll","*.exe","*.json")
+#Copy the files to the destination
+foreach ($file in $files)
 {
-    [CmdletBinding()]
-    param ()
-    
-    # Copies tools that require subfolders for Maps, Batch Files, etc
-    
-    Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
-    
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\EvtxECmd -Destination $kapeModulesBin -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RECmd -Destination $kapeModulesBin -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SQLECmd -Destination $kapeModulesBin -Recurse -Force
-    
-    Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
-    
-    # Copies tools that don't require subfolders
-    
-    Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
-    
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AmcacheParser.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AmcacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AmcacheParser.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AppCompatCacheParser.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AppCompatCacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\AppCompatCacheParser.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\bstrings.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\bstrings.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\bstrings.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\JLECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\JLECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\JLECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\LECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\LECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\LECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\MFTECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\MFTECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\MFTECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\PECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\PECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\PECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RBCmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RBCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RBCmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RecentFileCacheParser.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RecentFileCacheParser.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\RecentFileCacheParser.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SBECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SBECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SBECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SrumECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SrumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SrumECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SumECmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SumECmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\SumECmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\WxTCmd.dll -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\WxTCmd.exe -Destination $kapeModulesBin\ -Recurse -Force
-    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\WxTCmd.runtimeconfig.json -Destination $kapeModulesBin\ -Recurse -Force
-    
-    Log -logFilePath $logFilePath -msg "Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
-    
-    # This removes the downloaded EZ Tools that we no longer need to reside on disk
-    
-    & Remove-Item -Path $kapeModulesBin\ZimmermanTools\net6 -Recurse -Force
-    
-    Log -logFilePath $logFilePath -msg "Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
-    
+    if (Test-Path $kapeModulesBin\ZimmermanTools\net6\$file)
+    {
+        Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\$file -Destination $kapeModulesBin -Recurse -Force
+    }
+    else
+    {
+       Log -logFilePath $logFilePath -msg "$file not found." 
+	   Log -logFilePath $logFilePath -msg "If this continues to happen, try deleting $kapeModulesBin\ZimmermanTools\!!!RemoteFileDetails.csv and re-running this script"
+    }
+}
+Log -logFilePath $logFilePath -msg "Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
+
+}
+else{
+
+	Log -logFilePath $logFilePath -msg "No new Net6 EZ tools were downloaded. Continuing on."
+}
+	# This removes the downloaded EZ Tools that we no longer need to reside on disk
+
+	Log -logFilePath $logFilePath -msg "Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
+
+
+	Remove-Item -Path $kapeModulesBin\ZimmermanTools\net6 -Recurse -Force -ErrorAction SilentlyContinue
+
+	
 }
 
 # Let's update KAPE first
