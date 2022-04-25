@@ -369,12 +369,17 @@ if(Test-Path -path "$kapeModulesBin\ZimmermanTools\net6"){
 		"$kapeModulesBin\ZimmermanTools\net6\SQLECmd"
 	)
 
-	#Copy contents of each folder
-	foreach ($folder in $folders) {
-		Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
+	#Copy each folder that exist
+    $folderSuccess = @()
+	foreach ($folder in $folders) {        
+        if (Test-Path -path $folder) {
+            Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force            
+            $folderSuccess += $folder.Split('\')[-1]
+        }
+		
 	}
-
-	Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
+#Log only the folders that were copied
+	Log -logFilePath $logFilePath -msg "Copied$($folderSuccess.foreach({", $PSItem"})) and all associated ancillary files to $kapeModulesBin successfully"
 
 	# Copies tools that don't require subfolders
 
