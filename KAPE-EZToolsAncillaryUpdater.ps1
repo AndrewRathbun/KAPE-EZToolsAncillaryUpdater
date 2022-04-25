@@ -331,7 +331,47 @@ function Move-EZToolsNET4
 	.DESCRIPTION
 		Ensures all .NET 6 EZ Tools that were downloaded using Get-ZimmermanTools.ps1 are copied into the correct folders within .\KAPE\Modules\bin
 #>
-function Move-EZToolsNET6
+function Move-EZToolsNET6 {
+	[CmdletBinding()]
+	param ()
+
+
+# Only copy if Get-ZimmermanTools.ps1 has downloaded new net6 tools, otherwise continue on.
+if(Test-Path -path "$kapeModulesBin\ZimmermanTools\net6"){ 
+
+	# Copies tools that require subfolders for Maps, Batch Files, etc
+
+	Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
+
+
+	#create array of folders
+	$folders = @(
+		"$kapeModulesBin\ZimmermanTools\net6\EvtxECmd",
+		"$kapeModulesBin\ZimmermanTools\net6\RECmd",
+		"$kapeModulesBin\ZimmermanTools\net6\SQLECmd"
+	)
+
+	#Copy each folder that exist
+    $folderSuccess = @()
+	foreach ($folder in $folders) {        
+        if (Test-Path -path $folder) {
+            Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force            
+            $folderSuccess += $folder.Split('\')[-1]
+        }
+		
+	}
+#Log only the folders that were copied
+	Log -logFilePath $logFilePath -msg "Copied$($folderSuccess.foreach({", $PSItem"})) and all associated ancillary files to $kapeModulesBin successfully"
+
+	# Copies tools that don't require subfolders
+
+	Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
+
+
+# Create an array of the files to copy
+$files = @("*.dll","*.exe","*.json")
+#Copy the files to the destination
+foreach ($file in $files)
 {
     [CmdletBinding()]
     param ()
