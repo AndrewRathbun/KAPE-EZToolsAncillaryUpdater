@@ -30,11 +30,10 @@
         
         .CHANGELOG
         1.0 - (Sep 09, 2021) Initial release
-        2.0 - (Oct 22, 2021) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which leverages Get-KAPEUpdate.ps1 and Get-ZimmermanTools.ps1 as well as other various --sync commands to keep all of KAPE and the command line EZ Tools updated to their fullest potential with minimal effort. Signed script with certificate
-        3.0 - (Feb 22, 2022) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less chance for issues. Added changelog. Added logging capabilities
-        3.1 - (Mar 17, 2022) Added a "silent" parameter that disables the progress bar and exits the script without pausing in the end
-        3.2 - (Apr 04, 2022) Updated Move-EZToolsNET6 to use glob searching instead of hardcoded folder and file paths
-        3.3 - (Apr 25, 2022) Updated Move-EZToolsNET6 to correct Issue #9 - https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/issues/9. Also updated content and formatting of some of the comments
+        2.0 - (Oct 22, 2021) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which leverages Get-KAPEUpdate.ps1 and Get-ZimmermanTools.ps1 as well as other various --sync commands to keep all of KAPE and the command line EZ Tools updated to their fullest potential with minimal effort. Signed script with certificate.
+        3.0 - (Feb 22, 2022) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less chance for issues. Added changelog. Added logging capabilities.
+        3.1 - (Mar 17, 2022) Added a "silent" parameter that disables the progress bar and exits the script without pausing in the end.
+        3.2 - (Apr 04, 2022) Updated Move-EZToolNET6 to use glob searching instead of hardcoded folder and file paths.
     
     .PARAMETER silent
         Disable the progress bar and exit the script without pausing in the end
@@ -47,7 +46,7 @@
         Organization: 	Kroll
         Filename:		KAPE-EZToolsAncillaryUpdater.ps1
         GitHub:			https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
-        Version:		3.3
+        Version:		3.2
         ===========================================================================
 #>
 param
@@ -92,7 +91,7 @@ Log -logFilePath $logFilePath -msg " --- Beginning of session ---"
 Set-ExecutionPolicy Bypass -Scope Process
 
 # Setting variables the script relies on
-$kapeModulesBin = "$PSScriptRoot\Modules\bin"
+$kapeModulesBin = Join-Path -Path "$PSScriptRoot\Modules" -ChildPath "bin"
 $ZTZipFile = 'Get-ZimmermanTools.zip'
 $ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile"
 
@@ -203,7 +202,7 @@ function Sync-EvtxECmdMaps
     [CmdletBinding()]
     param ()
     
-    # This deletes the .\KAPE\Modules\bin\EvtxECmd\Maps folder so old Maps don't collide with new Maps
+    # This deletes the .\KAPE\Modules\bin\EvtxECmd\Maps folder so old Maps don't collide with new 
     Log -logFilePath $logFilePath -msg "Deleting $kapeModulesBin\SQLECmd\Maps for a fresh start prior to syncing SQLECmd with GitHub"
     
     Remove-Item -Path "$kapeModulesBin\EvtxECmd\Maps" -Recurse -Force
@@ -337,33 +336,28 @@ function Move-EZToolsNET6
     [CmdletBinding()]
     param ()
     
-    # Only copy if Get-ZimmermanTools.ps1 has downloaded new .NET 6 tools, otherwise continue on
+    # Only copy if Get-ZimmermanTools.ps1 has downloaded new .NET 6 tools, otherwise continue on.
     if (Test-Path -path "$kapeModulesBin\ZimmermanTools\net6")
     {
+        Log -logFilePath $logFilePath -msg "Please ensure you have the latest version of the .NET 6 Runtime installed. You can download it here: https://dotnet.microsoft.com/en-us/download/dotnet/6.0. Please note that the .NET 6 Desktop Runtime includes the Runtime needed for Desktop AND Console applications, aka Registry Explorer AND RECmd, for example"
+        
         # Copies tools that require subfolders for Maps, Batch Files, etc
         Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
         
-        # Create array of folders to be copied
+        # Create array of folders for the tools that have dedicated subfolders
         $folders = @(
             "$kapeModulesBin\ZimmermanTools\net6\EvtxECmd",
             "$kapeModulesBin\ZimmermanTools\net6\RECmd",
             "$kapeModulesBin\ZimmermanTools\net6\SQLECmd"
         )
         
-        # Copy each folder that exists
-        $folderSuccess = @()
+        # Copy contents of each subfolder
         foreach ($folder in $folders)
         {
-            if (Test-Path -path $folder)
-            {
-                Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
-                $folderSuccess += $folder.Split('\')[-1]
-            }
-            
+            Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
         }
         
-        # Log only the folders that were copied
-        Log -logFilePath $logFilePath -msg "Copied$($folderSuccess.foreach({ ", $PSItem" })) and all associated ancillary files to $kapeModulesBin successfully"
+        Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
         
         # Copies tools that don't require subfolders
         Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
@@ -374,65 +368,29 @@ function Move-EZToolsNET6
         # Copy the files to the destination
         foreach ($file in $files)
         {
-            # Only copy if Get-ZimmermanTools.ps1 has downloaded new .NET 6 tools, otherwise continue on.
-            if (Test-Path -path "$kapeModulesBin\ZimmermanTools\net6")
+            if (Test-Path $kapeModulesBin\ZimmermanTools\net6\$file)
             {
-                Log -logFilePath $logFilePath -msg "Please ensure you have the latest version of the .NET 6 Runtime installed. You can download it here: https://dotnet.microsoft.com/en-us/download/dotnet/6.0. Please note that the .NET 6 Desktop Runtime includes the Runtime needed for Desktop AND Console applications, aka Registry Explorer AND RECmd, for example"
-                
-                # Copies tools that require subfolders for Maps, Batch Files, etc
-                Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
-                
-                # Create array of folders for the tools that have dedicated subfolders
-                $folders = @(
-                    "$kapeModulesBin\ZimmermanTools\net6\EvtxECmd",
-                    "$kapeModulesBin\ZimmermanTools\net6\RECmd",
-                    "$kapeModulesBin\ZimmermanTools\net6\SQLECmd"
-                )
-                
-                # Copy contents of each subfolder
-                foreach ($folder in $folders)
-                {
-                    Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
-                }
-                
-                Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
-                
-                # Copies tools that don't require subfolders
-                Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
-                
-                # Create an array of the files to copy
-                $files = @("*.dll", "*.exe", "*.json")
-                
-                # Copy the files to the destination
-                foreach ($file in $files)
-                {
-                    if (Test-Path $kapeModulesBin\ZimmermanTools\net6\$file)
-                    {
-                        Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\$file -Destination $kapeModulesBin -Recurse -Force
-                    }
-                    else
-                    {
-                        Log -logFilePath $logFilePath -msg "$file not found."
-                        Log -logFilePath $logFilePath -msg "If this continues to happen, try deleting $kapeModulesBin\ZimmermanTools\!!!RemoteFileDetails.csv and re-running this script"
-                    }
-                }
-                
-                Log -logFilePath $logFilePath -msg "Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
+                Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\$file -Destination $kapeModulesBin -Recurse -Force
             }
             else
             {
-                Log -logFilePath $logFilePath -msg "No new Net6 EZ tools were downloaded. Continuing on."
+                Log -logFilePath $logFilePath -msg "$file not found."
+                Log -logFilePath $logFilePath -msg "If this continues to happen, try deleting $kapeModulesBin\ZimmermanTools\!!!RemoteFileDetails.csv and re-running this script"
             }
-            
-            # This removes the downloaded EZ Tools that we no longer need to reside on disk
-            Log -logFilePath $logFilePath -msg "Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
-            
-            Remove-Item -Path $kapeModulesBin\ZimmermanTools\net6 -Recurse -Force -ErrorAction SilentlyContinue
         }
+        
+        Log -logFilePath $logFilePath -msg "Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
     }
+    else
+    {
+        Log -logFilePath $logFilePath -msg "No new Net6 EZ tools were downloaded. Continuing on."
+    }
+    
+    # This removes the downloaded EZ Tools that we no longer need to reside on disk
+    Log -logFilePath $logFilePath -msg "Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
+    
+    Remove-Item -Path $kapeModulesBin\ZimmermanTools\net6 -Recurse -Force -ErrorAction SilentlyContinue
 }
-
-# Now starts the actual script where we call all the functions declared above. Up until this point, nothing has actually happened in this script. Calling the functions below will execute what we declared above in the order we call upon them
 
 # Let's update KAPE first
 & Get-KAPEUpdateEXE
@@ -440,7 +398,7 @@ function Move-EZToolsNET6
 # Let's download Get-ZimmermanTools.zip and extract Get-ZimmermanTools.ps1
 & Get-ZimmermanTools
 
-# Let's move all EZ Tools and place them into .\KAPE\Modules\bin. This function relies on the version of .NET that the end user input when running the script
+# Let's move all EZ Tools and place them into .\KAPE\Modules\bin
 if ($netVersion -eq '4')
 {
     Move-EZToolsNET4
@@ -454,7 +412,6 @@ else
     Write-Host "Cannot validate whether the .NET version is 4 or 6. Please let Andrew Rathbun know of this message if you see it!"
 }
 
-# Let's sync all of the tools
 & Sync-KAPETargetsModules
 & Sync-EvtxECmdMaps
 & Sync-RECmdBatchFiles
@@ -478,8 +435,8 @@ if (-not $silent)
 # SIG # Begin signature block
 # MIIpSAYJKoZIhvcNAQcCoIIpOTCCKTUCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBxFa7SKCtOcxwU
-# ny9BKo48GIXURcbJeH4R3p+Bz4Ut5qCCEgowggVvMIIEV6ADAgECAhBI/JO0YFWU
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDfxebID8Xkgv5e
+# MZjRRiXTKUjdtVBRnzjExlmLQkNH2qCCEgowggVvMIIEV6ADAgECAhBI/JO0YFWU
 # jTanyYqJ1pQWMA0GCSqGSIb3DQEBDAUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQI
 # DBJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoM
 # EUNvbW9kbyBDQSBMaW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2Vy
@@ -580,23 +537,23 @@ if (-not $silent)
 # VQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1nosluv9R
 # C3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoHwwEAYKKwYBBAGCNwIBDDECMAAwGQYJ
 # KoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQB
-# gjcCARUwLwYJKoZIhvcNAQkEMSIEIPM6ribp1O6/u2NfEzOy2jUfyGTPPDV4IiWE
-# gz8K930yMA0GCSqGSIb3DQEBAQUABIICAI441Y6xckFj9Rnl+a6V7uwwXDj77sex
-# LfXn3maMqfkSD5hE3A15qV8jeVDhfAO+nZzdqhp2u3gLVKxkA9NowXUasCScI9JM
-# yJTCdLTGx0BjuHKe2odP5uUG5Av/ZLQV6O/vvIynpUTA/v2GB4VKwu2we9Y83YnW
-# OoM1yCkuWCHFKLlK9NNn0UabCgcxfqKJbHdBz2E1stA6ZvRkvhG75BM/w1bfvy2I
-# ZwQqbeP/Y//2KPPzyfCXiSMcitD0EXLuReKcjARb+NlsPLmBvFit3nam4voqxZtN
-# LxW5bOZsQw87a2P3yMLxDcx3r38eliJrr+3boIKBYK03NKxK85IP3hn17j7Eb9tM
-# YEgQxOPLME///uIrn1CfmEpvwKX1Y2w2oTYVeSUzRnmF1hM9P44TcmZrUFEvs/8C
-# lLtYsNAqc9r4qV0hoYOhZH+NGriaugamZIGP7vmiZ6zINvqMDrHyy3TyzV05tDuK
-# jrQG3+FwEypY+ZbslHVilIV8czRroQsl++5/UrWzvK3Bmuew/hZKmzGNrPPZsDFf
-# l2uizVzH+jOyVZ5AhnjOkidx3UevcVroElTH7Sf85G4+qU3jrBJzlgKlj9gzygsP
-# u6Mswn2B2FFXaZnnyD1gUSeFihGvThP1BsqHf1ezNCb5ddcya/tk7N8r54UXF9vL
-# sS3mK89HRgIfoYITfzCCE3sGCisGAQQBgjcDAwExghNrMIITZwYJKoZIhvcNAQcC
+# gjcCARUwLwYJKoZIhvcNAQkEMSIEIHVFxJn7/vp0DkddArF/hr3W86C///LBueHB
+# s+9fUciYMA0GCSqGSIb3DQEBAQUABIICAAcTKDOnldQrB86doKV87fPff33uB0Rb
+# CjmM93NgofEFvCa15Z7ofgX826BhNdvVXHj6TMHWq2sFE2AfJ7CDi9EuU8lhpXAX
+# AUcsIQ3uUhZfbhLTX/eXsp51k95CyWNDwMd21MREZQkTndt6JT/ImuVTzFwPuC2l
+# 8WMdqJY9Se6E+IEJIrcRpEDt0ac9atDRZ9XU1/a4XnBRS6qwTU/nQ2Tl03E3da4q
+# Be9PnCGXoTR4lNR9umXVVocdTZrxIl7yH4t7BtLhyetafvmqbUIn62drhGF6pHNm
+# zLtWVarkkIsARxlxmaYFCXWz1J+bu/mDIbhZYulqJyY4D5JA9QFDvXoZ46p+ocE/
+# ncsitY4LwLrnMXCSB3StgC1JWEuj62eo/2azR5Eu45Z6YG2QJiJfouWMe5Xb8GqR
+# emoDgZ3XuWQsZHpupoj9w73bYTwzvnVIL8QsE0d3+UEvK5gQ9FPJfbwQnOlFlCtT
+# 27AUwCjZP5n9Wxspd3qoH+7UXstAND6mB8480Wlh4DLYa2Is5I7Kc0lU7WedPSb4
+# Vl6jAr0mPzPayVlSVGy/xeLOkJLLstPvQlwdXW23gHg5pdnEGIHXSuR8jKuy3jR9
+# FVzfF1RXsNtP07VHkK00+5PsJYBQztUAHetfwp3T6IMN1V91MPgMF01HC4709tyj
+# L4OaSwMOzZ8loYITfzCCE3sGCisGAQQBgjcDAwExghNrMIITZwYJKoZIhvcNAQcC
 # oIITWDCCE1QCAQMxDzANBglghkgBZQMEAgIFADCCAQwGCyqGSIb3DQEJEAEEoIH8
-# BIH5MIH2AgEBBgorBgEEAbIxAgEBMDEwDQYJYIZIAWUDBAIBBQAEIBPNjXT1taM4
-# 9Q+LHjz8vtnvHP/xy0mzfCTIzLuaEF8aAhQSjqNnLint8s92w2+yKdt/a5dJwhgP
-# MjAyMjA0MjUxMjUxNTJaoIGKpIGHMIGEMQswCQYDVQQGEwJHQjEbMBkGA1UECBMS
+# BIH5MIH2AgEBBgorBgEEAbIxAgEBMDEwDQYJYIZIAWUDBAIBBQAEIPg0iUC/Qkem
+# VMGLA0pfxqyRUrcdp/u88Czo7fEbwTjvAhQtM5Xp45D/qnqUVO/R57ICctgU0BgP
+# MjAyMjA0MDQxMjQzMjdaoIGKpIGHMIGEMQswCQYDVQQGEwJHQjEbMBkGA1UECBMS
 # R3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9T
 # ZWN0aWdvIExpbWl0ZWQxLDAqBgNVBAMMI1NlY3RpZ28gUlNBIFRpbWUgU3RhbXBp
 # bmcgU2lnbmVyICMyoIIN+zCCBwcwggTvoAMCAQICEQCMd6AAj/TRsMY9nzpIg41r
@@ -678,23 +635,23 @@ if (-not $silent)
 # ZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNVBAoTD1NlY3RpZ28gTGltaXRl
 # ZDElMCMGA1UEAxMcU2VjdGlnbyBSU0EgVGltZSBTdGFtcGluZyBDQQIRAIx3oACP
 # 9NGwxj2fOkiDjWswDQYJYIZIAWUDBAICBQCgggFrMBoGCSqGSIb3DQEJAzENBgsq
-# hkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjIwNDI1MTI1MTUyWjA/BgkqhkiG
-# 9w0BCQQxMgQwRfKR9qOKb4F1XaAP1Odi/cX9YyLSl6OU/KLF/qPKdZBXMMzvy1Qn
-# yFHhmf/aO3D7MIHtBgsqhkiG9w0BCRACDDGB3TCB2jCB1zAWBBSVETcQHYgvMb1R
+# hkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjIwNDA0MTI0MzI3WjA/BgkqhkiG
+# 9w0BCQQxMgQwf2Y10N+dyiJ5+2xXng37jGaxOdCikxODcevXiopaAcZxPeegRsnT
+# LI4QEz80WLn9MIHtBgsqhkiG9w0BCRACDDGB3TCB2jCB1zAWBBSVETcQHYgvMb1R
 # P5Sa2kxorYwI9TCBvAQUAtZbleKDcMFXAJX6iPkj3ZN/rY8wgaMwgY6kgYswgYgx
 # CzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcgSmVyc2V5MRQwEgYDVQQHEwtKZXJz
 # ZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3b3JrMS4wLAYDVQQD
 # EyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5AhAwD2+s3WaY
-# dHypRjaneC25MA0GCSqGSIb3DQEBAQUABIICAIs5XRCrIUd3wl3tZoMfRjL4f131
-# HQDc70ORqICXqW4i9WQ5Ou4Vn1duOvaBMDQkWqV2degR/JKcjIVaQUHNyLDbdZQ7
-# yHfPtJu7TBiak8gxDlsZ2Y4YwKTrif9ZHEd1R58SV3BUbN4oJlphpTyTyR2Zcvmm
-# V2yUjDspCc2pocjqI1in+Y8js6fxLtbaHLXBAQ7IsF7Pyvv7h9mMP0p8dY+KeWMO
-# lFLvm0A9CjLYY2FvnzVpGOYecG1z+VZ95YKqc/AuPsuP5wHi33EhNVXK/u5P570/
-# kpKsYG8sz75XpD5dYHSAW2CeZ9hEJDRzybo0P+sIC26lnuO1MFKolmSY18uJcXPJ
-# 1e0UhfjavrTZ20t2fwUoAUD2gp9uPv0R9ZHP0wHqVJniKIV/h8wBEhMbqHeSqi7c
-# Ba+0Jc8QLm920QXrM6aA08YnGYei3oh6A20TfiQrrR4w9YZJLLs4R6eBv4S3Zzur
-# kxmfFQR5Fidx78AKxBQNSehhZaLFDmQpnnskqT/ffJ3c8gvXl5wS0Vd/2BES0YNC
-# ROscYpN8rjDZTogyvcef7sAOZx1MAmrp0vu9IKT6EcoIFTf+qpc5IkgpFTEe9mqo
-# TLG5kvEsI46AqfHoTmx1RVite8BuHmdZpe5m+HQhP8QA1X165AAgXcq1wpyM9zYT
-# r3530IgrIaf31+ZK
+# dHypRjaneC25MA0GCSqGSIb3DQEBAQUABIICAEDBlaHeomX1liTqAlpqLsHnKa3i
+# j7ycUmuCyYkef/DeEv1UZ8rWquHpJxqMURhE70dcgyh+9Zhtzng/ephr6YzrwI2q
+# H6sXw+Of4q64nmB+hDQl7mGSpnptVnAt2FPBgiplCwLv6d4UdimbFClxMzumTzff
+# SyEBgQwva7LxKIJ2IaTdUtrqaeAh2b6WGaZ928NZbiBvedJpWgZKlwijgM8EXUNo
+# tpALilY5imzOGPSlaEugWs+EThXwszg1E2wE9QHSiDOfQLZUEJJZ7E8WCjWyDg1A
+# 1C1W+jyztv3EBtOjIdxgdEkxre6mHj52t+b88Tv24ER1fRhWuArvMkK1Il7AXBYf
+# HU3eWDdSAzB2ymjQgX+Xf6fqUGqnMReFsmQLn5/PeT0P7FnnM/ViNiWGFwL5YMF+
+# CBkZrcgOV4rBQ6oZ9b8boFN16ht7nASDD45IcYiiwXxWNk0otk+z6jK/SiBdUh7N
+# tt3awax7H92ZYi8D/TlArnS34jvm0+9dRIG9fcKAw10cTeixGE/Ao0/cIx/f1XPM
+# aruZZsc3sX6/6P7DuKZc1+F6En2OAmmfE7A6AiunqllbR1mRR1CGSjIzOH0TL/xD
+# TaNPT4cBLyfMaE50J3mkskN8GH8l1BlHqyPeQSXf85FGphH5o7vr2ygkjZVvsfvU
+# xAS3DrSITrW/5yWQ
 # SIG # End signature block
