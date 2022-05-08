@@ -1,4 +1,4 @@
-                                                                                                                                                       <#
+<#
     .SYNOPSIS
         Keep KAPE and all the included EZ Tools updated! Be sure to run this script from the root of your KAPE folder, i.e., where kape.exe, gkape.exe, Targets, Modules, and Documentation folders exists
     
@@ -53,32 +53,29 @@
 param
 (
     [Parameter(Mandatory = $true,
-               Position = 1,
-               HelpMessage = '.NET version of EZ Tools (Options: 4 or 6)')]
+        Position = 1,
+        HelpMessage = '.NET version of EZ Tools (Options: 4 or 6)')]
     [ValidateSet('4', '6')]
     [String]$netVersion,
     [Parameter(Position = 2,
-               HelpMessage = 'Disable the progress bar and exit the script without pausing in the end')]
+        HelpMessage = 'Disable the progress bar and exit the script without pausing in the end')]
     [Switch]$silent
 )
 
-function Get-TimeStamp
-{
-    return "[{0:yyyy/MM/dd} {0:HH:mm:ss}]" -f (Get-Date)
+function Get-TimeStamp {
+    return '[{0:yyyy/MM/dd} {0:HH:mm:ss}]' -f (Get-Date)
 }
 
 $logFilePath = "$PSScriptRoot\KAPEUpdateLog.log"
-$kapeDownloadUrl = "https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape"
-if ($silent)
-{
+$kapeDownloadUrl = 'https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape'
+if ($silent) {
     $ProgressPreference = 'SilentlyContinue'
 }
-function Log
-{
+function Log {
     param ([string]$logFilePath,
         [string]$msg)
     $msg = Write-Output "$(Get-TimeStamp) | $msg"
-    Out-File $logFilePath -Append -InputObject $msg -encoding ASCII
+    Out-File $logFilePath -Append -InputObject $msg -Encoding ASCII
     Write-Host $msg
 }
 
@@ -87,7 +84,7 @@ $stopwatch = [system.diagnostics.stopwatch]::StartNew()
 
 $Stopwatch.Start()
 
-Log -logFilePath $logFilePath -msg " --- Beginning of session ---"
+Log -logFilePath $logFilePath -msg ' --- Beginning of session ---'
 
 Set-ExecutionPolicy Bypass -Scope Process
 
@@ -103,21 +100,50 @@ $ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile"
 	.DESCRIPTION
 		Uses the preexisting .\Get-KAPEUpdate.ps1 script to update the KAPE binary (kape.exe)
 #>
-function Get-KAPEUpdateEXE
-{
+function Get-KAPEUpdateEXE {
     [CmdletBinding()]
     param ()
     
-    if (Test-Path -Path "$PSScriptRoot\Get-KAPEUpdate.ps1")
-    {
-        Log -logFilePath $logFilePath -msg "Running Get-KAPEUpdate.ps1 to update KAPE to the latest binary"
+    if (Test-Path -Path "$PSScriptRoot\Get-KAPEUpdate.ps1") {
+        Log -logFilePath $logFilePath -msg 'Running Get-KAPEUpdate.ps1 to update KAPE to the latest binary'
         & $PSScriptRoot\Get-KAPEUpdate.ps1
-    }
-    else
-    {
+    } else {
         Log -logFilePath $logFilePath -msg "Get-KAPEUpdate.ps1 not found, please go download KAPE from $kapeDownloadUrl"
         Exit
     }
+}
+
+<#
+	.SYNOPSIS
+		Makes sure the Updater is Up-To-Date!
+
+	.DESCRIPTION
+		Checks the latest version of this updater and updates if there is a newer version and $NoUpdates is $false
+#>
+function Get-LatestEZToolsUpdater {
+    [CmdletBinding()]
+    param (
+        # Default is to check for updates
+        [Parameter(Mandatory = $false)]
+        [Switch]
+        $NoUpdates = $false
+    )
+    # First check the version of the current script
+    $currentScriptVersion = Get-Content $("$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1") | Select-String -SimpleMatch 'Version:'
+    $CurrentScriptVersionNumber = $currentScriptVersion.ToString().Split("`t")[2]
+
+    $webRequest = Invoke-WebRequest -Uri 'https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/latest'
+    $webRequest.outerHTML | Where-Object {
+        $_ -like '*https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/*'
+    }
+
+    $strings = $webRequest.RawContent
+    $latestVersion = $strings | Select-String -Pattern 'EZToolsAncillaryUpdater/releases/tag/[0-9].[0-9]+' | Select-Object -First 1
+    $latestVersionToSplit =  $latestVersion.Matches[0].Value
+    $VersionNumber = $latestVersionToSplit.Split("/")[-1]
+    Write-Output $VersionNumber
+
+    
 }
 
 <#
@@ -127,13 +153,11 @@ function Get-KAPEUpdateEXE
 	.DESCRIPTION
 		Downloads Get-ZimmermanTools.zip, extracts Get-ZimmermanTools.ps1 from the ZIP file into .\KAPE\Modules\bin\ZimmermanTools
 #>
-function Get-ZimmermanTools
-{
+function Get-ZimmermanTools {
     [CmdletBinding()]
     param ()
     
-    if (Test-Path -Path "$kapeModulesBin\Get-ZimmermanTools.ps1")
-    {
+    if (Test-Path -Path "$kapeModulesBin\Get-ZimmermanTools.ps1") {
         
         Log -logFilePath $logFilePath -msg "Get-ZimmermanTools.ps1 already exists! Downloading .NET $netVersion version of EZ Tools to $kapeModulesBin\ZimmermanTools"
         
@@ -141,9 +165,7 @@ function Get-ZimmermanTools
         
         Start-Sleep -Seconds 3
         
-    }
-    else
-    {
+    } else {
         
         Log -logFilePath $logFilePath -msg "Downloading $ZTZipFile from $ZTdlUrl to $kapeModulesBin"
         
@@ -172,20 +194,16 @@ function Get-ZimmermanTools
 	.NOTES
 		Sync works without Admin privileges as of KAPE 1.0.0.3
 #>
-function Sync-KAPETargetsModules
-{
+function Sync-KAPETargetsModules {
     [CmdletBinding()]
     param ()
     
-    if (Test-Path -Path $PSScriptRoot\kape.exe)
-    {
-        Log -logFilePath $logFilePath -msg "Syncing KAPE with GitHub for the latest Targets and Modules"
+    if (Test-Path -Path $PSScriptRoot\kape.exe) {
+        Log -logFilePath $logFilePath -msg 'Syncing KAPE with GitHub for the latest Targets and Modules'
         Set-Location $PSScriptRoot
         .\kape.exe --sync
         Start-Sleep -Seconds 3
-    }
-    else
-    {
+    } else {
         Log -logFilePath $logFilePath -msg "kape.exe not found, please go download KAPE from $kapeDownloadUrl"
         Exit
     }
@@ -198,8 +216,7 @@ function Sync-KAPETargetsModules
 	.DESCRIPTION
 		This function will download the latest EvtxECmd Maps from https://github.com/EricZimmerman/evtx
 #>
-function Sync-EvtxECmdMaps
-{
+function Sync-EvtxECmdMaps {
     [CmdletBinding()]
     param ()
     
@@ -209,7 +226,7 @@ function Sync-EvtxECmdMaps
     Remove-Item -Path "$kapeModulesBin\EvtxECmd\Maps" -Recurse -Force
     
     # This ensures all the latest EvtxECmd Maps are downloaded
-    Log -logFilePath $logFilePath -msg "Syncing EvtxECmd with GitHub for the latest Maps"
+    Log -logFilePath $logFilePath -msg 'Syncing EvtxECmd with GitHub for the latest Maps'
     
     & "$kapeModulesBin\EvtxECmd\EvtxECmd.exe" --sync
     
@@ -224,8 +241,7 @@ function Sync-EvtxECmdMaps
 	.DESCRIPTION
 		This function will download the latest RECmd Batch Files from https://github.com/EricZimmerman/RECmd
 #>
-function Sync-RECmdBatchFiles
-{
+function Sync-RECmdBatchFiles {
     [CmdletBinding()]
     param ()
     
@@ -235,7 +251,7 @@ function Sync-RECmdBatchFiles
     Remove-Item -Path "$kapeModulesBin\RECmd\BatchExamples\*" -Recurse -Force
     
     # This ensures all the latest RECmd Batch files are present on disk
-    Log -logFilePath $logFilePath -msg "Syncing RECmd with GitHub for the latest Maps"
+    Log -logFilePath $logFilePath -msg 'Syncing RECmd with GitHub for the latest Maps'
     
     & "$kapeModulesBin\RECmd\RECmd.exe" --sync
     
@@ -249,8 +265,7 @@ function Sync-RECmdBatchFiles
 	.DESCRIPTION
 		This function will download the latest Maps from https://github.com/EricZimmerman/SQLECmd
 #>
-function Sync-SQLECmdMaps
-{
+function Sync-SQLECmdMaps {
     [CmdletBinding()]
     param ()
     
@@ -260,7 +275,7 @@ function Sync-SQLECmdMaps
     Remove-Item -Path "$kapeModulesBin\SQLECmd\Maps\*" -Recurse -Force
     
     # This ensures all the latest SQLECmd Maps are downloaded
-    Log -logFilePath $logFilePath -msg "Syncing SQLECmd with GitHub for the latest Maps"
+    Log -logFilePath $logFilePath -msg 'Syncing SQLECmd with GitHub for the latest Maps'
     
     & "$kapeModulesBin\SQLECmd\SQLECmd.exe" --sync
     
@@ -274,21 +289,17 @@ function Sync-SQLECmdMaps
 	.DESCRIPTION
 		Ensures all .NET 4 EZ Tools that were downloaded using Get-ZimmermanTools.ps1 are copied into the correct folders within .\KAPE\Modules\bin
 #>
-function Move-EZToolsNET4
-{
+function Move-EZToolsNET4 {
     [CmdletBinding()]
     param ()
     
     # Let's remove files no longer needed if you're switching from .NET 6 to .NET 4 version of EZ Tools
-    if ((Test-Path -Path $kapeModulesBin\*runtimeconfig.json) -and (Test-Path -Path $kapeModulesBin\*.dll))
-    {
+    if ((Test-Path -Path $kapeModulesBin\*runtimeconfig.json) -and (Test-Path -Path $kapeModulesBin\*.dll)) {
         Log -logFilePath $logFilePath -msg ".NET 6 EZ Tools lefovers detected! Removing unnecessary .dll and .json files from $kapeModulesBin"
         Remove-Item -Path $kapeModulesBin\*runtimeconfig.json -Recurse -Force
         Remove-Item -Path $kapeModulesBin\*.dll -Recurse -Force
         Start-Sleep -Seconds 2
-    }
-    else
-    {
+    } else {
         Log -logFilePath $logFilePath -msg "No indication of leftover files from the .NET 6 version of EZ Tools from $kapeModulesBin"
     }
     
@@ -322,7 +333,7 @@ function Move-EZToolsNET4
     Log -logFilePath $logFilePath -msg "Removing extra copies of EZ Tools from $kapeModulesBin\ZimmermanTools"
     
     # & Remove-Item -Path $kapeModulesBin\Get-ZimmermanTools.zip -Recurse -Force TODO MAYBE DELETE THIS?
-    Log -logFilePath $logFilePath -msg "Removed .\KAPE\Modules\bin\ZimmermanTools\Get-ZimmermanTools.zip successfully"
+    Log -logFilePath $logFilePath -msg 'Removed .\KAPE\Modules\bin\ZimmermanTools\Get-ZimmermanTools.zip successfully'
 }
 
 <#
@@ -332,15 +343,13 @@ function Move-EZToolsNET4
 	.DESCRIPTION
 		Ensures all .NET 6 EZ Tools that were downloaded using Get-ZimmermanTools.ps1 are copied into the correct folders within .\KAPE\Modules\bin
 #>
-function Move-EZToolsNET6
-{
+function Move-EZToolsNET6 {
     [CmdletBinding()]
     param ()
     
     
     # Only copy if Get-ZimmermanTools.ps1 has downloaded new net6 tools, otherwise continue on.
-    if (Test-Path -path "$kapeModulesBin\ZimmermanTools\net6")
-    {
+    if (Test-Path -Path "$kapeModulesBin\ZimmermanTools\net6") {
         
         # Copies tools that require subfolders for Maps, Batch Files, etc
         Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
@@ -354,10 +363,8 @@ function Move-EZToolsNET6
         
         # Copy each folder that exist
         $folderSuccess = @()
-        foreach ($folder in $folders)
-        {
-            if (Test-Path -path $folder)
-            {
+        foreach ($folder in $folders) {
+            if (Test-Path -Path $folder) {
                 Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
                 $folderSuccess += $folder.Split('\')[-1]
             }
@@ -370,16 +377,14 @@ function Move-EZToolsNET6
         Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
         
         # Create an array of the files to copy
-        $files = @("*.dll", "*.exe", "*.json")
+        $files = @('*.dll', '*.exe', '*.json')
         
         # Copy the files to the destination
-        foreach ($file in $files)
-        {
+        foreach ($file in $files) {
             
             # Only copy if Get-ZimmermanTools.ps1 has downloaded new .NET 6 tools, otherwise continue on
-            if (Test-Path -path "$kapeModulesBin\ZimmermanTools\net6")
-            {
-                Log -logFilePath $logFilePath -msg "Please ensure you have the latest version of the .NET 6 Runtime installed. You can download it here: https://dotnet.microsoft.com/en-us/download/dotnet/6.0. Please note that the .NET 6 Desktop Runtime includes the Runtime needed for Desktop AND Console applications, aka Registry Explorer AND RECmd, for example"
+            if (Test-Path -Path "$kapeModulesBin\ZimmermanTools\net6") {
+                Log -logFilePath $logFilePath -msg 'Please ensure you have the latest version of the .NET 6 Runtime installed. You can download it here: https://dotnet.microsoft.com/en-us/download/dotnet/6.0. Please note that the .NET 6 Desktop Runtime includes the Runtime needed for Desktop AND Console applications, aka Registry Explorer AND RECmd, for example'
                 
                 # Copies tools that require subfolders for Maps, Batch Files, etc
                 Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
@@ -392,8 +397,7 @@ function Move-EZToolsNET6
                 )
                 
                 # Copy contents of each subfolder
-                foreach ($folder in $folders)
-                {
+                foreach ($folder in $folders) {
                     Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
                 }
                 
@@ -403,27 +407,21 @@ function Move-EZToolsNET6
                 Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
                 
                 # Create an array of the files to copy
-                $files = @("*.dll", "*.exe", "*.json")
+                $files = @('*.dll', '*.exe', '*.json')
                 
                 # Copy the files to the destination
-                foreach ($file in $files)
-                {
-                    if (Test-Path $kapeModulesBin\ZimmermanTools\net6\$file)
-                    {
+                foreach ($file in $files) {
+                    if (Test-Path $kapeModulesBin\ZimmermanTools\net6\$file) {
                         Copy-Item -Path $kapeModulesBin\ZimmermanTools\net6\$file -Destination $kapeModulesBin -Recurse -Force
-                    }
-                    else
-                    {
+                    } else {
                         Log -logFilePath $logFilePath -msg "$file not found."
                         Log -logFilePath $logFilePath -msg "If this continues to happen, try deleting $kapeModulesBin\ZimmermanTools\!!!RemoteFileDetails.csv and re-running this script"
                     }
                 }
                 
                 Log -logFilePath $logFilePath -msg "Copied remaining EZ Tools binaries to $kapeModulesBin successfully"
-            }
-            else
-            {
-                Log -logFilePath $logFilePath -msg "No new .NET 6 EZ tools were downloaded. Continuing on."
+            } else {
+                Log -logFilePath $logFilePath -msg 'No new .NET 6 EZ tools were downloaded. Continuing on.'
             }
             
         }
@@ -442,17 +440,12 @@ function Move-EZToolsNET6
 & Get-ZimmermanTools
 
 # Let's move all EZ Tools and place them into .\KAPE\Modules\bin
-if ($netVersion -eq '4')
-{
+if ($netVersion -eq '4') {
     Move-EZToolsNET4
-}
-elseif ($netVersion -eq '6')
-{
+} elseif ($netVersion -eq '6') {
     Move-EZToolsNET6
-}
-else
-{
-    Write-Host "Cannot validate whether the .NET version is 4 or 6. Please let Andrew Rathbun know of this message if you see it!"
+} else {
+    Write-Host 'Cannot validate whether the .NET version is 4 or 6. Please let Andrew Rathbun know of this message if you see it!'
 }
 
 & Sync-KAPETargetsModules
@@ -460,7 +453,7 @@ else
 & Sync-RECmdBatchFiles
 & Sync-SQLECmdMaps
 
-Log -logFilePath $logFilePath -msg "Thank you for keeping this instance of KAPE updated! Please be sure to run this script on a regular basis and follow the GitHub repositories associated with KAPE and EZ Tools!"
+Log -logFilePath $logFilePath -msg 'Thank you for keeping this instance of KAPE updated! Please be sure to run this script on a regular basis and follow the GitHub repositories associated with KAPE and EZ Tools!'
 
 $stopwatch.stop()
 
@@ -468,10 +461,9 @@ $Elapsed = $stopwatch.Elapsed.TotalSeconds
 
 Log -logFilePath $logFilePath -msg "Total Processing Time: $Elapsed seconds"
 
-Log -logFilePath $logFilePath -msg " --- End of session ---"
+Log -logFilePath $logFilePath -msg ' --- End of session ---'
 
-if (-not $silent)
-{
+if (-not $silent) {
     Pause
 }
 
