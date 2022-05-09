@@ -47,7 +47,7 @@
         Organization: 	Kroll
         Filename:		KAPE-EZToolsAncillaryUpdater.ps1
         GitHub:			https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
-        Version:		3.3
+        Version:		3.2
         ===========================================================================
 #>
 param
@@ -128,20 +128,34 @@ function Get-LatestEZToolsUpdater {
         [Switch]
         $NoUpdates = $false
     )
-    # First check the version of the current script
-    $currentScriptVersion = Get-Content $("$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1") | Select-String -SimpleMatch 'Version:'
-    $CurrentScriptVersionNumber = $currentScriptVersion.ToString().Split("`t")[2]
 
+    $NoUpdates = $false
+    # First check the version of the current script show line number of match
+    $currentScriptVersion = Get-Content $('.\KAPE-EZToolsAncillaryUpdater.ps1') | Select-String -SimpleMatch 'Version:' | Select-Object -First 1
+    [System.Single]$CurrentScriptVersionNumber = $currentScriptVersion.ToString().Split("`t")[2]
+    Log -logFilePath $logFilePath -msg "Current script version is $CurrentScriptVersionNumber"
+
+    # Now get the latest version from github
     $webRequest = Invoke-WebRequest -Uri 'https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/latest'
-    $webRequest.outerHTML | Where-Object {
-        $_ -like '*https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/*'
-    }
-
     $strings = $webRequest.RawContent
     $latestVersion = $strings | Select-String -Pattern 'EZToolsAncillaryUpdater/releases/tag/[0-9].[0-9]+' | Select-Object -First 1
-    $latestVersionToSplit =  $latestVersion.Matches[0].Value
-    $VersionNumber = $latestVersionToSplit.Split("/")[-1]
-    Write-Output $VersionNumber
+    $latestVersionToSplit = $latestVersion.Matches[0].Value
+    [System.Single]$LatestVersionNumber = $latestVersionToSplit.Split('/')[-1]
+    Log -logFilePath $logFilePath -msg "Latest version of this script is $LatestVersionNumber"
+
+    if ($($CurrentScriptVersionNumber -lt $LatestVersionNumber) -and $($NoUpdates -eq $false)) {
+        Log -logFilePath $logFilePath -msg 'Updating script to the latest version'
+
+        #Start a new powershell process so we can replace the existing file and run the new script
+        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments `
+        @{CommandLine = "PowerShell.exe -NoProfile -ExecutionPolicy Bypass -NoExit -WindowStyle Normal -Command `"`
+         $webRequest = Invoke-WebRequest -Uri`
+         'https://raw.githubusercontent.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1'`
+         -OutFile `"$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1`";`
+         Start-Process -FilePath `"$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1`""
+        }      
+        
+    }
 
     
 }
