@@ -147,15 +147,14 @@ function Get-LatestEZToolsUpdater {
 
         #Start a new powershell process so we can replace the existing file and run the new script
         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1' -OutFile "$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1"
-         Log -logFilePath $logFilePath -msg "Successfully updated script to $CurrentScriptVersionNumber" 
-         Log -logFilePath $logFilePath -msg "Starting updated script in new Window"
-         Start-Process PowerShell -ArgumentList "$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1 $netVersion $(if ( $PSBoundParameters.Keys.Contains('silent')) {$silent = $true})"
-         Log -logFilePath $logFilePath -msg "Please observe the script in the new window"
-         Log -logFilePath $logFilePath -msg "Exiting old script"         
-            Exit
-    }
-    else {
-        Log -logFilePath $logFilePath -msg "Script is up-to-date"
+        Log -logFilePath $logFilePath -msg "Successfully updated script to $CurrentScriptVersionNumber" 
+        Log -logFilePath $logFilePath -msg 'Starting updated script in new Window'
+        Start-Process PowerShell -ArgumentList "$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1 $netVersion $(if ( $PSBoundParameters.Keys.Contains('silent')) {$silent = $true})"
+        Log -logFilePath $logFilePath -msg 'Please observe the script in the new window'
+        Log -logFilePath $logFilePath -msg 'Exiting old script'         
+        Exit
+    } else {
+        Log -logFilePath $logFilePath -msg 'Script is up-to-date'
     }    
 }
 
