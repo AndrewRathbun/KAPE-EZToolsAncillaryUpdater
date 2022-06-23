@@ -146,15 +146,17 @@ function Get-LatestEZToolsUpdater {
         Log -logFilePath $logFilePath -msg 'Updating script to the latest version'
 
         #Start a new powershell process so we can replace the existing file and run the new script
-        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments `
-        @{CommandLine = "PowerShell.exe -NoProfile -ExecutionPolicy Bypass -NoExit -WindowStyle Normal -Wait -Command `"`
-         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1' -OutFile `"$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1`";`
-         Start-Process -FilePath `"$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1`" -ArgumentList `"$netVersion $(if ( -not $($silent -eq $False)) {$silent = $true})`""
-        }      
-        
+        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1' -OutFile "$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1"
+         Log -logFilePath $logFilePath -msg "Successfully updated script to $CurrentScriptVersionNumber" 
+         Log -logFilePath $logFilePath -msg "Starting updated script in new Window"
+         Start-Process PowerShell -ArgumentList "$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1 $netVersion $(if ( $PSBoundParameters.Keys.Contains('silent')) {$silent = $true})"
+         Log -logFilePath $logFilePath -msg "Please observe the script in the new window"
+         Log -logFilePath $logFilePath -msg "Exiting old script"         
+            Exit
     }
-
-    
+    else {
+        Log -logFilePath $logFilePath -msg "Script is up-to-date"
+    }    
 }
 
 <#
