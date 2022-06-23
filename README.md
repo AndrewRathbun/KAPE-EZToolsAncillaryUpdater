@@ -28,4 +28,4 @@ Want to use KAPE with .NET 6 EZ Tools binaries? Run this command: `.\KAPE-EZTool
 Make sure you have the [.NET 6 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed prior to using the .NET 6 version of EZ Tools with KAPE!
 
 # Improving the Script
-Do you see something that could be done better with this script? Create an issue or do a Pull Request, if so! This is the first script I've put together on my own so I have no doubts there's room for improvement. Anything that moves the ball forward and helps the DFIR community I will always be in full support of!
+Do you see something that could be done better with this script? Create an Issue or do a Pull Request, if so! This is the first script I've put together on my own so I have no doubts there's room for improvement. Anything that moves the ball forward and helps the DFIR community I will always be in full support of!
