@@ -47,7 +47,7 @@
         Organization: 	Kroll
         Filename:		KAPE-EZToolsAncillaryUpdater.ps1
         GitHub:			https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
-        Version:		3.2
+        Version:		3.3
         ===========================================================================
 #>
 param
@@ -59,7 +59,10 @@ param
     [String]$netVersion,
     [Parameter(Position = 2,
         HelpMessage = 'Disable the progress bar and exit the script without pausing in the end')]
-    [Switch]$silent
+    [Switch]$silent,
+    [Parameter(Position = 3,
+        HelpMessage = 'Use this if you do not want to check for and update the script')]
+    [Switch]$DoNotUpdate
 )
 
 function Get-TimeStamp {
@@ -446,7 +449,7 @@ function Move-EZToolsNET6 {
 }
 
 # Lets make sure this script is up to date
-& Get-LatestEZToolsUpdater
+& Get-LatestEZToolsUpdater $(if ( $PSBoundParameters.Keys.Contains('DoNotUpdate')) { $NoUpdates = $PSBoundParameters['DoNotUpdate'] } else { $NoUpdates = $false })
 
 # Let's update KAPE first
 & Get-KAPEUpdateEXE
