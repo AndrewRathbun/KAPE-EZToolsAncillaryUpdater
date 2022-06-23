@@ -129,7 +129,6 @@ function Get-LatestEZToolsUpdater {
         $NoUpdates = $false
     )
 
-    $NoUpdates = $false
     # First check the version of the current script show line number of match
     $currentScriptVersion = Get-Content $('.\KAPE-EZToolsAncillaryUpdater.ps1') | Select-String -SimpleMatch 'Version:' | Select-Object -First 1
     [System.Single]$CurrentScriptVersionNumber = $currentScriptVersion.ToString().Split("`t")[2]
@@ -148,11 +147,9 @@ function Get-LatestEZToolsUpdater {
 
         #Start a new powershell process so we can replace the existing file and run the new script
         Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments `
-        @{CommandLine = "PowerShell.exe -NoProfile -ExecutionPolicy Bypass -NoExit -WindowStyle Normal -Command `"`
-         $webRequest = Invoke-WebRequest -Uri`
-         'https://raw.githubusercontent.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1'`
-         -OutFile `"$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1`";`
-         Start-Process -FilePath `"$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1`""
+        @{CommandLine = "PowerShell.exe -NoProfile -ExecutionPolicy Bypass -NoExit -WindowStyle Normal -Wait -Command `"`
+         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1' -OutFile `"$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1`";`
+         Start-Process -FilePath `"$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1`" -ArgumentList `"$netVersion $(if ( -not $($silent -eq $False)) {$silent = $true})`""
         }      
         
     }
@@ -446,6 +443,9 @@ function Move-EZToolsNET6 {
         Remove-Item -Path $kapeModulesBin\ZimmermanTools\net6 -Recurse -Force -ErrorAction SilentlyContinue
     }
 }
+
+# Lets make sure this script is up to date
+& Get-LatestEZToolsUpdater
 
 # Let's update KAPE first
 & Get-KAPEUpdateEXE
