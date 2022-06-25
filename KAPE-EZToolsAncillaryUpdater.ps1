@@ -405,7 +405,7 @@ function Move-EZToolsNET6
             "$kapeModulesBin\ZimmermanTools\net6\SQLECmd"
         )
         
-        # Copy each folder that exist
+        # Copy each folder that exists
         $folderSuccess = @()
         foreach ($folder in $folders)
         {
