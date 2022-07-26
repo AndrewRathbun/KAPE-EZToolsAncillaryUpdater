@@ -135,11 +135,7 @@ function Get-KAPEUpdateEXE
 function Get-LatestEZToolsUpdater
 {
     [CmdletBinding()]
-    param (
-        # Default is to check for updates
-        [Parameter(Mandatory = $false)]
-        [Switch]$NoUpdates = $false
-    )
+    param ()
     
     # First check the version of the current script show line number of match
     $currentScriptVersion = Get-Content $('.\KAPE-EZToolsAncillaryUpdater.ps1') | Select-String -SimpleMatch 'Version:' | Select-Object -First 1
@@ -489,8 +485,14 @@ function Move-EZToolsNET6
 }
 
 # Lets make sure this script is up to date
-& Get-LatestEZToolsUpdater $(if ($PSBoundParameters.Keys.Contains('DoNotUpdate')) { $NoUpdates = $PSBoundParameters['DoNotUpdate'] }
-    else { $NoUpdates = $false })
+if ($PSBoundParameters.Keys.Contains('DoNotUpdate'))
+{
+    Write-Host 'Skipping check for updated KAPE-EZToolsAncillaryUpdater.ps1 script because -DoNotUpdate parameter set.'
+}
+else
+{
+    Get-LatestEZToolsUpdater
+}
 
 # Let's update KAPE first
 & Get-KAPEUpdateEXE
