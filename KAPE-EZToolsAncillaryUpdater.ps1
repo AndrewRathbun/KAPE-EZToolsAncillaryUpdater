@@ -11,6 +11,7 @@
         RECmd Batch Files (.\KAPE\Modules\bin\RECmd\BatchExamples\*.reb) - https://github.com/EricZimmerman/RECmd/tree/master/BatchExamples
         EvtxECmd Maps (.\KAPE\Modules\bin\EvtxECmd\Maps\*.map) - https://github.com/EricZimmerman/evtx/tree/master/evtx/Maps
         SQLECmd Maps (.\KAPE\Modules\bin\SQLECmd\Maps\*.smap) - https://github.com/EricZimmerman/SQLECmd/tree/master/SQLMap/Maps
+        All other EZ Tools used by KAPE in the !EZParser Module
     
     .PARAMETER netVersion
         Please specify which .NET version of EZ Tools you want to download.
@@ -37,6 +38,7 @@
         3.3 - (Apr 25, 2022) Updated Move-EZToolsNET6 to correct Issue #9 - https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/issues/9. Also updated content and formatting of some of the comments
         3.4 - (Jun 24, 2022) Added version checker for the script - https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/issues/11. Added new messages re: GitHub repositories to follow at the end of each successful run
         3.5 - (Jul 27, 2022) Bug fix for version checker added in 3.4 - https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/pull/15
+        3.6 - (Aug 17, 2022) Added iisGeolocate now that a KAPE Module exists for it, updated comments and log messages
     
     .PARAMETER silent
         Disable the progress bar and exit the script without pausing in the end
@@ -49,7 +51,7 @@
         Organization: 	Kroll
         Filename:		KAPE-EZToolsAncillaryUpdater.ps1
         GitHub:			https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
-        Version:		3.5
+        Version:		3.6
         ===========================================================================
 #>
 param
@@ -347,6 +349,7 @@ function Move-EZToolsNET4
     & Copy-Item -Path $kapeModulesBin\ZimmermanTools\EvtxECmd -Destination $kapeModulesBin -Recurse -Force
     & Copy-Item -Path $kapeModulesBin\ZimmermanTools\RECmd -Destination $kapeModulesBin -Recurse -Force
     & Copy-Item -Path $kapeModulesBin\ZimmermanTools\SQLECmd -Destination $kapeModulesBin -Recurse -Force
+    & Copy-Item -Path $kapeModulesBin\ZimmermanTools\iisGeolocate -Destination $kapeModulesBin -Recurse -Force
     
     Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
     
@@ -387,19 +390,19 @@ function Move-EZToolsNET6
     [CmdletBinding()]
     param ()
     
-    
-    # Only copy if Get-ZimmermanTools.ps1 has downloaded new net6 tools, otherwise continue on.
+    # Only copy if Get-ZimmermanTools.ps1 has downloaded new .NET 6 tools, otherwise continue on.
     if (Test-Path -Path "$kapeModulesBin\ZimmermanTools\net6")
     {
         
         # Copies tools that require subfolders for Maps, Batch Files, etc
-        Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin"
+        Log -logFilePath $logFilePath -msg "Copying EvtxECmd, RECmd, SQLECmd, iisGeolocate, and all associated ancillary files to $kapeModulesBin"
         
         # Create array of folders to be copied
         $folders = @(
             "$kapeModulesBin\ZimmermanTools\net6\EvtxECmd",
             "$kapeModulesBin\ZimmermanTools\net6\RECmd",
             "$kapeModulesBin\ZimmermanTools\net6\SQLECmd"
+            "$kapeModulesBin\ZimmermanTools\net6\iisGeolocate"
         )
         
         # Copy each folder that exists
@@ -439,6 +442,7 @@ function Move-EZToolsNET6
                     "$kapeModulesBin\ZimmermanTools\net6\EvtxECmd",
                     "$kapeModulesBin\ZimmermanTools\net6\RECmd",
                     "$kapeModulesBin\ZimmermanTools\net6\SQLECmd"
+                    "$kapeModulesBin\ZimmermanTools\net6\iisGeolocate"
                 )
                 
                 # Copy contents of each subfolder
@@ -447,7 +451,7 @@ function Move-EZToolsNET6
                     Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
                 }
                 
-                Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, and SQLECmd and all associated ancillary files to $kapeModulesBin successfully"
+                Log -logFilePath $logFilePath -msg "Copied EvtxECmd, RECmd, SQLECmd, iisGeolocate, and all associated ancillary files to $kapeModulesBin successfully"
                 
                 # Copies tools that don't require subfolders
                 Log -logFilePath $logFilePath -msg "Copying remaining EZ Tools binaries to $kapeModulesBin"
@@ -543,8 +547,8 @@ if (-not $silent)
 # SIG # Begin signature block
 # MIIpGgYJKoZIhvcNAQcCoIIpCzCCKQcCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBhAUiOL1VqzOQ1
-# TJ/OYjC7Aw1fGfV/Drei7ZyE8pbmiqCCEgowggVvMIIEV6ADAgECAhBI/JO0YFWU
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCA8WiqyS3XaUtmh
+# VPFZBVMjbD6/2jzs1uR9HNuXWSgVvKCCEgowggVvMIIEV6ADAgECAhBI/JO0YFWU
 # jTanyYqJ1pQWMA0GCSqGSIb3DQEBDAUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQI
 # DBJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoM
 # EUNvbW9kbyBDQSBMaW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2Vy
@@ -645,23 +649,23 @@ if (-not $silent)
 # VQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1nosluv9R
 # C3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoHwwEAYKKwYBBAGCNwIBDDECMAAwGQYJ
 # KoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQB
-# gjcCARUwLwYJKoZIhvcNAQkEMSIEINf2XzyOncWpEIhSHiQCJOZBziwEuVylv6qc
-# bqNM3pPlMA0GCSqGSIb3DQEBAQUABIICAA3qpKFil678Behryv4yufqsGgqMfu5m
-# X0ZL7i/h9QxdXY8gRLeZ0sXvKGEK955X8QMheZBR9Li9ZAY3iRCXQQ3i598fWDLR
-# k9B+0s5IsMn7ZXwwP/9LNW26EZqTiCdQskjg4jSFzlCklh2R4HrDGVVNeBHh0e6R
-# qonAS0bzRF7KxBLg/S7hs8k4hfASs1v3vJpNhDrPWQAQ8ddqSOIaVgo/oSIecuZx
-# B1qbDEm1txaVlHl60340YUBh9C+VhCUOtgk2iWqR3vDU9N+8/CUSKOHKYViLVSYJ
-# D2XeeTjpJcWv/N22GaOkMymuMMlOh+Kd5smX9Rnd85jPokwoM+WES3Q4SB6GzT8n
-# HiUroGles90vh76C/u7yTtxBItUJ4Fa3kbGmhIod/ZTZ5Z1QbUrAyDV8/kqUzgbC
-# 5Nmn4Y/AJGKaRxftKBweYBtCLaAuiV/beIEADGyxh38FGbEEZ6ckweB27jdSDUhx
-# GSktWcQiOmY7psZ+A2I33RjF/fbCS8114p1fCjgH4C50eTVLZ9g6HFzKJNWJzUqJ
-# jCkyiV40UiY15lOAmZT4n+gHGtFDcZkvb6RVb9PzatTfbX1rxzpItlDHf1QFGEzF
-# 51jqwLkQjyDW3UgIKe2pAVe3OJXVP/lrTIO7nBj2BobXm6WcY4HFy9oqGsE9BgTK
-# nbbHumWJragQoYITUTCCE00GCisGAQQBgjcDAwExghM9MIITOQYJKoZIhvcNAQcC
+# gjcCARUwLwYJKoZIhvcNAQkEMSIEINbS6wMThhSXayNG6QmVIzYNSWdS3DS5gfFu
+# uX8PIFirMA0GCSqGSIb3DQEBAQUABIICAH2dV+t7EcCFUVtFrNX3Fra/ZqEQ8HgC
+# fL7MulAKYJc900x3C2rvoOTd8uzYCh8daa04bsRwLsz4K9iCMVIEbnpQW5kJK0B8
+# /plbXTxBXUtwpANrrrdIFnbC7VwIsmiu9+KIkP53e3OSdvOKgrOIKju4bdRjT1F4
+# owG7KgHVt6KzMDQkXcEWqrBij7ec7Iibp9emgpjkEpu3kl22iPPeeFhfxia5DWfa
+# K7yD4+HARZqvTSU0sGBIyfbnWXjmhc5Iqy1OOFYOKekuQmf0rVHpmifl7sPF7OEV
+# GfYfBX9XP55bd//Bu3BdE9W7hDk+ce9DlOdfnHiD1aqxG8ZXmHR9WDIAErBXokOT
+# Zal4e6a70PDjScFwv5PMD+rYdZ2rg+ruqCXqiHK1VPOHy+tAqaj3IQUj9eAR37w+
+# vyEsMvMhig7QXSfDJkGnprv50l+LUN3z4ZjW2hk7ZSjeDxHAxFIDpFlpn1UIR/hl
+# xo2HudtgcrU9wgc+WXR0RG6tVH10t7kp9k5dpI5JRr+rULkibS6dTzLw1xCx97b0
+# SNxiqEFRZfJ9du6aJ76oT/3mz46LtXDjzZtohiEmnmITEpcErjF0eI5H9XgRHzaE
+# SEmoRRQ/0MU1bWd0go7UoOXsDeRYm7vFeHGSVrkndDjcWmTZD9zXa68lN4vutsSo
+# gh9OPun9bTgGoYITUTCCE00GCisGAQQBgjcDAwExghM9MIITOQYJKoZIhvcNAQcC
 # oIITKjCCEyYCAQMxDzANBglghkgBZQMEAgIFADCB8AYLKoZIhvcNAQkQAQSggeAE
-# gd0wgdoCAQEGCisGAQQBsjECAQEwMTANBglghkgBZQMEAgEFAAQg5r81hs/JO6aN
-# 6w98Dpeh0Smq6gRy9uYD8uxv8nVW8yoCFQCGQxt+wlXOErSphfX/RIQZQF3oexgP
-# MjAyMjA3MjcxMTU2MzVaoG6kbDBqMQswCQYDVQQGEwJHQjETMBEGA1UECBMKTWFu
+# gd0wgdoCAQEGCisGAQQBsjECAQEwMTANBglghkgBZQMEAgEFAAQgGZCQh4DJGOAL
+# O2FlU5mPsHBAPzzi0jilMBZMjXPWItMCFQDUTt1dB/T4346X4/P6jNW/u4f8QRgP
+# MjAyMjA4MTcxMjUwMzNaoG6kbDBqMQswCQYDVQQGEwJHQjETMBEGA1UECBMKTWFu
 # Y2hlc3RlcjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMSwwKgYDVQQDDCNTZWN0
 # aWdvIFJTQSBUaW1lIFN0YW1waW5nIFNpZ25lciAjM6CCDeowggb2MIIE3qADAgEC
 # AhEAkDl/mtJKOhPyvZFfCDipQzANBgkqhkiG9w0BAQwFADB9MQswCQYDVQQGEwJH
@@ -742,23 +746,23 @@ if (-not $silent)
 # Y2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UEChMPU2VjdGlnbyBMaW1p
 # dGVkMSUwIwYDVQQDExxTZWN0aWdvIFJTQSBUaW1lIFN0YW1waW5nIENBAhEAkDl/
 # mtJKOhPyvZFfCDipQzANBglghkgBZQMEAgIFAKCCAWswGgYJKoZIhvcNAQkDMQ0G
-# CyqGSIb3DQEJEAEEMBwGCSqGSIb3DQEJBTEPFw0yMjA3MjcxMTU2MzVaMD8GCSqG
-# SIb3DQEJBDEyBDC5xXmNjJUW800q6N0Vc4uaUgFkZoMWIMqsx6yzjrYCwdaBBy8B
-# GjYPzThiAlIhe34wge0GCyqGSIb3DQEJEAIMMYHdMIHaMIHXMBYEFKs0ATqsQJcx
+# CyqGSIb3DQEJEAEEMBwGCSqGSIb3DQEJBTEPFw0yMjA4MTcxMjUwMzNaMD8GCSqG
+# SIb3DQEJBDEyBDBdJIfwts1Vv09xOTCWdxvrbropev+wPiRPzaH6xon8qkILHohW
+# 5ZORsfGgVUZRfBwwge0GCyqGSIb3DQEJEAIMMYHdMIHaMIHXMBYEFKs0ATqsQJcx
 # nwga8LMY4YP4D3iBMIG8BBQC1luV4oNwwVcAlfqI+SPdk3+tjzCBozCBjqSBizCB
 # iDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCk5ldyBKZXJzZXkxFDASBgNVBAcTC0pl
 # cnNleSBDaXR5MR4wHAYDVQQKExVUaGUgVVNFUlRSVVNUIE5ldHdvcmsxLjAsBgNV
 # BAMTJVVTRVJUcnVzdCBSU0EgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkCEDAPb6zd
-# Zph0fKlGNqd4LbkwDQYJKoZIhvcNAQEBBQAEggIARX7pqn34oShfZcv6kbuYlwtE
-# 4J4lNj2vi6n3qTZunWiggkUgutp2DFNiZnxmEyrbIcRkk0IoSL9Rcl0XrgyeX9Q3
-# B62OhbEm5OlN/l5UdLMPkZ7IrK/4jNVfi8wSJiQHzibl49KFDvbKtQziZD27AAD7
-# S44mqPsddP/kwzwgVW04a5GKU9s9BKSJ8k+ibdkOGPaqHJzVPgTTl3l/6ZXVolmX
-# Jeohsx+AaFX49wFN4JKM0eMz+iujMDZOSou97K+rRA+d2e7hqWs5BzIHHvR4Ji/z
-# amprIkPQTzmhu2j9GbpzsF0FRi3F9f+G8XIsFtkl/rIlaFfL/LrJd61v4VjemPXF
-# Ai8exuj938MFd2hha3mkM+ONq5ZQ19FKkNxEzUC7bRm035255seIxfNR0Oc4rrIu
-# yIXfXTglJwA4MJDXIxddLCIQZVncQu+TSIyBJa3PYM3x80cKwjhST083kIgYKh1d
-# gW5nX9/G/NazVz9f5HIncqTxPfA9VvjL8rHcbWvMtD5095MbOYcgYHGBftGCYqvN
-# Axdr6LkZJhasoHetwioQjXP9rCTayf8T3mw3XqqAxAasz78fpGbUUCyzsSg+1PNo
-# JwI7ib1uJ/S2BQ3M4MQbpzF5HOvSt5mqtZh+meLTKoXvXbprAjAl9mpyCPm/JKwF
-# eZ3CK5Sr8305+WHQOig=
+# Zph0fKlGNqd4LbkwDQYJKoZIhvcNAQEBBQAEggIAHtjCCbC0p4xIQqnGzXOmkkvY
+# heYfWnkeXmJu6bGHZn9foupx7rwtQuGVdegISz03h43MjF0YNe4ezOTeVDQVpabF
+# 1yJEuOYLbojHQSQNKwMwuqLgohEWgT430bce/aLnP619MrP8qmePPXGTuj1VzciY
+# MizVMX7FjfRcwnIq5ztfq+LPTeca2g73MXPoHwVp+ZuJ1QevTzal4ASiFQ105LLU
+# uU3ZMiYhLSt3ha/4GxqheGKRfMG6u8WnGkVj1CZnsA6jVaobULkEOzqzKjWIkJf9
+# w87/+W+x2kGaEq5MEAf9kec0z/QWOicp2QttuWKW6GMQEAoN1oJEp3Ju02HGg5yD
+# /mnNCLsMFsVj6ludlNzbTIoY0Lhkcgo5DrskFfpFUWPhaGUs5infSlfE4TiPTb4a
+# hAJbUVppY3lIiVuZfJc8Xb/YEzjte9uRdtkwHG5cVZpGTVB6xYj4YqsesS/bi0ET
+# SC1WAOaRauzOIXslrcM7U3lAY0ILsR/Hz5kF3RK2eljAlglf14jwgMR3cbRpFWJp
+# OTXSUSuojohp8zoLuf6SjHagDB2tNZb6MFRFX/eWuEesD8UHHR085cTZv6OaE5k/
+# CEJU3jdV/YiawyRujJQGwJhQ7gVLleHahFJ7FT14bxckuMpk7ILS4HnidgecqYdt
+# lIpPso97HB27JK35GjE=
 # SIG # End signature block
