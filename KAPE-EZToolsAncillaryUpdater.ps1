@@ -158,7 +158,7 @@ function Get-LatestEZToolsUpdater
         Log -logFilePath $logFilePath -msg 'Updating script to the latest version'
         
         #Start a new powershell process so we can replace the existing file and run the new script
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Donovoi/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1' -OutFile "$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1"
+        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1' -OutFile "$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1"
         Log -logFilePath $logFilePath -msg "Successfully updated script to $CurrentScriptVersionNumber"
         Log -logFilePath $logFilePath -msg 'Starting updated script in new Window'
         Start-Process PowerShell -ArgumentList "$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1 $netVersion $(if ($PSBoundParameters.Keys.Contains('silent')) { $silent = $true })"
