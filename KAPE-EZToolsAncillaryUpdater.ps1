@@ -141,7 +141,7 @@ function Get-LatestEZToolsUpdater
     param ()
     
     # First check the version of the current script show line number of match
-    $currentScriptVersion = Get-Content $('.\KAPE-EZToolsAncillaryUpdater.ps1') | Select-String -SimpleMatch 'Version:' | Select-Object -First 1
+    $currentScriptVersion = Get-Content $("$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1") | Select-String -SimpleMatch 'Version:' | Select-Object -First 1
     [System.Single]$CurrentScriptVersionNumber = $currentScriptVersion.ToString().Split("`t")[2]
     Log -logFilePath $logFilePath -msg "Current script version is $CurrentScriptVersionNumber"
     
