@@ -51,7 +51,7 @@
         Organization: 	Kroll
         Filename:		KAPE-EZToolsAncillaryUpdater.ps1
         GitHub:			https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
-        Version:		3.2
+        Version:		3.6
         ===========================================================================
 #>
 param
@@ -138,7 +138,7 @@ function Get-LatestEZToolsUpdater {
     Log -logFilePath $logFilePath -msg "Current script version is $CurrentScriptVersionNumber"
     
     # Now get the latest version from the script hosted on github
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1' -OutFile "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AndrewRathburn/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1' -OutFile "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1"
     $TempUpdateScript = $(Resolve-Path "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1")
     $NewScriptVersion = Get-Content $TempUpdateScript | Select-String -SimpleMatch 'Version:' | Select-Object -First 1
     [System.Single]$LatestVersionNumber = $NewScriptVersion.ToString().Split("`t")[2]
