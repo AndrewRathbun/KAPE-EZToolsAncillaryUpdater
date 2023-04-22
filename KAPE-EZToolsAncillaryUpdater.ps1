@@ -137,7 +137,12 @@ function Get-LatestEZToolsUpdater {
     [System.Single]$CurrentScriptVersionNumber = $currentScriptVersion.ToString().Split("`t")[2]
     Log -logFilePath $logFilePath -msg "Current script version is $CurrentScriptVersionNumber"
     
-    # Now get the latest version from the script hosted on github
+   
+    # Remove the temp file if it exist
+    if ( Test-Path "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1") {
+        Remove-Item "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1" -Force
+    }
+     # Now get the latest version from github
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AndrewRathburn/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1' -OutFile "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1"
     $TempUpdateScript = $(Resolve-Path "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1")
     $NewScriptVersion = Get-Content $TempUpdateScript | Select-String -SimpleMatch 'Version:' | Select-Object -First 1
