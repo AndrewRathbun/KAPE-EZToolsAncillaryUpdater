@@ -130,9 +130,17 @@ function Get-KAPEUpdateEXE {
 #>
 function Get-LatestEZToolsUpdater {
     [CmdletBinding()]
-    param ()
-    
-    # First check the version of the current script show line number of match
+    param (
+        [Parameter()]
+        [switch]
+        $NoUpdates
+    )
+    # Don't update if $NoUpdates is set to true
+    if ($NoUpdates) {
+        Log -logFilePath $logFilePath -msg "Not Updating script do to `$NoUpdates switch"
+        break
+    }
+    # Check the version of the current script
     $currentScriptVersion = Get-Content $("$PSScriptRoot\KAPE-EZToolsAncillaryUpdater.ps1") | Select-String -SimpleMatch 'Version:' | Select-Object -First 1
     [System.Single]$CurrentScriptVersionNumber = $currentScriptVersion.ToString().Split("`t")[2]
     Log -logFilePath $logFilePath -msg "Current script version is $CurrentScriptVersionNumber"
@@ -142,14 +150,14 @@ function Get-LatestEZToolsUpdater {
     if ( Test-Path "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1") {
         Remove-Item "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1" -Force
     }
-     # Now get the latest version from github
+    # Now get the latest version from github
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AndrewRathburn/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1' -OutFile "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1"
     $TempUpdateScript = $(Resolve-Path "$ENV:USERPROFILE\KAPE-EZToolsAncillaryUpdater.ps1")
     $NewScriptVersion = Get-Content $TempUpdateScript | Select-String -SimpleMatch 'Version:' | Select-Object -First 1
     [System.Single]$LatestVersionNumber = $NewScriptVersion.ToString().Split("`t")[2]
     Log -logFilePath $logFilePath -msg "Latest version of this script is $LatestVersionNumber"
     
-    if ($($CurrentScriptVersionNumber -lt $LatestVersionNumber) -and $($NoUpdates -eq $false)) {
+    if ($CurrentScriptVersionNumber -lt $LatestVersionNumber) {
         Log -logFilePath $logFilePath -msg 'Updating script to the latest version'
         
         #Start a new powershell process so we can replace the existing file and run the new script
