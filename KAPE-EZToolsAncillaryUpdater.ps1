@@ -259,11 +259,30 @@ function Get-ZimmermanTools
 	[CmdletBinding()]
 	param ()
 	
+	# Get all instances of !!!RemoteFileDetails.csv from $PSScriptRoot recursively
+	$remoteFileDetailsCSVs = Get-ChildItem -Path $PSScriptRoot -Filter "!!!RemoteFileDetails.csv" -Recurse
+	
+	# Iterate over each file and remove it forcefully
+	foreach ($remoteFileDetailsCSV in $remoteFileDetailsCSVs)
+	{
+		# Check if the file exists before trying to remove it
+		if (Test-Path $remoteFileDetailsCSV.FullName)
+		{
+			# Remove the file
+			Remove-Item -Path $remoteFileDetailsCSV.FullName -Force
+			Log -logFilePath $logFilePath -msg "Deleting $($remoteFileDetailsCSV.FullName)"
+		}
+	}
+	
 	# if .\KAPE\Modules\bin\ZimmermanTools doesn't exist, create it!
 	if (-not (Test-Path $getZimmermanToolsFolderKape))
 	{
 		Log -logFilePath $logFilePath -msg "Creating $getZimmermanToolsFolderKape"
 		New-Item -ItemType Directory -Path $getZimmermanToolsFolderKape | Out-Null
+	}
+	else
+	{
+		Log -logFilePath $logFilePath -msg "$getZimmermanToolsFolderKape already exists!"
 	}
 	
 	# -Dest .\KAPE\Modules\bin\ZimmermanTools
@@ -271,12 +290,19 @@ function Get-ZimmermanTools
 		Dest = "$getZimmermanToolsFolderKape"
 	}
 	
-	# if .\KAPE\Modules\bin\Get-ZimmermanTools.ps1 exists....
+	# if .\KAPE\Modules\bin\Get-ZimmermanTools.ps1 exists...
 	if (Test-Path -Path $getZimmermanToolsPs1Kape)
 	{
 		Log -logFilePath $logFilePath -msg "$getZimmermanToolsPs1Kape already exists! Downloading .NET 6 version of EZ Tools to $getZimmermanToolsFolderKape"
 		
-		Start-Process -FilePath "powershell.exe" -ArgumentList "-File $getZimmermanToolsPs1Kape", "-Dest $($scriptArgs.Dest)" -NoNewWindow -Wait
+		# Store arguments in a variable
+		$arguments = @("-File", "$getZimmermanToolsPs1Kape", "-Dest", "$($scriptArgs.Dest)")
+		
+		# Verify the arguments - for debugging purposes
+		# Write-Host "Running $getZimmermanToolsFileName with the following arguments: $arguments"
+		
+		# Use the variable in Start-Process
+		Start-Process -FilePath "powershell.exe" -ArgumentList $arguments -NoNewWindow -Wait
 		
 		Start-Sleep -Seconds 3
 	}
@@ -445,6 +471,7 @@ function Move-EZToolsNET6
 			{
 				Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
 				$folderSuccess += $folder.Split('\')[-1]
+				Log -logFilePath $logFilePath -msg "Copying $folder to $kapeModulesBin"
 			}
 		}
 		
@@ -484,6 +511,7 @@ function Move-EZToolsNET6
 	}
 }
 
+# Now that all functions have been declared, let's start executing them in order
 try
 {
 	# Lets make sure this script is up to date
@@ -522,11 +550,6 @@ try
 	$Elapsed = $stopwatch.Elapsed.TotalSeconds
 	
 	Log -logFilePath $logFilePath -msg "Total Processing Time: $Elapsed seconds"
-	
-	if (-not $silent)
-	{
-		Pause
-	}
 }
 catch [System.IO.IOException] {
 	# Handle specific IOException related to file operations
@@ -540,13 +563,18 @@ finally
 {
 	# This block will always run, even if there was an exception
 	Log -logFilePath $logFilePath -msg ' --- End of session ---'
+	
+	if (-not $silent)
+	{
+		Pause
+	}
 }
 
 # SIG # Begin signature block
 # MIIviwYJKoZIhvcNAQcCoIIvfDCCL3gCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAy5hJeo/mPNPA+
-# RZTMYiV/Vrdme1mooEfa7Fi5r+a8OqCCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDYVii0WPNgu/jU
+# purfQ3A5DgEK1FhNBdy8x4DpjAyvT6CCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
 # SIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJHcmVhdGVyIE1hbmNo
 # ZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBMaW1p
 # dGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAx
@@ -766,35 +794,35 @@ finally
 # Bk0CAQEwaDBUMQswCQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVk
 # MSswKQYDVQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1
 # nosluv9RC3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoEwwGQYJKoZIhvcNAQkDMQwG
-# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIMF7StQ85BQ8M5F2ORyUoN5Qh/Bt
-# vhsNaJanUhIBe4X7MA0GCSqGSIb3DQEBAQUABIICABD+11U2XfssPD0NIjRz3BgZ
-# 96WtwCCnFTzgE+0J/qdxNG0UroOCOyKjYsZpDfVx3czTfX7E9/CRPoQUSZeJX0oz
-# UiOS5bKunC+q3oZEvI05ZsXH7wwi9SHBfrGaq46k+Dl0si4uH9lfuCIlUJJJwjnj
-# FbpYn2zvd9tueW1+nnwug2V4/5VAGyo63lZlL5wl+3Ddg+uECOG+mB7VxBGZ3tUo
-# T2B5O1mv5wPPlyT4o0Kqts5M81IeIGLrMNCeBnj35pKIS66+k+wpeYNKDpnrs7oE
-# AZX7aQx55GIS/jsFADat3qeOOpTURg616bhQYIn+FGX2FJOkBxoIh/P6eULIzpv8
-# E/sl9NAwUigC+WGiT6TqJyjd9FXxzzPumyJZWMbCcM+i2mqX8hayFYqOhGb+cKJJ
-# JF/kKs/we7o+h876+kiB0KqLyvrN2M3MFrzjBsALpQmZCwsXOILzd2gQme59lFCJ
-# dAdGHDHVPTbfMbcS5ttc66oKQeudM2OaXKiFlq1oQ14M3bXwuP3b17wNCSjU8H9D
-# QZC//BEHNcr+cCP23jotZWBD9Z8YKToRV32hM3/Ip8+1L3ZDhjIt0B24IAszoeuw
-# OxOsFkIZkvNh1GzJAxsKkNYoUJOswRKylSy8FAY2tgQaGdnNBbHA4La3x/w2BryV
-# Lu5/kn4zhelhrX5fDe6KoYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
+# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIBBOFVe2CV/9hhss3QZKiO622v+a
+# Fjg2bCIgmqMbFPNOMA0GCSqGSIb3DQEBAQUABIICAFYPRpccqhb6PZEh+HD6cmC4
+# zBI3V2uzv1Rid67fKBXSZ+7bz0Sfm6IUySvdYbgMg3jg0qKxUGBA8ClkPv8mmus0
+# bqxz3jiVyc+bwxT0j9BIHKdA79kAre4m60VljAFK+6BEWajSd7mmCS7EnN3y2UJZ
+# 6TvDk1jUX3cx7jsr+G9eP46Yzt2XMOiPGLUCFQdik3+djvOgODxvb9A/ICYJO49O
+# CM2W6NOSIBLPJAvlqnHf61HKw2xy0G/ObJADHAqSTXtnsM4+vqLtygg10GJ4jwAk
+# z1jSF22jDl8yCxcaSk2TBjSdjTR0QoiPTcAmvVOQNXrHQY8r08lxflqzX0nJicLT
+# j6Pnnc+BPhQIen1ASsYjcag3h6QUP6g57TF3kpvXpmnPUYx52y2eZFRfZabSkIyD
+# 4h6eO8BjoobjwbJH1KEB4eg1ysoMP7uA9WdLEqJ0eLfJuZEjN3y2NoJYSlsVIk/R
+# a77yFO0CC8KErWvIEe15lRObWbhll3ZXloRBy0C0fteFh0xLIh2cg1FtQA65hvaI
+# BydHI6ZHoYDuaFvaCyLEKZnzRMDca/jeLQW6U4Y6tw12CSIswcXi1JdiNfbBLIXk
+# zoh8Ov275gQFr4JJjTN/O4LBdvbjX1vpESjhTPazEMbkzqzUBNt5X/WCBpZT4Nce
+# Pv26cj7oTU1SxzfL4K24oYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
 # WzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExMTAvBgNV
 # BAMTKEdsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gU0hBMzg0IC0gRzQCEAFI
 # kD3CirynoRlNDBxXuCkwCwYJYIZIAWUDBAIBoIIBPTAYBgkqhkiG9w0BCQMxCwYJ
-# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTMyMDIwMDNaMCsGCSqGSIb3
+# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTMyMDQ4MzJaMCsGCSqGSIb3
 # DQEJNDEeMBwwCwYJYIZIAWUDBAIBoQ0GCSqGSIb3DQEBCwUAMC8GCSqGSIb3DQEJ
-# BDEiBCDnqH8xS/A9IEhwYE3aT7/YNY7HDwjsuNF1XcAiTJsOkzCBpAYLKoZIhvcN
+# BDEiBCCeem21yj2pYCQey+piuhdWyvj8Wn4FK2CvxEgzXjdOpDCBpAYLKoZIhvcN
 # AQkQAgwxgZQwgZEwgY4wgYsEFDEDDhdqpFkuqyyLregymfy1WF3PMHMwX6RdMFsx
 # CzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 # EyhHbG9iYWxTaWduIFRpbWVzdGFtcGluZyBDQSAtIFNIQTM4NCAtIEc0AhABSJA9
-# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgCRQq+biE3vKio8fttGm7CS5
-# BrZP8A/GcAAo6PKe0xY65G2kaEH8ZDuHe8aen+3qfbUfRBoMJN2/tqnhq7xXLmW8
-# YX1xdBFcWLREmqx2y6hgpgz0bBjzTQ1tHIOpRRtddBZCO5LCk6sg9OiP+eX3IGiO
-# BweBaBpG+HkP4DYrC4pM61+vAy+v0RZImLqzRl0TK2J7/5WeVgfpkgJtSrg9zdEO
-# ZjKf4dIu+mjorEuy7RQM36DLiCqZcvsb9Ew1F6tu8YyUh5FAIe7N0fYAyqrjMuKt
-# GOzcQfesz3A3+zMxn7sDBZb9XT8fObSbZR87Geofe5vEi1enNoJkCkhyM6jkP1mz
-# ID6AlVPI9uWeISRm95ihnek/JxoyF02lgUTxxPkFmXmEksTnWVLOQe/iwvzX4GE+
-# UNEqLNg9sd0KyXw2+jBRn/HImBJLYoqI2KUSMh2ey0iy/KUztl5HWmIFoYoGMlVc
-# xZkuBy8ELpw/WXDIfx+J7xZ6wvuD07CT6VxTMmNMMA==
+# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgLrVru4PYXXrJAyHtuqDDtPa
+# XfCCKpEGuDu5+83myB1Mr0Hn3oQqmjuSUIP31UJWAjASeN2CquFoysoh2FhHdW5l
+# 9glnfzhTc7H4I/n8lvwWmQDjTHWoqqJ+H7dY+Cuih0ER7Pipxn1m2E0zM6ng+U0d
+# uiMqNuofguV8+U7QIB8n+dX7Qz1J+7MZ2wZl2pIOC9lJpuVClffFZDc/LPNXL0ic
+# hwDHoXb8QgL9V6UuLwxhG7bW0z++aWtpnmOhq0AEFPRxfx//4tCR9QBimBsll15h
+# BpiX/Hh+3J9ERv72muOdwxClHfO9PcWHV5ONXAir+9y8Ae9nohHk4rXpI5qKFzTB
+# 3mwb4H+pBLBYzSpE9V+FxVGJAyFbU7KXkNe1CsV0VMUPZED6CisotN//fNlc9HBX
+# F8wrTAIXJqoTEq6V0ygHebfoC1sqgpnN1IsKSjc5yS5NPnWOYFNjDIKwwVV9DJeU
+# Kb4/9kGDuaiuywAP2W+Rpc2YRX7X/xucUZsR4whCIg==
 # SIG # End signature block
