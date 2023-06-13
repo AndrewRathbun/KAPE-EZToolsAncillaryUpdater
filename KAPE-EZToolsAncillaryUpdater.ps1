@@ -153,7 +153,7 @@ function Get-KAPEUpdateEXE
 	
 	$script:getKapeUpdatePs1 = Get-ChildItem -Path $PSScriptRoot -Filter $getKapeUpdatePs1FileName # .\KAPE\Get-KAPEUpdate.ps1
 	
-	if ($getKapeUpdatePs1 -ne $null)
+	if ($null -ne $getKapeUpdatePs1)
 	{
 		Log -logFilePath $logFilePath -msg "Running $getKapeUpdatePs1FileName to update KAPE to the latest binary"
 		try
