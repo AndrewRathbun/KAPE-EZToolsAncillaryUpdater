@@ -14,7 +14,7 @@
 		All other EZ Tools used by KAPE in the !EZParser Module
 		
 		.USAGE
-		As of 3.7, this script will only download .NET 6 tools, so you can just run the script in your .\KAPE folder!
+		As of 4.0, this script will only download .NET 6 tools, so you can just run the script in your .\KAPE folder!
 		
 		.CHANGELOG
 		1.0 - (Sep 09, 2021) Initial release
@@ -26,7 +26,7 @@
 		3.4 - (Jun 24, 2022) Added version checker for the script - https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/issues/11. Added new messages re: GitHub repositories to follow at the end of each successful run
 		3.5 - (Jul 27, 2022) Bug fix for version checker added in 3.4 - https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/pull/15
 		3.6 - (Aug 17, 2022) Added iisGeolocate now that a KAPE Module exists for it, updated comments and log messages
-		3.7 - (June 13, 2023) Made adjustments to script based on Get-ZimmermanTools.ps1 update - https://github.com/EricZimmerman/Get-ZimmermanTools/commit/c40e8ddc8df5a210c5d9155194e602a81532f23d, script now defaults to .NET 6, modifed lots of comments, variables, etc, and overall made the script more readable and maintainable
+		4.0 - (June 13, 2023) Made adjustments to script based on Get-ZimmermanTools.ps1 update - https://github.com/EricZimmerman/Get-ZimmermanTools/commit/c40e8ddc8df5a210c5d9155194e602a81532f23d, script now defaults to .NET 6, modifed lots of comments, variables, etc, and overall made the script more readable and maintainable
 	
 	.PARAMETER silent
 		Disable the progress bar and exit the script without pausing in the end
@@ -36,13 +36,13 @@
 	
 	.NOTES
 		===========================================================================
-		Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2022 v5.8.201
-		Created on:   	2022-02-22 23:29
-		Created by:   	Andrew Rathbun
-		Organization: 	Kroll
+		Created with:	 	SAPIEN Technologies, Inc., PowerShell Studio 2022 v5.8.201
+		Created on:   		2022-02-22 23:29
+		Created by:	   	Andrew Rathbun
+		Organization: 		Kroll
 		Filename:		KAPE-EZToolsAncillaryUpdater.ps1
 		GitHub:			https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
-		Version:		3.7
+		Version:		4.0
 		===========================================================================
 #>
 param
