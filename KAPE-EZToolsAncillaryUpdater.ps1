@@ -158,12 +158,14 @@ function Get-KAPEUpdateEXE
 		Log -logFilePath $logFilePath -msg "Running $getKapeUpdatePs1FileName to update KAPE to the latest binary"
 		try
 		{
-			& $getKapeUpdatePs1.FullName # executes Get-KAPEUpdate.ps1
+			# Start-Process is used here to execute the PowerShell script
+			Start-Process -FilePath "powershell.exe" -ArgumentList "-File `"$($getKapeUpdatePs1.FullName)`"" -NoNewWindow -Wait
 		}
 		catch
 		{
 			Log -logFilePath $logFilePath -msg "Error when running Get-KAPEUpdate.ps1: $_"
-			exit
+			Log -logFilePath $logFilePath -msg "KAPE was not updated properly, please try again"
+			break
 		}
 	}
 	else
@@ -274,7 +276,7 @@ function Get-ZimmermanTools
 	{
 		Log -logFilePath $logFilePath -msg "$getZimmermanToolsPs1Kape already exists! Downloading .NET 6 version of EZ Tools to $getZimmermanToolsFolderKape"
 		
-		Start-Process -FilePath "powershell.exe" -ArgumentList "-File $getZimmermanToolsPs1Kape", "-Dest $($scriptArgs.Dest)"
+		Start-Process -FilePath "powershell.exe" -ArgumentList "-File $getZimmermanToolsPs1Kape", "-Dest $($scriptArgs.Dest)" -NoNewWindow -Wait
 		
 		Start-Sleep -Seconds 3
 	}
@@ -478,7 +480,7 @@ function Move-EZToolsNET6
 	}
 	else
 	{
-		Log -logFilePath $logFilePath -msg 'No new .NET 6 EZ tools were downloaded. Continuing on.'
+		Log -logFilePath $logFilePath -msg "$getZimmermanToolsFolderKapeNet6 doesn't exist. Make sure you have the latest version of Get-ZimmermanTools.ps1 in $kapeModulesBin"
 	}
 }
 
@@ -543,8 +545,8 @@ finally
 # SIG # Begin signature block
 # MIIviwYJKoZIhvcNAQcCoIIvfDCCL3gCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCD+Hky81h0hXRvP
-# 4op9pvH9aGO6oechEdQ0pr8gcN2+JKCCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAy5hJeo/mPNPA+
+# RZTMYiV/Vrdme1mooEfa7Fi5r+a8OqCCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
 # SIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJHcmVhdGVyIE1hbmNo
 # ZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBMaW1p
 # dGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAx
@@ -764,35 +766,35 @@ finally
 # Bk0CAQEwaDBUMQswCQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVk
 # MSswKQYDVQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1
 # nosluv9RC3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoEwwGQYJKoZIhvcNAQkDMQwG
-# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIAw6kUHf6Qq5ZHWLf35iERtgYbKe
-# 9/ZV30SnOwX+qBlAMA0GCSqGSIb3DQEBAQUABIICAIyLbJuszSDUY9ergYmZyOro
-# m5rsiM6gLtEUUW382otEOQjpk605ZzWEd86jnjOXOOcXKgbSeONmFo/j3VoUywGO
-# Onm7ULrQxy0dUWP0CDAiwbPQyFbfeibeau+EFwiJVm2vevA0CNSs01twGQR6OKuT
-# 7jSVVaRCk5PHyZ5SAHKarcU8ROONmD2su8LACGiDNzaInrXZFw0a82Ygj4a0mB0d
-# E5N/GmF02f0ER7/X/SvNPLNUOIyCac5lsauHSbKA8RwwMYddyM8omNa5oiEryPmf
-# s/wKpSsvc9R2ja/uCdlMU77X+eMx3yBjeweDaWectOT83pwmKOXtBeCtTtExWH3g
-# VrFNDcaWUbzrE139jLpANVXnPRvtaDHyrQv4uo3c0iuQabsSQGVgMNM85hPlYW23
-# jQy2eTkOSlY/gKyZApJy0YwMLNuisXq/K4x1LBJGMJd5gefj1xT9hGs8eEarc067
-# UwsvW89vbvcqwOf1YIyJ9RjHsoQwhJ25G84TM5oxou2tYHYYXgyF5ghxMhGq8p2Z
-# 4v1cASn5FNjGfZJATJrxjRUv9j13E6DFHvy0aYzdwzZhcTVwrshugYra/vy87G7X
-# Z54eZNEx4noPs/WKT1++uS1zYleoRPwBV+eleTnTWaI0w4nxlLLWx/eGnDdysvmN
-# A6rccgI/xDv7ud1rhdVhoYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
+# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIMF7StQ85BQ8M5F2ORyUoN5Qh/Bt
+# vhsNaJanUhIBe4X7MA0GCSqGSIb3DQEBAQUABIICABD+11U2XfssPD0NIjRz3BgZ
+# 96WtwCCnFTzgE+0J/qdxNG0UroOCOyKjYsZpDfVx3czTfX7E9/CRPoQUSZeJX0oz
+# UiOS5bKunC+q3oZEvI05ZsXH7wwi9SHBfrGaq46k+Dl0si4uH9lfuCIlUJJJwjnj
+# FbpYn2zvd9tueW1+nnwug2V4/5VAGyo63lZlL5wl+3Ddg+uECOG+mB7VxBGZ3tUo
+# T2B5O1mv5wPPlyT4o0Kqts5M81IeIGLrMNCeBnj35pKIS66+k+wpeYNKDpnrs7oE
+# AZX7aQx55GIS/jsFADat3qeOOpTURg616bhQYIn+FGX2FJOkBxoIh/P6eULIzpv8
+# E/sl9NAwUigC+WGiT6TqJyjd9FXxzzPumyJZWMbCcM+i2mqX8hayFYqOhGb+cKJJ
+# JF/kKs/we7o+h876+kiB0KqLyvrN2M3MFrzjBsALpQmZCwsXOILzd2gQme59lFCJ
+# dAdGHDHVPTbfMbcS5ttc66oKQeudM2OaXKiFlq1oQ14M3bXwuP3b17wNCSjU8H9D
+# QZC//BEHNcr+cCP23jotZWBD9Z8YKToRV32hM3/Ip8+1L3ZDhjIt0B24IAszoeuw
+# OxOsFkIZkvNh1GzJAxsKkNYoUJOswRKylSy8FAY2tgQaGdnNBbHA4La3x/w2BryV
+# Lu5/kn4zhelhrX5fDe6KoYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
 # WzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExMTAvBgNV
 # BAMTKEdsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gU0hBMzg0IC0gRzQCEAFI
 # kD3CirynoRlNDBxXuCkwCwYJYIZIAWUDBAIBoIIBPTAYBgkqhkiG9w0BCQMxCwYJ
-# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTMxOTM5MDdaMCsGCSqGSIb3
+# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTMyMDIwMDNaMCsGCSqGSIb3
 # DQEJNDEeMBwwCwYJYIZIAWUDBAIBoQ0GCSqGSIb3DQEBCwUAMC8GCSqGSIb3DQEJ
-# BDEiBCDU3IVzv1I+PhHs5KXOhL2v/5cYRDj/pp9hwUSCUz/FRDCBpAYLKoZIhvcN
+# BDEiBCDnqH8xS/A9IEhwYE3aT7/YNY7HDwjsuNF1XcAiTJsOkzCBpAYLKoZIhvcN
 # AQkQAgwxgZQwgZEwgY4wgYsEFDEDDhdqpFkuqyyLregymfy1WF3PMHMwX6RdMFsx
 # CzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 # EyhHbG9iYWxTaWduIFRpbWVzdGFtcGluZyBDQSAtIFNIQTM4NCAtIEc0AhABSJA9
-# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgAvc9/ZATnfvDi+j77o4kz+j
-# Qb/39UAFLD4R4bOYs+KnEu+lgMaWTrM+nFGzNKomlSB/8ys0r390XSjky9/YNPmQ
-# TzuTrWjFPMEpxqiyF63eevB6tLYSjyJCBbdqokRsqrBGEkDK/RnowXLMxSi0SuVi
-# nPQm0YpBD7sbNqO/tFhlED03peDD/bX5Y/NZIjdQDiFnjqh6Vjo1Uoi6FvCNN2qp
-# F1hRrbeVAenVNMxwfD2AKfPVHCMlIkWPcAmFMJHdSHPqivlUkoWPxYyxv03xHB/v
-# 80GRYdyCvdAf2NxIGGDR3zQ219HmUMYV1iEqFH+Dfbw9EDVIE93YdPTBuNeRFXJ1
-# ljsrVae49JhozHM1o6cJ0s7Q4p/CXSWtf+BxapycjTyeAVw5j/es+PlDsg02cNlC
-# ZWlA5kqQqfVWq/XDKpBw39oziarfW5v9x3roJr74PdyuQVHNMqLRPJIZxEHC0ESO
-# /X3rt4FDRB2wQd9sFJWod25lgBMvXTB/+uz1MYI5VQ==
+# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgCRQq+biE3vKio8fttGm7CS5
+# BrZP8A/GcAAo6PKe0xY65G2kaEH8ZDuHe8aen+3qfbUfRBoMJN2/tqnhq7xXLmW8
+# YX1xdBFcWLREmqx2y6hgpgz0bBjzTQ1tHIOpRRtddBZCO5LCk6sg9OiP+eX3IGiO
+# BweBaBpG+HkP4DYrC4pM61+vAy+v0RZImLqzRl0TK2J7/5WeVgfpkgJtSrg9zdEO
+# ZjKf4dIu+mjorEuy7RQM36DLiCqZcvsb9Ew1F6tu8YyUh5FAIe7N0fYAyqrjMuKt
+# GOzcQfesz3A3+zMxn7sDBZb9XT8fObSbZR87Geofe5vEi1enNoJkCkhyM6jkP1mz
+# ID6AlVPI9uWeISRm95ihnek/JxoyF02lgUTxxPkFmXmEksTnWVLOQe/iwvzX4GE+
+# UNEqLNg9sd0KyXw2+jBRn/HImBJLYoqI2KUSMh2ey0iy/KUztl5HWmIFoYoGMlVc
+# xZkuBy8ELpw/WXDIfx+J7xZ6wvuD07CT6VxTMmNMMA==
 # SIG # End signature block
