@@ -13,10 +13,10 @@
 		SQLECmd Maps (.\KAPE\Modules\bin\SQLECmd\Maps\*.smap) - https://github.com/EricZimmerman/SQLECmd/tree/master/SQLMap/Maps
 		All other EZ Tools used by KAPE in the !EZParser Module
 		
-		.USAGE
+	.USAGE
 		As of 4.0, this script will only download .NET 6 tools, so you can just run the script in your .\KAPE folder!
 		
-		.CHANGELOG
+	.CHANGELOG
 		1.0 - (Sep 09, 2021) Initial release
 		2.0 - (Oct 22, 2021) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which leverages Get-KAPEUpdate.ps1 and Get-ZimmermanTools.ps1 as well as other various --sync commands to keep all of KAPE and the command line EZ Tools updated to their fullest potential with minimal effort. Signed script with certificate
 		3.0 - (Feb 22, 2022) Updated version of KAPE-EZToolsAncillaryUpdater PowerShell script which gives user option to leverage either the .NET 4 or .NET 6 version of EZ Tools in the .\KAPE\Modules\bin folder. Changed logic so EZ Tools are downloaded using the script from .\KAPE\Modules\bin rather than $PSScriptRoot for cleaner operation and less chance for issues. Added changelog. Added logging capabilities
@@ -89,8 +89,45 @@ $stopwatch = [system.diagnostics.stopwatch]::StartNew()
 
 $Stopwatch.Start()
 
-Log -logFilePath $logFilePath -msg ' --- Beginning of session ---'
+Log -logFilePath $logFilePath -msg ' --- Beginning of session ---' # start of Log
 
+Set-ExecutionPolicy Bypass -Scope Process
+
+# Let's get some script info and provide it to the end user for the purpose of the log
+# establish name of script to pass to Log-ToFile Module, so it outputs to the correctly named log file
+$scriptPath = $PSCommandPath
+
+$scriptNameWithoutExtension = (Split-Path -Path $scriptPath -Leaf).TrimEnd('.ps1')
+$scriptName = Split-Path -Path $scriptPath -Leaf
+
+$fileInfo = Get-Item $scriptPath
+$fileSizeInBytes = $fileInfo.Length
+$fileSizeInMegabytes = $fileSizeInBytes / 1MB
+
+$signature = Get-AuthenticodeSignature $scriptPath
+
+if ($signature -and $signature.SignerCertificate)
+{
+	$lastSignedTime = $signature.SignerCertificate.NotAfter
+}
+else
+{
+	$lastSignedTime = "Invalid or not signed"
+}
+
+$fileHash = (Get-FileHash -Path $scriptPath -Algorithm MD5).Hash
+
+$fileSizeFormatted = "{0:N2}" -f $fileSizeInMegabytes
+
+Log -logFilePath $logFilePath -msg "Script Name: $scriptName"
+Log -logFilePath $logFilePath -msg "Full Path: $scriptPath"
+Log -logFilePath $logFilePath -msg "Last Modified Date: $($fileInfo.LastWriteTime)"
+Log -logFilePath $logFilePath -msg "File Size: $fileSizeInBytes bytes | $fileSizeFormatted MB"
+Log -logFilePath $logFilePath -msg "Certificate Expiration: $lastSignedTime"
+Log -logFilePath $logFilePath -msg "MD5 Hash: $fileHash"
+Log -logFilePath $logFilePath -msg "--------- Script Log ---------"
+
+# Validate that logFilePath exists and shoot a message to the user one way or another
 try
 {
 	if (!(Test-Path -Path $logFilePath))
@@ -107,8 +144,6 @@ catch
 {
 	Write-Host $_.Exception.Message
 }
-
-Set-ExecutionPolicy Bypass -Scope Process
 
 # Setting variables the script relies on. Comments show expected values stored within each respective variable
 $script:kapeTargetsFolder = Join-Path -Path $PSScriptRoot -ChildPath 'Targets' # .\KAPE\Targets
@@ -573,8 +608,8 @@ finally
 # SIG # Begin signature block
 # MIIviwYJKoZIhvcNAQcCoIIvfDCCL3gCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDYVii0WPNgu/jU
-# purfQ3A5DgEK1FhNBdy8x4DpjAyvT6CCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCHV27sDvIOGyaD
+# eIwRHMAvUxnGI3DBVH3gFbEn2CNlZ6CCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
 # SIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJHcmVhdGVyIE1hbmNo
 # ZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBMaW1p
 # dGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAx
@@ -794,35 +829,35 @@ finally
 # Bk0CAQEwaDBUMQswCQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVk
 # MSswKQYDVQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1
 # nosluv9RC3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoEwwGQYJKoZIhvcNAQkDMQwG
-# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIBBOFVe2CV/9hhss3QZKiO622v+a
-# Fjg2bCIgmqMbFPNOMA0GCSqGSIb3DQEBAQUABIICAFYPRpccqhb6PZEh+HD6cmC4
-# zBI3V2uzv1Rid67fKBXSZ+7bz0Sfm6IUySvdYbgMg3jg0qKxUGBA8ClkPv8mmus0
-# bqxz3jiVyc+bwxT0j9BIHKdA79kAre4m60VljAFK+6BEWajSd7mmCS7EnN3y2UJZ
-# 6TvDk1jUX3cx7jsr+G9eP46Yzt2XMOiPGLUCFQdik3+djvOgODxvb9A/ICYJO49O
-# CM2W6NOSIBLPJAvlqnHf61HKw2xy0G/ObJADHAqSTXtnsM4+vqLtygg10GJ4jwAk
-# z1jSF22jDl8yCxcaSk2TBjSdjTR0QoiPTcAmvVOQNXrHQY8r08lxflqzX0nJicLT
-# j6Pnnc+BPhQIen1ASsYjcag3h6QUP6g57TF3kpvXpmnPUYx52y2eZFRfZabSkIyD
-# 4h6eO8BjoobjwbJH1KEB4eg1ysoMP7uA9WdLEqJ0eLfJuZEjN3y2NoJYSlsVIk/R
-# a77yFO0CC8KErWvIEe15lRObWbhll3ZXloRBy0C0fteFh0xLIh2cg1FtQA65hvaI
-# BydHI6ZHoYDuaFvaCyLEKZnzRMDca/jeLQW6U4Y6tw12CSIswcXi1JdiNfbBLIXk
-# zoh8Ov275gQFr4JJjTN/O4LBdvbjX1vpESjhTPazEMbkzqzUBNt5X/WCBpZT4Nce
-# Pv26cj7oTU1SxzfL4K24oYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
+# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEINTdN64xnid6JZHLn1oWDbeSlNpC
+# Lo/gqwzbQ/2JBNKcMA0GCSqGSIb3DQEBAQUABIICAKKbMt3KdEH6xfkaocsCYVVP
+# p+1yVD6hDzXJzwxl7rX3K1q0XBH+tlig+WdQjAZH/hidcZb+cdv3LHvkxnmLw2il
+# 48s30w174kJase1z77kYuj5dYS4x6hdjYURMG8NO0Fj89nNdjbI2Zt77Iq4gRPEH
+# 1NG9WB6mHbHOxnJ+4V3rziRCOk83yDzv13kCuAmaU0hWmV+ZwblLRzemNXYPLNb/
+# 5Bh6TfgrHwtXCI5p89N3dp5AHzWm4XrtnZ7LsbjLmkA8v5oZxkbmedlHGjuGxtl9
+# aoSfOQdoOBFepCV9vTZ9gxlifEMvHAp7U3GzNH28gOqw4EAVHKJ0jHGmgHgf4/Vb
+# a0fhN+ivzrmM10vn7EYwtcmjiQao9wUj32h609nPBeEmkLfYjYvteDuEquc9KHbp
+# up/xnxpqR9VOoIkzNtYm6I4x+VGNZhpSguo5p37wRXZQh//M3sM+7psnzuYdryB8
+# DLPbOFEpnnSSrYSZM1jVQlT4Io9VTSEtcqgS46OLCTUtsfR6qfqM4bg3Og+QbJRT
+# otvs4n/BLpcIi2tO8qiF0ERL1nRxWB6BjPi5y2SDDXkSgjiNLGL3b5dG/fM9vPIt
+# 9vrMPjhOGZgQlgp+auD0gyP9buKYemiuhFTiv6h86jax4ueWXRkYBAtg2cNZftVr
+# FCX/tHFA6aOBpS52NENXoYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
 # WzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExMTAvBgNV
 # BAMTKEdsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gU0hBMzg0IC0gRzQCEAFI
 # kD3CirynoRlNDBxXuCkwCwYJYIZIAWUDBAIBoIIBPTAYBgkqhkiG9w0BCQMxCwYJ
-# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTMyMDQ4MzJaMCsGCSqGSIb3
+# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTQwMjE1MjFaMCsGCSqGSIb3
 # DQEJNDEeMBwwCwYJYIZIAWUDBAIBoQ0GCSqGSIb3DQEBCwUAMC8GCSqGSIb3DQEJ
-# BDEiBCCeem21yj2pYCQey+piuhdWyvj8Wn4FK2CvxEgzXjdOpDCBpAYLKoZIhvcN
+# BDEiBCCDmAUEz3VC4UfT/4AAC0yF579n8d/zH0EWDJ7VFXAb3jCBpAYLKoZIhvcN
 # AQkQAgwxgZQwgZEwgY4wgYsEFDEDDhdqpFkuqyyLregymfy1WF3PMHMwX6RdMFsx
 # CzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 # EyhHbG9iYWxTaWduIFRpbWVzdGFtcGluZyBDQSAtIFNIQTM4NCAtIEc0AhABSJA9
-# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgLrVru4PYXXrJAyHtuqDDtPa
-# XfCCKpEGuDu5+83myB1Mr0Hn3oQqmjuSUIP31UJWAjASeN2CquFoysoh2FhHdW5l
-# 9glnfzhTc7H4I/n8lvwWmQDjTHWoqqJ+H7dY+Cuih0ER7Pipxn1m2E0zM6ng+U0d
-# uiMqNuofguV8+U7QIB8n+dX7Qz1J+7MZ2wZl2pIOC9lJpuVClffFZDc/LPNXL0ic
-# hwDHoXb8QgL9V6UuLwxhG7bW0z++aWtpnmOhq0AEFPRxfx//4tCR9QBimBsll15h
-# BpiX/Hh+3J9ERv72muOdwxClHfO9PcWHV5ONXAir+9y8Ae9nohHk4rXpI5qKFzTB
-# 3mwb4H+pBLBYzSpE9V+FxVGJAyFbU7KXkNe1CsV0VMUPZED6CisotN//fNlc9HBX
-# F8wrTAIXJqoTEq6V0ygHebfoC1sqgpnN1IsKSjc5yS5NPnWOYFNjDIKwwVV9DJeU
-# Kb4/9kGDuaiuywAP2W+Rpc2YRX7X/xucUZsR4whCIg==
+# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgCaAh10XfnqLcA0GdC1LIZM5
+# C+JDjmcl6CQoLzTXa9rZlx5EtYo8oP0groRe7xDnK2a/GKNbBTIDxhOyaKW71EDd
+# u/G3rOlN9ParT/BEZJ6tj9N1uNvdPaLshBUarJorT6Fxvh8Zc+ITwdTgUUck6VlN
+# IZuszg6k2aCpYr8K/W/wigySrvpvAUVItqrqAf7VIiCZSjiBrkhWRIIU3IbNt/PT
+# mZ/M1pRZ3YaF6JL56zC6nUxdbwQAEqJ6M7/XJWTbX4PUIkH7suvxtzy849bs3wvQ
+# HchlzLsBmWkPMicSioHMKhOY64x0PZEHn+YvpVsgDsNtSEv+MH9vwHIxFHB2JXC9
+# qUagLXze5DpVNx161/tM+N+V4QPYOOk1TNF2AYc5ohIvzPpOeb+ko/SkftUMEsyU
+# UwS0LH7o1AgdGwQGNmTeVN7GD3CLIQgMdqSdwVSN0EDD1AaoOiuab7UtrsUk6w5/
+# DNUf5HV69SI8tFr8/lb8TYPGCn3kLQ3Ev3dnPVESQw==
 # SIG # End signature block
