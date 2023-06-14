@@ -1,3 +1,11 @@
+---
+name: Feature request
+about: Suggest an idea for this project
+title: ''
+labels: enhancement
+assignees: AndrewRathbun
+---
+
 **Script Info**
 
 From your KAPEUpdate.log file, please paste the first few lines that display the script name, hash, etc. For example:  
