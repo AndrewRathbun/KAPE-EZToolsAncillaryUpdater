@@ -119,12 +119,13 @@ $fileHash = (Get-FileHash -Path $scriptPath -Algorithm MD5).Hash
 
 $fileSizeFormatted = "{0:N2}" -f $fileSizeInMegabytes
 
-Log -logFilePath $logFilePath -msg "Script Name: $scriptName"
-Log -logFilePath $logFilePath -msg "Full Path: $scriptPath"
-Log -logFilePath $logFilePath -msg "Last Modified Date: $($fileInfo.LastWriteTime)"
-Log -logFilePath $logFilePath -msg "File Size: $fileSizeInBytes bytes | $fileSizeFormatted MB"
-Log -logFilePath $logFilePath -msg "Certificate Expiration: $lastSignedTime"
-Log -logFilePath $logFilePath -msg "MD5 Hash: $fileHash"
+# Output all of the above stats about this script. Examples are in comments at end of each line
+Log -logFilePath $logFilePath -msg "Script Name: $scriptName" # [2023-06-13 22:23:13] | Script Name: KAPE-EZToolsAncillaryUpdater.ps1
+Log -logFilePath $logFilePath -msg "Full Path: $scriptPath" # [2023-06-13 22:23:13] | Full Path: D:\KAPE-EZToolsAncillaryUpdater\KAPE-EZToolsAncillaryUpdater.ps1
+Log -logFilePath $logFilePath -msg "Last Modified Date: $($fileInfo.LastWriteTime)" # [2023-06-13 22:23:13] | Last Modified Date: 06/13/2023 22:23:07
+Log -logFilePath $logFilePath -msg "File Size: $fileSizeInBytes bytes | $fileSizeFormatted MB" # [2023-06-13 22:23:13] | File Size: 43655 bytes | 0.04 MB
+Log -logFilePath $logFilePath -msg "Certificate Expiration: $lastSignedTime" # [2023-06-13 22:23:13] | Certificate Expiration: 01/26/2025 18:59:59
+Log -logFilePath $logFilePath -msg "MD5 Hash: $fileHash" # [2023-06-13 22:23:13] | MD5 Hash: A9E7D1DB7A8C41B9424DEC57297CC9E6
 Log -logFilePath $logFilePath -msg "--------- Script Log ---------"
 
 # Validate that logFilePath exists and shoot a message to the user one way or another
@@ -608,8 +609,8 @@ finally
 # SIG # Begin signature block
 # MIIviwYJKoZIhvcNAQcCoIIvfDCCL3gCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCHV27sDvIOGyaD
-# eIwRHMAvUxnGI3DBVH3gFbEn2CNlZ6CCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAg8H7CKWmCL/Ea
+# ysJbBVSzVYiX0HuuXqPikk/tJJ8PKKCCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
 # SIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJHcmVhdGVyIE1hbmNo
 # ZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBMaW1p
 # dGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAx
@@ -829,35 +830,35 @@ finally
 # Bk0CAQEwaDBUMQswCQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVk
 # MSswKQYDVQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1
 # nosluv9RC3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoEwwGQYJKoZIhvcNAQkDMQwG
-# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEINTdN64xnid6JZHLn1oWDbeSlNpC
-# Lo/gqwzbQ/2JBNKcMA0GCSqGSIb3DQEBAQUABIICAKKbMt3KdEH6xfkaocsCYVVP
-# p+1yVD6hDzXJzwxl7rX3K1q0XBH+tlig+WdQjAZH/hidcZb+cdv3LHvkxnmLw2il
-# 48s30w174kJase1z77kYuj5dYS4x6hdjYURMG8NO0Fj89nNdjbI2Zt77Iq4gRPEH
-# 1NG9WB6mHbHOxnJ+4V3rziRCOk83yDzv13kCuAmaU0hWmV+ZwblLRzemNXYPLNb/
-# 5Bh6TfgrHwtXCI5p89N3dp5AHzWm4XrtnZ7LsbjLmkA8v5oZxkbmedlHGjuGxtl9
-# aoSfOQdoOBFepCV9vTZ9gxlifEMvHAp7U3GzNH28gOqw4EAVHKJ0jHGmgHgf4/Vb
-# a0fhN+ivzrmM10vn7EYwtcmjiQao9wUj32h609nPBeEmkLfYjYvteDuEquc9KHbp
-# up/xnxpqR9VOoIkzNtYm6I4x+VGNZhpSguo5p37wRXZQh//M3sM+7psnzuYdryB8
-# DLPbOFEpnnSSrYSZM1jVQlT4Io9VTSEtcqgS46OLCTUtsfR6qfqM4bg3Og+QbJRT
-# otvs4n/BLpcIi2tO8qiF0ERL1nRxWB6BjPi5y2SDDXkSgjiNLGL3b5dG/fM9vPIt
-# 9vrMPjhOGZgQlgp+auD0gyP9buKYemiuhFTiv6h86jax4ueWXRkYBAtg2cNZftVr
-# FCX/tHFA6aOBpS52NENXoYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
+# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIDJ4t/s2nCEDMbqklX6lWi8jS57h
+# /QDSnH+WroH0i2UrMA0GCSqGSIb3DQEBAQUABIICAEuNuoKDntS6E08zrILZhWCk
+# i7h5XxJpH+/ESRGoGtCvUBA2FpoVrKfGyenUQCCzPA8861LtP9L2WuJLx9QfvkSr
+# RTeeTHp47FKJe146J7CG3kzEMTwtfX8MfBV09Q+dYoXflchG0EX1/xqS32UhLR2k
+# irfkZlg+uXOBFIz8Q8k/wyXBsydhHiJSiM7EOcXGvd3FBXHp27F0AygxSPWFN3qE
+# X7I1wkliRaHEvuIJrV9XajVfK8lPjBtVJVIT0DQY7/OOYsduQFUF9SF+UHpIxzrW
+# DMPFfSdaT0SVE1bbemSf0NBtDmPO+N+QsMHI94sdAPBZ/Q8guSRXfhojHdVkAX6U
+# qIl3O8E/5VmTYCuiKwZA8w1vNfFUnjsA94QqzSq1Xvwg/V6ZTCVTsLCSfW9zPFdB
+# +T71A6pjy9N35RiSG2i8B6adwvuOS5DZGjTv/NTJ7X98DgiePIWxJVH4doIImqYE
+# z+5OpxGdBNRrH8QK0xkrmnWQ7rEWWfFQFHOG7duUDWlW1JX+/GUHQeBqjLSib2Nz
+# Y+8x4cUR9gFhswlot0VxMi+K/2Pk5Q+bE5V4CBHLxRCtrJMOAAtE+KBVzsP6NOcx
+# Aptq3twt8PUcspnKEin2+sz7p/JFsWJ11ncp6tO7lVG9qtjauhbcDhTYcqyS9V0m
+# 6EnC6TIDGPcF71NPZdLeoYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
 # WzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExMTAvBgNV
 # BAMTKEdsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gU0hBMzg0IC0gRzQCEAFI
 # kD3CirynoRlNDBxXuCkwCwYJYIZIAWUDBAIBoIIBPTAYBgkqhkiG9w0BCQMxCwYJ
-# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTQwMjE1MjFaMCsGCSqGSIb3
+# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTQwMjI0NDNaMCsGCSqGSIb3
 # DQEJNDEeMBwwCwYJYIZIAWUDBAIBoQ0GCSqGSIb3DQEBCwUAMC8GCSqGSIb3DQEJ
-# BDEiBCCDmAUEz3VC4UfT/4AAC0yF579n8d/zH0EWDJ7VFXAb3jCBpAYLKoZIhvcN
+# BDEiBCBYxwXNrpuJzU/101dDNQ68a2OpXMiIduY/vFJoWjyFJjCBpAYLKoZIhvcN
 # AQkQAgwxgZQwgZEwgY4wgYsEFDEDDhdqpFkuqyyLregymfy1WF3PMHMwX6RdMFsx
 # CzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 # EyhHbG9iYWxTaWduIFRpbWVzdGFtcGluZyBDQSAtIFNIQTM4NCAtIEc0AhABSJA9
-# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgCaAh10XfnqLcA0GdC1LIZM5
-# C+JDjmcl6CQoLzTXa9rZlx5EtYo8oP0groRe7xDnK2a/GKNbBTIDxhOyaKW71EDd
-# u/G3rOlN9ParT/BEZJ6tj9N1uNvdPaLshBUarJorT6Fxvh8Zc+ITwdTgUUck6VlN
-# IZuszg6k2aCpYr8K/W/wigySrvpvAUVItqrqAf7VIiCZSjiBrkhWRIIU3IbNt/PT
-# mZ/M1pRZ3YaF6JL56zC6nUxdbwQAEqJ6M7/XJWTbX4PUIkH7suvxtzy849bs3wvQ
-# HchlzLsBmWkPMicSioHMKhOY64x0PZEHn+YvpVsgDsNtSEv+MH9vwHIxFHB2JXC9
-# qUagLXze5DpVNx161/tM+N+V4QPYOOk1TNF2AYc5ohIvzPpOeb+ko/SkftUMEsyU
-# UwS0LH7o1AgdGwQGNmTeVN7GD3CLIQgMdqSdwVSN0EDD1AaoOiuab7UtrsUk6w5/
-# DNUf5HV69SI8tFr8/lb8TYPGCn3kLQ3Ev3dnPVESQw==
+# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgFz0fYayFcLcDf/EIcLwNZnU
+# OoipVFJwMRSmc/I7r3EmCSA1fckh70b3jZiSuEnAEpVKdP8UEJ7VbQjiK452i2Vc
+# hiV3lotF+CQwa6KCSWvYi+LE46aVkhtOWLAYSypmjdP8+1zOQSICzZSK/52HxOv0
+# qiM1scXPfH2cznUFLoOkeGrVui5QAslYiwvV+Oda27/9caIFSUk4/84CUian+bQV
+# +KV9mxb9pmaMiCf+1Ttq2S4TS+OgCKis80uOulf2cwv7dOEGAX4C8gzZInBv4KzR
+# z48Fhy/q5tau/N7mR10vr2zWIfa+L26dRXchu8FuT010AfPp3QAbGAlfgrMsdzrX
+# t704sk2F14SJJyF3YcG8Sa4WScCggrgLrwlPQet40xcx8hAAds3EywOaMkutZqzc
+# g6LGVXSAubbKvNtPCYlmRHC7GJicDuRLP0E+oFG2xcf80VxfyKktYfAhwXvB19qa
+# 8PlSM2zGqPpj9Zs0zXujtYb++9BydSwv7rGJsHHO4g==
 # SIG # End signature block
