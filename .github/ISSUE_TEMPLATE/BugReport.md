@@ -1,3 +1,11 @@
+---
+name: Bug report
+about: Create a report to help improve the script
+title: ''
+labels: bug
+assignees: AndrewRathbun
+---
+
 **Script Info**
 
 From your KAPEUpdate.log file, please paste the first few lines that display the script name, hash, etc. For example:  
