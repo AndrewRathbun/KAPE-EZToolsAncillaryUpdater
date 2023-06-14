@@ -15,17 +15,23 @@ In the context of this script, KAPE [Targets](https://github.com/EricZimmerman/K
 
 ## Where Do I Run the Script From?
 
-![ScriptLocation](https://github.com/rathbuna/KAPE-EZToolsAncillaryUpdater/blob/main/Pictures/ScriptLocation.jpg)
+![ScriptLocation](https://raw.githubusercontent.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/main/Pictures/ScriptLocation.jpg)
 
 Right-click -> `Run with PowerShell` and let it ride!
 
 ## Usage Examples
 
-Want to use KAPE with .NET 4 EZ Tools binaries? Run this command: `.\KAPE-EZToolsAncillaryUpdater.ps1 4`
+As of version [4.0](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/4.0), all you have to is run the script by itself without any arguments, unless you want to leverage `-silent` or `-DoNotUpdate`.
 
-Want to use KAPE with .NET 6 EZ Tools binaries? Run this command: `.\KAPE-EZToolsAncillaryUpdater.ps1 6`
+An example of the current switches:  
 
-Make sure you have the [.NET 6 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed prior to using the .NET 6 version of EZ Tools with KAPE!
+* `-silent` - Disable the progress bar and exit the script without pausing in the end
+* `-DoNotUpdate` - Use this if you do not want to check for and update this script (KAPE-EZToolsAncillaryUpdater.ps1)
+
+## Disclaimer (.NET 6)
+
+Make sure you have the [.NET 6 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed prior to using the .NET 6 version of EZ Tools with KAPE! As of version [4.0](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/4.0), this script will only download and update the .NET 6 version of EZ Tools.
 
 # Improving the Script
-Do you see something that could be done better with this script? Create an Issue or do a Pull Request, if so! This is the first script I've put together on my own so I have no doubts there's room for improvement. Anything that moves the ball forward and helps the DFIR community I will always be in full support of!
+
+Do you see something that could be done better with this script? Create an [Issue](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/issues) or do a [Pull Request](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/pulls), if so! This is the first script I've put together on my own so I have no doubts there's room for improvement. Anything that moves the ball forward and helps the DFIR community I will always be in full support of!
