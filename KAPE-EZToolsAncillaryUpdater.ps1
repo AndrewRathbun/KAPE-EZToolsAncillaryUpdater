@@ -97,7 +97,7 @@ Set-ExecutionPolicy Bypass -Scope Process
 # establish name of script to pass to Log-ToFile Module, so it outputs to the correctly named log file
 $scriptPath = $PSCommandPath
 
-$scriptNameWithoutExtension = (Split-Path -Path $scriptPath -Leaf).TrimEnd('.ps1')
+$scriptNameWithoutExtension = (Split-Path -Path $scriptPath -Leaf).TrimEnd('.ps1') # this isn't currently used
 $scriptName = Split-Path -Path $scriptPath -Leaf
 
 $fileInfo = Get-Item $scriptPath
@@ -187,6 +187,8 @@ function Get-KAPEUpdateEXE
 	[CmdletBinding()]
 	param ()
 	
+	Log -logFilePath $logFilePath -msg ' --- Update KAPE ---'
+	
 	$script:getKapeUpdatePs1 = Get-ChildItem -Path $PSScriptRoot -Filter $getKapeUpdatePs1FileName # .\KAPE\Get-KAPEUpdate.ps1
 	
 	if ($null -ne $getKapeUpdatePs1)
@@ -222,6 +224,8 @@ function Get-LatestEZToolsUpdater
 {
 	[CmdletBinding()]
 	param ()
+	
+	Log -logFilePath $logFilePath -msg ' --- KAPE-EZToolsAncillaryUpdater.ps1 ---'
 	
 	# First check the version of the current script show line number of match
 	$currentScriptVersion = Get-Content $('.\KAPE-EZToolsAncillaryUpdater.ps1') | Select-String -SimpleMatch 'Version:' | Select-Object -First 1 # Version: 3.7
@@ -294,6 +298,8 @@ function Get-ZimmermanTools
 {
 	[CmdletBinding()]
 	param ()
+	
+	Log -logFilePath $logFilePath -msg ' --- Get-ZimmermanTools.ps1 ---'
 	
 	# Get all instances of !!!RemoteFileDetails.csv from $PSScriptRoot recursively
 	$remoteFileDetailsCSVs = Get-ChildItem -Path $PSScriptRoot -Filter "!!!RemoteFileDetails.csv" -Recurse
@@ -383,6 +389,8 @@ function Sync-KAPETargetsModules
 	[CmdletBinding()]
 	param ()
 	
+	Log -logFilePath $logFilePath -msg ' --- KAPE Sync ---'
+	
 	if (Test-Path -Path $kape)
 	{
 		Log -logFilePath $logFilePath -msg 'Syncing KAPE with GitHub for the latest Targets and Modules'
@@ -407,6 +415,8 @@ function Sync-EvtxECmdMaps
 {
 	[CmdletBinding()]
 	param ()
+	
+	Log -logFilePath $logFilePath -msg ' --- EvtxECmd Sync ---'
 	
 	# This deletes the .\KAPE\Modules\bin\EvtxECmd\Maps folder so old Maps don't collide with new Maps
 	if (Test-Path -Path $kapeEvtxecmdMaps -PathType Container)
@@ -435,6 +445,8 @@ function Sync-RECmdBatchFiles
 	[CmdletBinding()]
 	param ()
 	
+	Log -logFilePath $logFilePath -msg ' --- RECmd Sync ---'
+	
 	# This deletes the .\KAPE\Modules\bin\RECmd\BatchExamples folder so old Batch files don't collide with new Batch files
 	Log -logFilePath $logFilePath -msg "Deleting $kapeRecmdBatchExamples for a fresh start prior to syncing RECmd with GitHub"
 	
@@ -459,6 +471,8 @@ function Sync-SQLECmdMaps
 {
 	[CmdletBinding()]
 	param ()
+	
+	Log -logFilePath $logFilePath -msg ' --- SQLECmd Sync ---'
 	
 	# This deletes the .\KAPE\Modules\bin\SQLECmd\Maps folder so old Maps don't collide with new Maps
 	Log -logFilePath $logFilePath -msg "Deleting $kapeSQLECmdMaps for a fresh start prior to syncing SQLECmd with GitHub"
@@ -499,6 +513,8 @@ function Move-EZToolsNET6
 			"$getZimmermanToolsFolderKapeNet6\iisGeolocate"
 		)
 		
+		Log -logFilePath $logFilePath -msg ' --- EZ Tools Folder Copy ---'
+		
 		# Copy each folder that exists
 		$folderSuccess = @()
 		foreach ($folder in $folders)
@@ -507,12 +523,14 @@ function Move-EZToolsNET6
 			{
 				Copy-Item -Path $folder -Destination $kapeModulesBin -Recurse -Force
 				$folderSuccess += $folder.Split('\')[-1]
-				Log -logFilePath $logFilePath -msg "Copying $folder to $kapeModulesBin"
+				Log -logFilePath $logFilePath -msg "Copying $folder and all contents to $kapeModulesBin"
 			}
 		}
 		
 		# Log only the folders that were copied
 		Log -logFilePath $logFilePath -msg "Copied $($folderSuccess -join ', ') and all associated ancillary files to $kapeModulesBin successfully"
+		
+		Log -logFilePath $logFilePath -msg ' --- EZ Tools File Copy ---'
 		
 		# Create an array of the file extensions to copy
 		$fileExts = @('*.dll', '*.exe', '*.json')
@@ -609,8 +627,8 @@ finally
 # SIG # Begin signature block
 # MIIviwYJKoZIhvcNAQcCoIIvfDCCL3gCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCkmJonOxq2W9/l
-# CD+29nLMft1mxo0dRdtMHUHEeEp3P6CCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDa/F1w1y5R21W1
+# t9TAfU81+LrsIfL9V+iL9l3Tbmte66CCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
 # SIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJHcmVhdGVyIE1hbmNo
 # ZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBMaW1p
 # dGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAx
@@ -830,35 +848,35 @@ finally
 # Bk0CAQEwaDBUMQswCQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVk
 # MSswKQYDVQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1
 # nosluv9RC3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoEwwGQYJKoZIhvcNAQkDMQwG
-# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIAu47xODa1O+U+wim8MgirQx88ut
-# Rw0GbRmuwwTZr+L7MA0GCSqGSIb3DQEBAQUABIICAGlGn1XZIXcmZ+pV5rztb9cn
-# s5FtvmAslfNyDyb2nOqhcaUQqrLLeA1S2xPP7crCgkBnxeJU6GkjfIw6z0VYca48
-# KOSE5zu3C4n8+SNnsbTQu9sf2GxBiauqXICMcUopOqU2dprh1NqgJDObFXGNqSwZ
-# C+tFjcJyj7IDgAAgeMR4IeX7uO0ZvTI6HqtPoUzTz9b5N6emu0Cx1pNhXVaqQHjC
-# XITtrQ4KhikaphuMlOPWNqSlcTf3waCtwIRYcrfiIBdP+VFhojEGghzp8fx4ad7c
-# 1AAJStnUGgyfkWXRHB4rVfPyBsflPD1L7Q5Ji3vQ/+aoV0m1NXfOOJ+cfSflzLuk
-# 3X23PA+SvoqHqOjRPQEhpblTIdvf/SvApkeERw75vjYq4TmqbBXJbluYJPOnKOOM
-# aLOWGKxk/50Z8upSZsdBPxcFAUw44mH7s5GMtpfORuP+QTtbutlQLXsU0vRtBhQ/
-# qx2lUMdg/kzwcQy55k985ghVd+O9EkIiBFtHYSozJV4+D/5KB0NtbtphoYfQATG6
-# Aj1/zM4FkStaBGpYYx1UMHW3NMjVXGDxpcsyU+c7F4mAMOL0JddEm5V5tGO6Uo/w
-# pIYKzC29LtUTLIxLb5IIHAjcbhFKU3rczxbd6mnXAhv/fyMot1pkbUqlGDxX9pdP
-# aYPveBntyhamHIWdzsjooYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
+# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIElkGYs2aCc5tFyyC8PLtyBdyJtt
+# blFQUL6FpguW6e89MA0GCSqGSIb3DQEBAQUABIICAISGmWG/djaghhryJ78dxkcK
+# Tkk/5df4jcumO6bru2xImvXIymxggmpBrDv5f8aJB4OKC6nmZgTGV6WRif7tW2N2
+# RjC/LsCt4wW5l+SqqsbEGBDNl3ZIyP398Jh+AnAAQ/psge3IwKNgofYtkWB/X/Yq
+# 7L5SFOsImLuxkSjEiDha9hPyw5D5A6ccBxv/DYm+Gbe5/xxTbIeHoX5eteg9LB3p
+# byhvHMKL8sv5GDXGSpmEgVixAu+6tSuRgPZpX4hiIoAH3uLyfvrjHl46YfHEVtId
+# TfULTCRQqySaijtUqE50rlip14tXrc+Hcs8YhlJY6zJYp7dZ67cqkBxfyaHo0zsE
+# FGGw7hxMWnNWnwAlmkfnNlGxY8pSBjjyVrqKkGUgnVokTcTVSXXc8ALvQtV0b8wq
+# SfiH4v14xIGYDBDS/vP68Dln8VSv1R4oCwGf4kACvd4d278PsehhZ5H9aDYwmaVn
+# krvvVXWYzOTy3zow/OAMjmbrj8ozhN90EiQr81dRI49YZykSa2o34FIMTQTDtnKa
+# w4yeuG4u6ErcyPnpvEe106nUPsZomOklP3NH1rPMwhu/gBwmqPk0LJ58Tl8QR2Gm
+# ld0zPWCO9qsXoaWZkIsPmVjSbKB43SyYUphnzyBmLXVXIY+3adbGSvpUb92R7ueU
+# s4q6rCuedmva0k0bZZe8oYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
 # WzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExMTAvBgNV
 # BAMTKEdsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gU0hBMzg0IC0gRzQCEAFI
 # kD3CirynoRlNDBxXuCkwCwYJYIZIAWUDBAIBoIIBPTAYBgkqhkiG9w0BCQMxCwYJ
-# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTUwMjI3MjNaMCsGCSqGSIb3
+# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTUwMjQ5NDJaMCsGCSqGSIb3
 # DQEJNDEeMBwwCwYJYIZIAWUDBAIBoQ0GCSqGSIb3DQEBCwUAMC8GCSqGSIb3DQEJ
-# BDEiBCAuQi/tv42Zb71B6N5EcSyoae8ntYaQvo7ra4dGJAnfUDCBpAYLKoZIhvcN
+# BDEiBCDtGya82453IcZB0At9b1r2WSnF8C46nCtChgNCokniazCBpAYLKoZIhvcN
 # AQkQAgwxgZQwgZEwgY4wgYsEFDEDDhdqpFkuqyyLregymfy1WF3PMHMwX6RdMFsx
 # CzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 # EyhHbG9iYWxTaWduIFRpbWVzdGFtcGluZyBDQSAtIFNIQTM4NCAtIEc0AhABSJA9
-# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgHIbS/R7rawB14PcqhZS/eZE
-# H0nczL8M5wZvuSrToRG6gUACJXt8eJibI07YJcZsxcyNYXJq5gFNJ23KsZa6DAxL
-# cRAso4zxrAL5gvgll6VcHFbdlIgBNQto3gG1DEd0pBBx9oPqR3osduScwMSUrNtH
-# U8d8w0FeKf+nreT//8KRZW0dz199EaKay5K9YLC2VqL80li25ZX/XhdPieRDB4QM
-# 92vV4/EGtNAKO2Tko/oBjrMhcCijhhu/jW3RNKK0q1t7m2CRBQhIFhEr3Y9d3Ezi
-# v5v01lsAG9yQP0e8X21OgrxD6uV7H3FuLsYnrM9pT1zC3TxWDoIBjAJyeqT41TLa
-# GHrJBPKlM8EOAU8Xc+lQ9wkwDZxLW4VCXxJ/y6oy2etbAsMRdUbr+FUiHTqRPf2i
-# yXizjFY+7ikIPtqGnSubuWSKW6E9DhUb/zTaDQfO+vw6zqx/YZuJoIIAtKBc6LHs
-# 6QdfX94TW3jmqyBR5l++CRbzfwLx8xBWNurxPKggig==
+# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgG5R6YVSk4kdkg2p63R/gmZy
+# SkAPfyr+lyRxot7IpG3rKaXMBGvAqJYAw+F4Kby5nW2T/EKAHm1kur1aU5aBAoYn
+# pG/OoH/bWYGc8In/xur2dITHE8ZE2w+4DUga5SA6blHZeceZN5FN6Z5VoZCO9hGc
+# oR64U2HlIQXDOoIyX74aQCncFkqKd+TlA5iMTNKXP/yWnkMM6gdP8ZoSTv3fqH47
+# 8YjShJ8NEwN6v1FT/IgYgcNQuGq1nCY1eEH08XE2iqNmBA6CGlCP68yn5g3oFVw7
+# 8xxc0MaHh/mwo278HgU6gtWoz+CuKefmw6jI9CYUDRCumPhDKs+st3XJwrxlkjoQ
+# +JVUxFkf0RYnv2pOyh6vDiIXvcJVplgSD+Mo4wSVQ6lVuvX7Ggk7S81sfwsGSf83
+# l9cBrVnX9wfG+apSFhDijig6k11cB9yOpwgmekyrBjf1iuJLJFoZIOEizqH6SCRW
+# UMxnoODtGYfh+2Hq7JTLIxJB5CNiKemRa57Czp8ZSA==
 # SIG # End signature block
