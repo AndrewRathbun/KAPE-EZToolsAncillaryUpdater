@@ -177,13 +177,13 @@ function Set-Variables
 	
 	# setting variables for EZ Tools binaries, folders, and folders containing ancillary files within .\KAPE\Modules\bin
 	$script:kapeRecmd = Join-Path $kapeModulesBin -ChildPath 'RECmd' #.\KAPE\Modules\bin\RECmd
-	$script:kapeRecmdExe = Get-ChildItem $kapeRecmd -Filter 'RECmd.exe' | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\RECmd\RECmd.exe
+	$script:kapeRecmdExe = Get-ChildItem $kapeRecmd -Filter 'RECmd.exe' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\RECmd\RECmd.exe
 	$script:kapeRecmdBatchExamples = Join-Path $kapeRecmd -ChildPath 'BatchExamples' #.\KAPE\Modules\bin\RECmd\BatchExamples
 	$script:kapeEvtxECmd = Join-Path $kapeModulesBin -ChildPath 'EvtxECmd' #.\KAPE\Modules\bin\EvtxECmd
-	$script:kapeEvtxECmdExe = Get-ChildItem $kapeEvtxECmd -Filter 'EvtxECmd.exe' | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\EvtxECmd\EvtxECmd.exe
+	$script:kapeEvtxECmdExe = Get-ChildItem $kapeEvtxECmd -Filter 'EvtxECmd.exe' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\EvtxECmd\EvtxECmd.exe
 	$script:kapeEvtxECmdMaps = Join-Path $kapeEvtxECmd -ChildPath 'Maps' #.\KAPE\Modules\bin\EvtxECmd\Maps
 	$script:kapeSQLECmd = Join-Path $kapeModulesBin -ChildPath 'SQLECmd' #.\KAPE\Modules\bin\SQLECmd
-	$script:kapeSQLECmdExe = Get-ChildItem $kapeSQLECmd -Filter 'SQLECmd.exe' | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\SQLECmd\SQLECmd.exe
+	$script:kapeSQLECmdExe = Get-ChildItem $kapeSQLECmd -Filter 'SQLECmd.exe' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\SQLECmd\SQLECmd.exe
 	$script:kapeSQLECmdMaps = Join-Path $kapeSQLECmd -ChildPath 'Maps' #.\KAPE\Modules\bin\SQLECmd\Maps
 }
 
@@ -380,25 +380,31 @@ function Get-ZimmermanTools
 	
 	Log -logFilePath $logFilePath -msg "Moving $getZimmermanToolsFileName from $kapeModulesBin to $getZimmermanToolsFolderKape"
 	
-	$getZimmermanToolsPs1 = Get-ChildItem -Path $PSScriptRoot -Filter $getZimmermanToolsFileName
+	$getZimmermanToolsPs1 = (Get-ChildItem -Path $kapeModulesBin -Filter $getZimmermanToolsFileName).FullName
 	
-	Move-Item -Path $getZimmermanToolsPs1.FullName -Destination $kapeModulesBin -Force
+	# Move Get-ZimmermanTools.ps1 from .\KAPE\Modules\bin to .\KAPE\Modules\bin\ZimmermanTools
+	Move-Item -Path $getZimmermanToolsPs1 -Destination $getZimmermanToolsFolderKape -Force
+	
+	$getZimmermanToolsPs1ZT = (Get-ChildItem -Path $getZimmermanToolsFolderKape -Filter $getZimmermanToolsFileName).FullName
+	
+	# Check if file was moved successfully
+	if (-not (Test-Path "$getZimmermanToolsPs1ZT"))
+	{
+		Log -logFilePath $logFilePath -msg "Failed to move $getZimmermanToolsFileName from $kapeModulesBin to $getZimmermanToolsFolderKape"
+	}
+	else
+	{
+		Log -logFilePath $logFilePath -msg "Successfully moved $getZimmermanToolsFileName from $kapeModulesBin to $getZimmermanToolsFolderKape"
+	}
 	
 	Start-Sleep -Seconds 1
 	
 	Log -logFilePath $logFilePath -msg "Running $getZimmermanToolsFileName! Downloading .NET 6 version of EZ Tools to $getZimmermanToolsFolderKape"
 	
-	# Start the process
-	Start-Process -FilePath "powershell.exe" -ArgumentList "-File $getZimmermanToolsPs1Kape", "-Dest $($scriptArgs.Dest)" # executing .\KAPE\Modules\bin\Get-ZimmermanTools.ps1 -Dest .\KAPE\Modules\bin\ZimmermanTools
+	Log -logFilePath $logFilePath -msg "Running script at path $getZimmermanToolsPs1ZT with arguments -Dest $($scriptArgs.Dest)"
 	
-	# Wait for the process to exit
-	$process.WaitForExit()
-	
-	# Check the exit code
-	if ($process.ExitCode -ne 0)
-	{
-		Log -logFilePath $logFilePath -msg "Failed to execute $getZimmermanToolsPs1Kape. Exit code: $($process.ExitCode)"
-	}
+	# executing .\KAPE\Modules\bin\Get-ZimmermanTools.ps1 -Dest .\KAPE\Modules\bin\ZimmermanTools
+	Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile", "-File $getZimmermanToolsPs1ZT", "-Dest $($scriptArgs.Dest)" -Wait
 	
 	Start-Sleep -Seconds 3
 }
@@ -447,6 +453,14 @@ function Sync-EvtxECmdMaps
 	
 	Log -logFilePath $logFilePath -msg ' --- EvtxECmd Sync ---'
 	
+	# Check if $kapeEvtxECmdExe holds a value
+	if ([string]::IsNullOrEmpty($kapeEvtxECmdExe))
+	{
+		# Redo the original declaration
+		$script:kapeEvtxECmdExe = (Get-ChildItem $kapeEvtxECmd -Filter 'EvtxECmd.exe').FullName
+		Log -logFilePath $logFilePath -msg "Located $kapeEvtxECmdExe"
+	}
+	
 	# This deletes the .\KAPE\Modules\bin\EvtxECmd\Maps folder so old Maps don't collide with new Maps
 	if (Test-Path -Path $kapeEvtxecmdMaps -PathType Container)
 	{
@@ -462,6 +476,7 @@ function Sync-EvtxECmdMaps
 	Start-Sleep -Seconds 5
 }
 
+
 <#
 	.SYNOPSIS
 		Sync with GitHub for the latest RECmd Batch files!
@@ -476,10 +491,20 @@ function Sync-RECmdBatchFiles
 	
 	Log -logFilePath $logFilePath -msg ' --- RECmd Sync ---'
 	
-	# This deletes the .\KAPE\Modules\bin\RECmd\BatchExamples folder so old Batch files don't collide with new Batch files
-	Log -logFilePath $logFilePath -msg "Deleting $kapeRecmdBatchExamples for a fresh start prior to syncing RECmd with GitHub"
+	# Check if $kapeRECmdExe holds a value
+	if ([string]::IsNullOrEmpty($kapeRECmdExe))
+	{
+		# Redo the original declaration
+		$script:kapeRECmdExe = (Get-ChildItem $kapeRecmd -Filter 'RECmd.exe').FullName
+		Log -logFilePath $logFilePath -msg "Located $kapeRECmdExe"
+	}
 	
-	Remove-Item -Path "$kapeRecmdBatchExamples\*" -Recurse -Force
+	# This deletes the .\KAPE\Modules\bin\RECmd\BatchExamples folder so old Batch files don't collide with new Batch files
+	if (Test-Path -Path $kapeRecmdBatchExamples -PathType Container)
+	{
+		Remove-Item -Path "$kapeRecmdBatchExamples\*" -Recurse -Force
+		Log -logFilePath $logFilePath -msg "Deleting $kapeRecmdBatchExamples for a fresh start prior to syncing RECmd with GitHub"
+	}
 	
 	# This ensures all the latest RECmd Batch files are present on disk
 	Log -logFilePath $logFilePath -msg 'Syncing RECmd with GitHub for the latest Maps'
@@ -503,10 +528,20 @@ function Sync-SQLECmdMaps
 	
 	Log -logFilePath $logFilePath -msg ' --- SQLECmd Sync ---'
 	
-	# This deletes the .\KAPE\Modules\bin\SQLECmd\Maps folder so old Maps don't collide with new Maps
-	Log -logFilePath $logFilePath -msg "Deleting $kapeSQLECmdMaps for a fresh start prior to syncing SQLECmd with GitHub"
+	# Check if $kapeRECmdExe holds a value
+	if ([string]::IsNullOrEmpty($kapeSQLECmdExe))
+	{
+		# Redo the original declaration
+		$script:kapeSQLECmdExe = (Get-ChildItem $kapeSQLECmd -Filter 'SQLECmd.exe').FullName
+		Log -logFilePath $logFilePath -msg "Located $kapeSQLECmdExe"
+	}
 	
-	Remove-Item -Path "$kapeSQLECmdMaps\*" -Recurse -Force
+	# This deletes the .\KAPE\Modules\bin\SQLECmd\Maps folder so old Maps don't collide with new Maps
+	if (Test-Path -Path $kapeSQLECmdMaps -PathType Container)
+	{
+		Remove-Item -Path "$kapeSQLECmdMaps\*" -Recurse -Force
+		Log -logFilePath $logFilePath -msg "Deleting $kapeSQLECmdMaps for a fresh start prior to syncing SQLECmd with GitHub"
+	}
 	
 	# This ensures all the latest SQLECmd Maps are downloaded
 	Log -logFilePath $logFilePath -msg 'Syncing SQLECmd with GitHub for the latest Maps'
@@ -674,8 +709,8 @@ finally
 # SIG # Begin signature block
 # MIIviwYJKoZIhvcNAQcCoIIvfDCCL3gCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCC2jK7u3y/veI/c
-# d0cppJhRplgY0RD8E7Vj2hw2Vw2A+6CCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBkSMpY+eVnAtQ3
+# f6Gy4NHpTJgxF/HAtDmhrk6gjjuC3aCCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
 # SIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJHcmVhdGVyIE1hbmNo
 # ZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBMaW1p
 # dGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAx
@@ -895,35 +930,35 @@ finally
 # Bk0CAQEwaDBUMQswCQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVk
 # MSswKQYDVQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1
 # nosluv9RC3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoEwwGQYJKoZIhvcNAQkDMQwG
-# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIGYRlGFBPEOowWsEowYPKpE8y9ig
-# 64x8GzGo0EkL7Sj4MA0GCSqGSIb3DQEBAQUABIICAKqfg6LFYJeqfsNRl0oVxcM6
-# piWixfhn4KzKzeRmpWB6d1cTWp17u4bEVgXmQFpozq9arMqL/3kq8DUrKT2KY9nN
-# RIdNwuad3KK4UQoTFhr36FEULQoiESxDYDFXEmYkkKSzgdFTel0T16gg8/6v1sG/
-# CM9vwNseM+7yKbsIb9DipY0JA8RHY87ror7i/8qZQB3rt8fVKZBGkxiN8jM3zYvp
-# Ij7adV9fIuGQwAuzQ17kEzED40fFMu2tcsZ8jnRElz8UuyZIV0ecwN40M7+6l11R
-# 1xxJR2Qvib/eWVLeQ6ktOqGXHAnm7m0PECm5ECPySM6Xtz6CUzhPbvJplvl6ovGu
-# y5z2EQODMUyUGeMz8BNUrXA28kOfBwUrJOFl9BO2wBJLDjxzNTiIFrO/Np+RPIN2
-# GkEWPsTrD6g2h+F1wq+Bwjsf+wMI7oD5QwOU1B5NcOHcXQFJSizcJgF/Sum83zXc
-# z+HoceZRTsrt4wAYZjct96XESMLpxMIADIAV+MGHd2MTQGcuaovsd/jdYz2tj0U3
-# 4+Fc7dFq+Ftj+JHGaOosbU96Gey+TTgOQrRgsHa+igw/GtrNL0XP4WSJLKF3N2im
-# aE7qPz7fzNW+0cbT2rGvnVqq1YLnukt/RvTN1T67hMxfbp0YUJDhZB5w5WgfDLCB
-# avsjpvWsfI/aBEETtmrBoYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
+# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIB1irSVeuSx6RPR/YdFpiSPVSX5v
+# jMSflwaWwHdGE+lwMA0GCSqGSIb3DQEBAQUABIICAAYVUxUfYJfoV8VNudRD1z2y
+# IqT5Y/iV2BAvcxV0iYVqgbYlDujDTMBHKinaOtkvrFp+B2b3ZHlOP3CbplnZdubn
+# 8Ac1JkQ98Ly/21c+260Crl0p/HI5AnmwB7kMR2GjHtTnkWD2ga4yVPh7/EnN1hwk
+# 99zfA+uIAO4cPDa4Fz6cMY4PzYgCAMUpyqbfiZ7ONy/TtGamSiP5H908RoyFGIWB
+# oPlpt7rKdA5373g10G6Sfs4+HraOe8MnP9J1r17m93EHOuYvuFRIc54qOXpAxNlR
+# HKBipGfGOQuyY2jZaO7cRJfXkkpK+m5Ei5o1kniZw5RCYA9mBUQ4D5jDK5dRUPkX
+# hnWB6od6X8vTGF4oWoqf1kx+ilIr1hTvNxZ7VQckb9W3r30EJ1utphHtqg6ekUR2
+# njSOP35CmMIulPVKsuhUOcLk5xWAijWJUvq3YZYTzekeWAuKiW0+otEpJ48OZ4/2
+# n++CqLeh8jUuw0xvbXVWkuNZyGg4ZlnY6wkCdc+5UEWQ2k0L4S6ZNn3cxTAuLYC/
+# kl1/F5kBQBZi1c9u7fZ1xqzvnvc04QOMzl5TsTiUJt5B3OCTmDnBTnIE0ixnIdUO
+# lX7hSzB2qXfYBkGs2NN729FHJpR+ktbgQDVxtDhoBu3mpiAfotAHXZWSt+5tFwG3
+# SKmWwLycFdUZN+L3VI3ToYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
 # WzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExMTAvBgNV
 # BAMTKEdsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gU0hBMzg0IC0gRzQCEAFI
 # kD3CirynoRlNDBxXuCkwCwYJYIZIAWUDBAIBoIIBPTAYBgkqhkiG9w0BCQMxCwYJ
-# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTUwMzE4NTJaMCsGCSqGSIb3
+# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTUwNDA2MTVaMCsGCSqGSIb3
 # DQEJNDEeMBwwCwYJYIZIAWUDBAIBoQ0GCSqGSIb3DQEBCwUAMC8GCSqGSIb3DQEJ
-# BDEiBCAa8hEcBdELR7+6moqq+hZBohp0zet9owaSpBGktnHLzjCBpAYLKoZIhvcN
+# BDEiBCDnw7Rr2eZUSudKeol3Ci0Tqln88cokC5YYjbiSbcIpAzCBpAYLKoZIhvcN
 # AQkQAgwxgZQwgZEwgY4wgYsEFDEDDhdqpFkuqyyLregymfy1WF3PMHMwX6RdMFsx
 # CzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 # EyhHbG9iYWxTaWduIFRpbWVzdGFtcGluZyBDQSAtIFNIQTM4NCAtIEc0AhABSJA9
-# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgLrGYfQMd1JldTlKWUq9nY8Z
-# K/ttqS3mvEsaJqu03exXy+67CMZcR37Zywk1c+tqkzJD897/6UwZ0KYt9/a+W/qP
-# B7ndqH8mayB1d6Ewhh2dRMkt6+zTJjDCkdK20vD9cQSrt7+rYYduZpi3c18lhvrA
-# /Nvne0rbmMv7wba6AlIBTALgQvcFXdsZx7l2S8bHo9qnt45NewJDy/Oe3lbCSVdd
-# uyriy0cFEV96AfnJp+p9EnxfrAUmewW13UyelitWjWw5VgmfjgCilSdP9PEMneB4
-# 3jLqwkoOvUEUEhhPN6KajcJaXqzcGIvom0TcIPaAb7A+SuzXEPWPAVUk1y05QV1I
-# ABURkU68ucW6K+ojC3Bd+RVDi2mzFaS2HY32t06fy2Og9miIQ/59Wi4050+7AOYM
-# ij6Wr1ZaQzSyDMgrVxvMbhO2NXCfpAlUs//yptsDjOBx5SQpDCTZLkVEUuHVFtAh
-# oqhCpI6zrNsTs3SAAEYtus8Hgh+85Ywo5us+dB6Uyg==
+# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgFTEzYC51YJveN9f7eQnmbZS
+# +jFD4sCq0wq64lrP0SOgS4wW/2c+mvUuT+JgSTkJ0HtDROMW52SWUh7hEVmiVsFk
+# LUFPr83uN1nakYhOGkAOeGtmIR6qFGbYSqM/jfftTo98xuRJedmysfDWB1j1dNjo
+# 55nT5cKzOP6psJjvs3mx+jH0QaCQbtDQa171FS5aw3fXK4Me38tdvaESGn0kKSs2
+# 2i4BK5QerxJyaJY+cCTvgmGzw5Gm8HUJy2DUaYjGBdUuiBNYeH2sncj//kN9Q8n/
+# 0HazU5Nh26ZkBWgcYFWe471qpEoMt3xQhNpqs5NRfgEPkp1uLipFIq+3sEQqgFhQ
+# 7OlP+QlJ374OyhV5W7IlIDeX2PDTngkeplPjRBWutRXOlCFXAD71qm93cyQWGN4M
+# 4ntOHRKM4sJdDqZuLkDGpWNV1h/uLrH3EN8oAlmftMKcRvray3A9hZFWxUcjsJzJ
+# zRIhk4T7yNadzijixUXfBrHAq1uANEKlQEVo/Vy3qA==
 # SIG # End signature block
