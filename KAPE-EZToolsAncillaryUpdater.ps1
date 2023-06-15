@@ -84,96 +84,108 @@ if ($silent)
 	$ProgressPreference = 'SilentlyContinue'
 }
 
-# Establishes stopwatch to keep track of execution duration of this script
-$stopwatch = [system.diagnostics.stopwatch]::StartNew()
-
-$Stopwatch.Start()
-
-Log -logFilePath $logFilePath -msg ' --- Beginning of session ---' # start of Log
-
-Set-ExecutionPolicy Bypass -Scope Process
-
-# Let's get some script info and provide it to the end user for the purpose of the log
-# establish name of script to pass to Log-ToFile Module, so it outputs to the correctly named log file
-$scriptPath = $PSCommandPath
-
-$scriptNameWithoutExtension = (Split-Path -Path $scriptPath -Leaf).TrimEnd('.ps1') # this isn't currently used
-$scriptName = Split-Path -Path $scriptPath -Leaf
-
-$fileInfo = Get-Item $scriptPath
-$fileSizeInBytes = $fileInfo.Length
-$fileSizeInMegabytes = $fileSizeInBytes / 1MB
-
-$signature = Get-AuthenticodeSignature $scriptPath
-
-if ($signature -and $signature.SignerCertificate)
+function Start-Script
 {
-	$lastSignedTime = $signature.SignerCertificate.NotAfter
-}
-else
-{
-	$lastSignedTime = "Invalid or not signed"
-}
-
-$fileHash = (Get-FileHash -Path $scriptPath -Algorithm SHA1).Hash
-
-$fileSizeFormatted = "{0:N2}" -f $fileSizeInMegabytes
-
-# Output all of the above stats about this script. Examples are in comments at end of each line
-Log -logFilePath $logFilePath -msg "Script Name: $scriptName" # [2023-06-13 22:23:13] | Script Name: KAPE-EZToolsAncillaryUpdater.ps1
-Log -logFilePath $logFilePath -msg "Full Path: $scriptPath" # [2023-06-13 22:23:13] | Full Path: D:\KAPE-EZToolsAncillaryUpdater\KAPE-EZToolsAncillaryUpdater.ps1
-Log -logFilePath $logFilePath -msg "Last Modified Date: $($fileInfo.LastWriteTime)" # [2023-06-13 22:23:13] | Last Modified Date: 06/13/2023 22:23:07
-Log -logFilePath $logFilePath -msg "File Size: $fileSizeInBytes bytes | $fileSizeFormatted MB" # [2023-06-13 22:23:13] | File Size: 43655 bytes | 0.04 MB
-Log -logFilePath $logFilePath -msg "Certificate Expiration: $lastSignedTime" # [2023-06-13 22:23:13] | Certificate Expiration: 01/26/2025 18:59:59
-Log -logFilePath $logFilePath -msg "SHA1 Hash: $fileHash" # [2023-06-13 22:23:13] | SHA1 Hash: A9E7D1DB7A8C41B9424DEC57297CC9E6
-Log -logFilePath $logFilePath -msg "--------- Script Log ---------"
-
-# Validate that logFilePath exists and shoot a message to the user one way or another
-try
-{
-	if (!(Test-Path -Path $logFilePath))
+	[CmdletBinding()]
+	param ()
+	
+	# Establishes stopwatch to keep track of execution duration of this script
+	$script:stopwatch = [system.diagnostics.stopwatch]::StartNew()
+	
+	$Stopwatch.Start()
+	
+	Log -logFilePath $logFilePath -msg ' --- Beginning of session ---' # start of Log
+	
+	Set-ExecutionPolicy Bypass -Scope Process
+	
+	# Let's get some script info and provide it to the end user for the purpose of the log
+	# establish name of script to pass to Log-ToFile Module, so it outputs to the correctly named log file
+	$scriptPath = $PSCommandPath
+	
+	$scriptNameWithoutExtension = (Split-Path -Path $scriptPath -Leaf).TrimEnd('.ps1') # this isn't currently used
+	$scriptName = Split-Path -Path $scriptPath -Leaf
+	
+	$fileInfo = Get-Item $scriptPath
+	$fileSizeInBytes = $fileInfo.Length
+	$fileSizeInMegabytes = $fileSizeInBytes / 1MB
+	
+	$signature = Get-AuthenticodeSignature $scriptPath
+	
+	if ($signature -and $signature.SignerCertificate)
 	{
-		New-Item -ItemType File -Path $logFilePath -Force | Out-Null
-		Log -logFilePath $logFilePath -msg "Created new log file at $logFilePath"
+		$lastSignedTime = $signature.SignerCertificate.NotAfter
 	}
 	else
 	{
-		Log -logFilePath $logFilePath -msg "Log file already exists at $logFilePath"
+		$lastSignedTime = "Invalid or not signed"
+	}
+	
+	$fileHash = (Get-FileHash -Path $scriptPath -Algorithm SHA1).Hash
+	
+	$fileSizeFormatted = "{0:N2}" -f $fileSizeInMegabytes
+	
+	# Output all of the above stats about this script. Examples are in comments at end of each line
+	Log -logFilePath $logFilePath -msg "Script Name: $scriptName" # [2023-06-13 22:23:13] | Script Name: KAPE-EZToolsAncillaryUpdater.ps1
+	Log -logFilePath $logFilePath -msg "Full Path: $scriptPath" # [2023-06-13 22:23:13] | Full Path: D:\KAPE-EZToolsAncillaryUpdater\KAPE-EZToolsAncillaryUpdater.ps1
+	Log -logFilePath $logFilePath -msg "Last Modified Date: $($fileInfo.LastWriteTime)" # [2023-06-13 22:23:13] | Last Modified Date: 06/13/2023 22:23:07
+	Log -logFilePath $logFilePath -msg "File Size: $fileSizeInBytes bytes | $fileSizeFormatted MB" # [2023-06-13 22:23:13] | File Size: 43655 bytes | 0.04 MB
+	Log -logFilePath $logFilePath -msg "Certificate Expiration: $lastSignedTime" # [2023-06-13 22:23:13] | Certificate Expiration: 01/26/2025 18:59:59
+	Log -logFilePath $logFilePath -msg "SHA1 Hash: $fileHash" # [2023-06-13 22:23:13] | SHA1 Hash: A9E7D1DB7A8C41B9424DEC57297CC9E6
+	Log -logFilePath $logFilePath -msg "--------- Script Log ---------"
+	
+	# Validate that logFilePath exists and shoot a message to the user one way or another
+	try
+	{
+		if (!(Test-Path -Path $logFilePath))
+		{
+			New-Item -ItemType File -Path $logFilePath -Force | Out-Null
+			Log -logFilePath $logFilePath -msg "Created new log file at $logFilePath"
+		}
+		else
+		{
+			Log -logFilePath $logFilePath -msg "Log file already exists at $logFilePath"
+		}
+	}
+	catch
+	{
+		Write-Host $_.Exception.Message
 	}
 }
-catch
+
+function Set-Variables
 {
-	Write-Host $_.Exception.Message
+	[CmdletBinding()]
+	param ()
+	
+	# Setting variables the script relies on. Comments show expected values stored within each respective variable
+	$script:kapeTargetsFolder = Join-Path -Path $PSScriptRoot -ChildPath 'Targets' # .\KAPE\Targets
+	$script:kapeModulesFolder = Join-Path -Path $PSScriptRoot -ChildPath 'Modules' # .\KAPE\Modules
+	$script:kapeModulesBin = Join-Path -Path $kapeModulesFolder -ChildPath 'bin' # .\KAPE\Modules\bin
+	$script:getZimmermanToolsFolderKape = Join-Path -Path $kapeModulesBin -ChildPath 'ZimmermanTools' # .\KAPE\Modules\bin\ZimmermanTools, also serves as our .NET 4 folder, if needed
+	$script:getZimmermanToolsFolderKapeNet6 = Join-Path -Path $getZimmermanToolsFolderKape -ChildPath 'net6' # .\KAPE\Modules\bin\ZimmermanTools\net6
+	
+	$script:ZTZipFile = 'Get-ZimmermanTools.zip'
+	$script:ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile" # https://f001.backblazeb2.com/file/EricZimmermanTools\Get-ZimmermanTools.zip
+	$script:getZimmermanToolsFolderKapeZip = Join-Path -Path $getZimmermanToolsFolderKape -ChildPath $ZTZipFile # .\KAPE\Modules\bin\ZimmermanTools\Get-ZimmermanTools.zip - this currently doesn't get used...
+	$script:kapeDownloadUrl = 'https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape'
+	$script:kapeEzToolsAncillaryUpdaterFileName = 'KAPE-EZToolsAncillaryUpdater.ps1'
+	$script:getZimmermanToolsFileName = 'Get-ZimmermanTools.ps1'
+	$script:getKapeUpdatePs1FileName = 'Get-KAPEUpdate.ps1'
+	$script:kape = Join-Path -Path $PSScriptRoot -ChildPath 'kape.exe' # .\KAPE\kape.exe
+	$script:getZimmermanToolsZipKape = Join-Path -Path $kapeModulesBin -ChildPath $ZTZipFile # .\KAPE\Modules\bin\Get-ZimmermanTools.zip
+	$script:getZimmermanToolsPs1Kape = Join-Path -Path $kapeModulesBin -ChildPath $getZimmermanToolsFileName # .\KAPE\Modules\bin\Get-ZimmermanTools.ps1
+	
+	# setting variables for EZ Tools binaries, folders, and folders containing ancillary files within .\KAPE\Modules\bin
+	$script:kapeRecmd = Join-Path $kapeModulesBin -ChildPath 'RECmd' #.\KAPE\Modules\bin\RECmd
+	$script:kapeRecmdExe = Get-ChildItem $kapeRecmd -Filter 'RECmd.exe' | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\RECmd\RECmd.exe
+	$script:kapeRecmdBatchExamples = Join-Path $kapeRecmd -ChildPath 'BatchExamples' #.\KAPE\Modules\bin\RECmd\BatchExamples
+	$script:kapeEvtxECmd = Join-Path $kapeModulesBin -ChildPath 'EvtxECmd' #.\KAPE\Modules\bin\EvtxECmd
+	$script:kapeEvtxECmdExe = Get-ChildItem $kapeEvtxECmd -Filter 'EvtxECmd.exe' | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\EvtxECmd\EvtxECmd.exe
+	$script:kapeEvtxECmdMaps = Join-Path $kapeEvtxECmd -ChildPath 'Maps' #.\KAPE\Modules\bin\EvtxECmd\Maps
+	$script:kapeSQLECmd = Join-Path $kapeModulesBin -ChildPath 'SQLECmd' #.\KAPE\Modules\bin\SQLECmd
+	$script:kapeSQLECmdExe = Get-ChildItem $kapeSQLECmd -Filter 'SQLECmd.exe' | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\SQLECmd\SQLECmd.exe
+	$script:kapeSQLECmdMaps = Join-Path $kapeSQLECmd -ChildPath 'Maps' #.\KAPE\Modules\bin\SQLECmd\Maps
 }
-
-# Setting variables the script relies on. Comments show expected values stored within each respective variable
-$script:kapeTargetsFolder = Join-Path -Path $PSScriptRoot -ChildPath 'Targets' # .\KAPE\Targets
-$script:kapeModulesFolder = Join-Path -Path $PSScriptRoot -ChildPath 'Modules' # .\KAPE\Modules
-$script:kapeModulesBin = Join-Path -Path $kapeModulesFolder -ChildPath 'bin' # .\KAPE\Modules\bin
-$script:getZimmermanToolsFolderKape = Join-Path -Path $kapeModulesBin -ChildPath 'ZimmermanTools' # .\KAPE\Modules\bin\ZimmermanTools, also serves as our .NET 4 folder, if needed
-$script:getZimmermanToolsFolderKapeNet6 = Join-Path -Path $getZimmermanToolsFolderKape -ChildPath 'net6' # .\KAPE\Modules\bin\ZimmermanTools\net6
-
-$script:ZTZipFile = 'Get-ZimmermanTools.zip'
-$script:ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile" # https://f001.backblazeb2.com/file/EricZimmermanTools\Get-ZimmermanTools.zip
-$script:getZimmermanToolsFolderKapeZip = Join-Path -Path $getZimmermanToolsFolderKape -ChildPath $ZTZipFile # .\KAPE\Modules\bin\ZimmermanTools\Get-ZimmermanTools.zip - this currently doesn't get used...
-$script:kapeDownloadUrl = 'https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape'
-$script:kapeEzToolsAncillaryUpdaterFileName = 'KAPE-EZToolsAncillaryUpdater.ps1'
-$script:getZimmermanToolsFileName = 'Get-ZimmermanTools.ps1'
-$script:getKapeUpdatePs1FileName = 'Get-KAPEUpdate.ps1'
-$script:kape = Join-Path -Path $PSScriptRoot -ChildPath 'kape.exe' # .\KAPE\kape.exe
-$script:getZimmermanToolsZipKape = Join-Path -Path $kapeModulesBin -ChildPath $ZTZipFile # .\KAPE\Modules\bin\Get-ZimmermanTools.zip
-$script:getZimmermanToolsPs1Kape = Join-Path -Path $kapeModulesBin -ChildPath $getZimmermanToolsFileName # .\KAPE\Modules\bin\Get-ZimmermanTools.ps1
-
-# setting variables for EZ Tools binaries, folders, and folders containing ancillary files within .\KAPE\Modules\bin
-$script:kapeRecmd = Join-Path $kapeModulesBin -ChildPath 'RECmd' #.\KAPE\Modules\bin\RECmd
-$script:kapeRecmdExe = Get-ChildItem $kapeRecmd -Filter 'RECmd.exe' | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\RECmd\RECmd.exe
-$script:kapeRecmdBatchExamples = Join-Path $kapeRecmd -ChildPath 'BatchExamples' #.\KAPE\Modules\bin\RECmd\BatchExamples
-$script:kapeEvtxECmd = Join-Path $kapeModulesBin -ChildPath 'EvtxECmd' #.\KAPE\Modules\bin\EvtxECmd
-$script:kapeEvtxECmdExe = Get-ChildItem $kapeEvtxECmd -Filter 'EvtxECmd.exe' | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\EvtxECmd\EvtxECmd.exe
-$script:kapeEvtxECmdMaps = Join-Path $kapeEvtxECmd -ChildPath 'Maps' #.\KAPE\Modules\bin\EvtxECmd\Maps
-$script:kapeSQLECmd = Join-Path $kapeModulesBin -ChildPath 'SQLECmd' #.\KAPE\Modules\bin\SQLECmd
-$script:kapeSQLECmdExe = Get-ChildItem $kapeSQLECmd -Filter 'SQLECmd.exe' | Select-Object -ExpandProperty FullName #.\KAPE\Modules\bin\SQLECmd\SQLECmd.exe
-$script:kapeSQLECmdMaps = Join-Path $kapeSQLECmd -ChildPath 'Maps' #.\KAPE\Modules\bin\SQLECmd\Maps
 
 <#
 	.SYNOPSIS
@@ -254,16 +266,24 @@ function Get-LatestEZToolsUpdater
 	{
 		Log -logFilePath $logFilePath -msg 'Updating script to the latest version'
 		
-		#Start a new PowerShell process so we can replace the existing file and run the new script
+		# Start a new PowerShell process so we can replace the existing file and run the new script
 		$script:kapeEzToolsAncillaryUpdaterScriptUrl = 'https://raw.githubusercontent.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/main/KAPE-EZToolsAncillaryUpdater.ps1'
 		$script:kapeEzToolsAncillaryUpdaterOutFile = Join-Path -Path $PSScriptRoot -ChildPath 'KAPE-EZToolsAncillaryUpdater.ps1'
-		Invoke-WebRequest -Uri $kapeEzToolsAncillaryUpdaterScriptUrl -OutFile $kapeEzToolsAncillaryUpdaterOutFile -UseBasicParsing
+		
+		try
+		{
+			Invoke-WebRequest -Uri $kapeEzToolsAncillaryUpdaterScriptUrl -OutFile $kapeEzToolsAncillaryUpdaterOutFile -UseBasicParsing -ErrorAction Stop
+		}
+		catch
+		{
+			Log -logFilePath $logFilePath -msg 'Failed to download updated script'
+			Log -logFilePath $logFilePath -msg $_.Exception.Message
+			Exit
+		}
+		
 		Log -logFilePath $logFilePath -msg "Successfully updated script to $CurrentScriptVersionNumber"
 		Log -logFilePath $logFilePath -msg 'Starting updated script in new window'
-		# old code
-		# Start-Process PowerShell -ArgumentList "$kapeEzToolsAncillaryUpdaterOutFile $netVersion $(if ($PSBoundParameters.Keys.Contains('silent')) { $silent = $true })"
 		
-		# new code 
 		# Store the arguments in a variable
 		$argList = "$kapeEzToolsAncillaryUpdaterOutFile" # no netVersion specified which defaults to .NET 6 tools as of 3.7
 		if ($PSBoundParameters.Keys.Contains('silent'))
@@ -312,11 +332,22 @@ function Get-ZimmermanTools
 		{
 			# Remove the file
 			Remove-Item -Path $remoteFileDetailsCSV.FullName -Force
-			Log -logFilePath $logFilePath -msg "Deleting $($remoteFileDetailsCSV.FullName)"
+			
+			# Confirm the file was removed
+			if (Test-Path $remoteFileDetailsCSV.FullName)
+			{
+				Log -logFilePath $logFilePath -msg "Warning: Failed to delete $($remoteFileDetailsCSV.FullName)"
+			}
+			else
+			{
+				Log -logFilePath $logFilePath -msg "Deleted $($remoteFileDetailsCSV.FullName)"
+			}
 		}
 	}
 	
 	# if .\KAPE\Modules\bin\ZimmermanTools doesn't exist, create it!
+	Log -logFilePath $logFilePath -msg "Checking if $getZimmermanToolsFolderKape exists"
+	
 	if (-not (Test-Path $getZimmermanToolsFolderKape))
 	{
 		Log -logFilePath $logFilePath -msg "Creating $getZimmermanToolsFolderKape"
@@ -332,46 +363,44 @@ function Get-ZimmermanTools
 		Dest = "$getZimmermanToolsFolderKape"
 	}
 	
-	# if .\KAPE\Modules\bin\Get-ZimmermanTools.ps1 exists...
-	if (Test-Path -Path $getZimmermanToolsPs1Kape)
+	Log -logFilePath $logFilePath -msg "Downloading $ZTZipFile from $ZTdlUrl to $kapeModulesBin" # message saying we're downloading Get-ZimmermanTools.zip to .\KAPE\Modules\bin
+	
+	try
 	{
-		Log -logFilePath $logFilePath -msg "$getZimmermanToolsPs1Kape already exists! Downloading .NET 6 version of EZ Tools to $getZimmermanToolsFolderKape"
-		
-		# Store arguments in a variable
-		$arguments = @("-File", "$getZimmermanToolsPs1Kape", "-Dest", "$($scriptArgs.Dest)")
-		
-		# Verify the arguments - for debugging purposes
-		# Write-Host "Running $getZimmermanToolsFileName with the following arguments: $arguments"
-		
-		# Use the variable in Start-Process
-		Start-Process -FilePath "powershell.exe" -ArgumentList $arguments -NoNewWindow -Wait
-		
-		Start-Sleep -Seconds 3
+		Start-BitsTransfer -Source $ZTdlUrl -Destination $kapeModulesBin -ErrorAction Stop
 	}
-	else
+	catch
 	{
-		Log -logFilePath $logFilePath -msg "Downloading $ZTZipFile from $ZTdlUrl to $kapeModulesBin" # message saying we're downloading Get-ZimmermanTools.zip to .\KAPE\Modules\bin
-		
-		Start-BitsTransfer -Source $ZTdlUrl -Destination $kapeModulesBin # downloading to .\KAPE\Modules\bin
-		
-		Log -logFilePath $logFilePath -msg "Extracting $ZTZipFile from $kapeModulesBin to $kapeModulesBin" # extracting Get-ZimmermanTools.zip from .\KAPE\Modules\bin to .\KAPE\Modules\bin
-		
-		Expand-Archive -Path "$getZimmermanToolsZipKape" -DestinationPath "$kapeModulesBin" -Force # actually expanding Get-ZimmermanTools.zip to .\KAPE\Modules\bin
-		
-		Log -logFilePath $logFilePath -msg "Moving $getZimmermanToolsFileName from $kapeModulesBin to $getZimmermanToolsFolderKape"
-		
-		$getZimmermanToolsPs1 = Get-ChildItem -Path $PSScriptRoot -Filter $getZimmermanToolsFileName
-		
-		Move-Item -Path $getZimmermanToolsPs1.FullName -Destination $kapeModulesBin -Force
-		
-		Start-Sleep -Seconds 1
-		
-		Log -logFilePath $logFilePath -msg "Running $getZimmermanToolsFileName! Downloading .NET 6 version of EZ Tools to $getZimmermanToolsFolderKape"
-		
-		Start-Process -FilePath "powershell.exe" -ArgumentList "-File $getZimmermanToolsPs1Kape", "-Dest $($scriptArgs.Dest)" # executing .\KAPE\Modules\bin\Get-ZimmermanTools.ps1 -Dest .\KAPE\Modules\bin\ZimmermanTools
-		
-		Start-Sleep -Seconds 3
+		Log -logFilePath $logFilePath -msg "Failed to download $ZTZipFile from $ZTdlUrl. Error: $($_.Exception.Message)"
 	}
+	
+	Log -logFilePath $logFilePath -msg "Extracting $ZTZipFile from $kapeModulesBin to $kapeModulesBin" # extracting Get-ZimmermanTools.zip from .\KAPE\Modules\bin to .\KAPE\Modules\bin
+	
+	Expand-Archive -Path "$getZimmermanToolsZipKape" -DestinationPath "$kapeModulesBin" -Force # actually expanding Get-ZimmermanTools.zip to .\KAPE\Modules\bin
+	
+	Log -logFilePath $logFilePath -msg "Moving $getZimmermanToolsFileName from $kapeModulesBin to $getZimmermanToolsFolderKape"
+	
+	$getZimmermanToolsPs1 = Get-ChildItem -Path $PSScriptRoot -Filter $getZimmermanToolsFileName
+	
+	Move-Item -Path $getZimmermanToolsPs1.FullName -Destination $kapeModulesBin -Force
+	
+	Start-Sleep -Seconds 1
+	
+	Log -logFilePath $logFilePath -msg "Running $getZimmermanToolsFileName! Downloading .NET 6 version of EZ Tools to $getZimmermanToolsFolderKape"
+	
+	# Start the process
+	Start-Process -FilePath "powershell.exe" -ArgumentList "-File $getZimmermanToolsPs1Kape", "-Dest $($scriptArgs.Dest)" # executing .\KAPE\Modules\bin\Get-ZimmermanTools.ps1 -Dest .\KAPE\Modules\bin\ZimmermanTools
+	
+	# Wait for the process to exit
+	$process.WaitForExit()
+	
+	# Check the exit code
+	if ($process.ExitCode -ne 0)
+	{
+		Log -logFilePath $logFilePath -msg "Failed to execute $getZimmermanToolsPs1Kape. Exit code: $($process.ExitCode)"
+	}
+	
+	Start-Sleep -Seconds 3
 }
 
 <#
@@ -565,9 +594,36 @@ function Move-EZToolsNET6
 	}
 }
 
+function Conclude-Script
+{
+	[CmdletBinding()]
+	param ()
+	
+	Log -logFilePath $logFilePath -msg ' --- Administrative ---'
+	Log -logFilePath $logFilePath -msg 'Thank you for keeping this instance of KAPE updated!'
+	Log -logFilePath $logFilePath -msg 'Please be sure to run this script on a regular basis and follow the GitHub repositories associated with KAPE and EZ Tools!'
+	Log -logFilePath $logFilePath -msg ' --- GitHub Repositories of Interest ---'
+	Log -logFilePath $logFilePath -msg 'KapeFiles (Targets/Modules): https://github.com/EricZimmerman/KapeFiles'
+	Log -logFilePath $logFilePath -msg 'RECmd (RECmd Batch Files): https://github.com/EricZimmerman/RECmd/tree/master/BatchExamples'
+	Log -logFilePath $logFilePath -msg 'EvtxECmd (EvtxECmd Maps): https://github.com/EricZimmerman/evtx/tree/master/evtx/Maps'
+	Log -logFilePath $logFilePath -msg 'SQLECmd (SQLECmd Maps): https://github.com/EricZimmerman/SQLECmd/tree/master/SQLMap/Maps'
+	
+	$stopwatch.stop()
+	
+	$Elapsed = $stopwatch.Elapsed.TotalSeconds
+	
+	Log -logFilePath $logFilePath -msg "Total Processing Time: $Elapsed seconds"
+}
+
 # Now that all functions have been declared, let's start executing them in order
 try
 {
+	# Let's get some basic info about the script and output it to the log
+	Start-Script
+	
+	# Let's set up the variables we're going to need for the rest of the script
+	Set-Variables
+	
 	# Lets make sure this script is up to date
 	if ($PSBoundParameters.Keys.Contains('DoNotUpdate'))
 	{
@@ -593,17 +649,8 @@ try
 	& Sync-RECmdBatchFiles
 	& Sync-SQLECmdMaps
 	
-	Log -logFilePath $logFilePath -msg 'Thank you for keeping this instance of KAPE updated! Please be sure to run this script on a regular basis and follow the GitHub repositories associated with KAPE and EZ Tools!'
-	Log -logFilePath $logFilePath -msg 'KapeFiles (Targets/Modules): https://github.com/EricZimmerman/KapeFiles'
-	Log -logFilePath $logFilePath -msg 'RECmd (RECmd Batch Files): https://github.com/EricZimmerman/RECmd/tree/master/BatchExamples'
-	Log -logFilePath $logFilePath -msg 'EvtxECmd (EvtxECmd Maps): https://github.com/EricZimmerman/evtx/tree/master/evtx/Maps'
-	Log -logFilePath $logFilePath -msg 'SQLECmd (SQLECmd Maps): https://github.com/EricZimmerman/SQLECmd/tree/master/SQLMap/Maps'
-	
-	$stopwatch.stop()
-	
-	$Elapsed = $stopwatch.Elapsed.TotalSeconds
-	
-	Log -logFilePath $logFilePath -msg "Total Processing Time: $Elapsed seconds"
+	# Let's output our final administrative messages to close out the script
+	Conclude-Script
 }
 catch [System.IO.IOException] {
 	# Handle specific IOException related to file operations
@@ -627,8 +674,8 @@ finally
 # SIG # Begin signature block
 # MIIviwYJKoZIhvcNAQcCoIIvfDCCL3gCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDa/F1w1y5R21W1
-# t9TAfU81+LrsIfL9V+iL9l3Tbmte66CCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCC2jK7u3y/veI/c
+# d0cppJhRplgY0RD8E7Vj2hw2Vw2A+6CCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
 # SIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJHcmVhdGVyIE1hbmNo
 # ZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBMaW1p
 # dGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAx
@@ -848,35 +895,35 @@ finally
 # Bk0CAQEwaDBUMQswCQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVk
 # MSswKQYDVQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1
 # nosluv9RC3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoEwwGQYJKoZIhvcNAQkDMQwG
-# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIElkGYs2aCc5tFyyC8PLtyBdyJtt
-# blFQUL6FpguW6e89MA0GCSqGSIb3DQEBAQUABIICAISGmWG/djaghhryJ78dxkcK
-# Tkk/5df4jcumO6bru2xImvXIymxggmpBrDv5f8aJB4OKC6nmZgTGV6WRif7tW2N2
-# RjC/LsCt4wW5l+SqqsbEGBDNl3ZIyP398Jh+AnAAQ/psge3IwKNgofYtkWB/X/Yq
-# 7L5SFOsImLuxkSjEiDha9hPyw5D5A6ccBxv/DYm+Gbe5/xxTbIeHoX5eteg9LB3p
-# byhvHMKL8sv5GDXGSpmEgVixAu+6tSuRgPZpX4hiIoAH3uLyfvrjHl46YfHEVtId
-# TfULTCRQqySaijtUqE50rlip14tXrc+Hcs8YhlJY6zJYp7dZ67cqkBxfyaHo0zsE
-# FGGw7hxMWnNWnwAlmkfnNlGxY8pSBjjyVrqKkGUgnVokTcTVSXXc8ALvQtV0b8wq
-# SfiH4v14xIGYDBDS/vP68Dln8VSv1R4oCwGf4kACvd4d278PsehhZ5H9aDYwmaVn
-# krvvVXWYzOTy3zow/OAMjmbrj8ozhN90EiQr81dRI49YZykSa2o34FIMTQTDtnKa
-# w4yeuG4u6ErcyPnpvEe106nUPsZomOklP3NH1rPMwhu/gBwmqPk0LJ58Tl8QR2Gm
-# ld0zPWCO9qsXoaWZkIsPmVjSbKB43SyYUphnzyBmLXVXIY+3adbGSvpUb92R7ueU
-# s4q6rCuedmva0k0bZZe8oYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
+# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIGYRlGFBPEOowWsEowYPKpE8y9ig
+# 64x8GzGo0EkL7Sj4MA0GCSqGSIb3DQEBAQUABIICAKqfg6LFYJeqfsNRl0oVxcM6
+# piWixfhn4KzKzeRmpWB6d1cTWp17u4bEVgXmQFpozq9arMqL/3kq8DUrKT2KY9nN
+# RIdNwuad3KK4UQoTFhr36FEULQoiESxDYDFXEmYkkKSzgdFTel0T16gg8/6v1sG/
+# CM9vwNseM+7yKbsIb9DipY0JA8RHY87ror7i/8qZQB3rt8fVKZBGkxiN8jM3zYvp
+# Ij7adV9fIuGQwAuzQ17kEzED40fFMu2tcsZ8jnRElz8UuyZIV0ecwN40M7+6l11R
+# 1xxJR2Qvib/eWVLeQ6ktOqGXHAnm7m0PECm5ECPySM6Xtz6CUzhPbvJplvl6ovGu
+# y5z2EQODMUyUGeMz8BNUrXA28kOfBwUrJOFl9BO2wBJLDjxzNTiIFrO/Np+RPIN2
+# GkEWPsTrD6g2h+F1wq+Bwjsf+wMI7oD5QwOU1B5NcOHcXQFJSizcJgF/Sum83zXc
+# z+HoceZRTsrt4wAYZjct96XESMLpxMIADIAV+MGHd2MTQGcuaovsd/jdYz2tj0U3
+# 4+Fc7dFq+Ftj+JHGaOosbU96Gey+TTgOQrRgsHa+igw/GtrNL0XP4WSJLKF3N2im
+# aE7qPz7fzNW+0cbT2rGvnVqq1YLnukt/RvTN1T67hMxfbp0YUJDhZB5w5WgfDLCB
+# avsjpvWsfI/aBEETtmrBoYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
 # WzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExMTAvBgNV
 # BAMTKEdsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gU0hBMzg0IC0gRzQCEAFI
 # kD3CirynoRlNDBxXuCkwCwYJYIZIAWUDBAIBoIIBPTAYBgkqhkiG9w0BCQMxCwYJ
-# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTUwMjQ5NDJaMCsGCSqGSIb3
+# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTUwMzE4NTJaMCsGCSqGSIb3
 # DQEJNDEeMBwwCwYJYIZIAWUDBAIBoQ0GCSqGSIb3DQEBCwUAMC8GCSqGSIb3DQEJ
-# BDEiBCDtGya82453IcZB0At9b1r2WSnF8C46nCtChgNCokniazCBpAYLKoZIhvcN
+# BDEiBCAa8hEcBdELR7+6moqq+hZBohp0zet9owaSpBGktnHLzjCBpAYLKoZIhvcN
 # AQkQAgwxgZQwgZEwgY4wgYsEFDEDDhdqpFkuqyyLregymfy1WF3PMHMwX6RdMFsx
 # CzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 # EyhHbG9iYWxTaWduIFRpbWVzdGFtcGluZyBDQSAtIFNIQTM4NCAtIEc0AhABSJA9
-# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgG5R6YVSk4kdkg2p63R/gmZy
-# SkAPfyr+lyRxot7IpG3rKaXMBGvAqJYAw+F4Kby5nW2T/EKAHm1kur1aU5aBAoYn
-# pG/OoH/bWYGc8In/xur2dITHE8ZE2w+4DUga5SA6blHZeceZN5FN6Z5VoZCO9hGc
-# oR64U2HlIQXDOoIyX74aQCncFkqKd+TlA5iMTNKXP/yWnkMM6gdP8ZoSTv3fqH47
-# 8YjShJ8NEwN6v1FT/IgYgcNQuGq1nCY1eEH08XE2iqNmBA6CGlCP68yn5g3oFVw7
-# 8xxc0MaHh/mwo278HgU6gtWoz+CuKefmw6jI9CYUDRCumPhDKs+st3XJwrxlkjoQ
-# +JVUxFkf0RYnv2pOyh6vDiIXvcJVplgSD+Mo4wSVQ6lVuvX7Ggk7S81sfwsGSf83
-# l9cBrVnX9wfG+apSFhDijig6k11cB9yOpwgmekyrBjf1iuJLJFoZIOEizqH6SCRW
-# UMxnoODtGYfh+2Hq7JTLIxJB5CNiKemRa57Czp8ZSA==
+# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgLrGYfQMd1JldTlKWUq9nY8Z
+# K/ttqS3mvEsaJqu03exXy+67CMZcR37Zywk1c+tqkzJD897/6UwZ0KYt9/a+W/qP
+# B7ndqH8mayB1d6Ewhh2dRMkt6+zTJjDCkdK20vD9cQSrt7+rYYduZpi3c18lhvrA
+# /Nvne0rbmMv7wba6AlIBTALgQvcFXdsZx7l2S8bHo9qnt45NewJDy/Oe3lbCSVdd
+# uyriy0cFEV96AfnJp+p9EnxfrAUmewW13UyelitWjWw5VgmfjgCilSdP9PEMneB4
+# 3jLqwkoOvUEUEhhPN6KajcJaXqzcGIvom0TcIPaAb7A+SuzXEPWPAVUk1y05QV1I
+# ABURkU68ucW6K+ojC3Bd+RVDi2mzFaS2HY32t06fy2Og9miIQ/59Wi4050+7AOYM
+# ij6Wr1ZaQzSyDMgrVxvMbhO2NXCfpAlUs//yptsDjOBx5SQpDCTZLkVEUuHVFtAh
+# oqhCpI6zrNsTs3SAAEYtus8Hgh+85Ywo5us+dB6Uyg==
 # SIG # End signature block
