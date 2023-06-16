@@ -27,6 +27,7 @@
 		3.5 - (Jul 27, 2022) Bug fix for version checker added in 3.4 - https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/pull/15
 		3.6 - (Aug 17, 2022) Added iisGeolocate now that a KAPE Module exists for it, updated comments and log messages
 		4.0 - (June 13, 2023) Made adjustments to script based on Get-ZimmermanTools.ps1 update - https://github.com/EricZimmerman/Get-ZimmermanTools/commit/c40e8ddc8df5a210c5d9155194e602a81532f23d, script now defaults to .NET 6, modifed lots of comments, variables, etc, and overall made the script more readable and maintainable
+		4.1 - (June 16, 2023) Minor adjustments based on feedback from version 4.0. Additionally, added script info to the log output
 	
 	.PARAMETER silent
 		Disable the progress bar and exit the script without pausing in the end
@@ -38,11 +39,11 @@
 		===========================================================================
 		Created with:	 	SAPIEN Technologies, Inc., PowerShell Studio 2022 v5.8.201
 		Created on:   		2022-02-22 23:29
-		Created by:	   	Andrew Rathbun
+		Created by:	   		Andrew Rathbun
 		Organization: 		Kroll
-		Filename:		KAPE-EZToolsAncillaryUpdater.ps1
-		GitHub:			https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
-		Version:		4.0
+		Filename:			KAPE-EZToolsAncillaryUpdater.ps1
+		GitHub:				https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater
+		Version:			4.1
 		===========================================================================
 #>
 param
@@ -709,8 +710,8 @@ finally
 # SIG # Begin signature block
 # MIIviwYJKoZIhvcNAQcCoIIvfDCCL3gCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBkSMpY+eVnAtQ3
-# f6Gy4NHpTJgxF/HAtDmhrk6gjjuC3aCCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB46CIv5nHZZxAY
+# KswryC5gJ3iwwSwyo18og3UpDrNx3aCCKJAwggQyMIIDGqADAgECAgEBMA0GCSqG
 # SIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJHcmVhdGVyIE1hbmNo
 # ZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBMaW1p
 # dGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAx
@@ -930,35 +931,35 @@ finally
 # Bk0CAQEwaDBUMQswCQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVk
 # MSswKQYDVQQDEyJTZWN0aWdvIFB1YmxpYyBDb2RlIFNpZ25pbmcgQ0EgUjM2AhA1
 # nosluv9RC3xO0e22wmkkMA0GCWCGSAFlAwQCAQUAoEwwGQYJKoZIhvcNAQkDMQwG
-# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIB1irSVeuSx6RPR/YdFpiSPVSX5v
-# jMSflwaWwHdGE+lwMA0GCSqGSIb3DQEBAQUABIICAAYVUxUfYJfoV8VNudRD1z2y
-# IqT5Y/iV2BAvcxV0iYVqgbYlDujDTMBHKinaOtkvrFp+B2b3ZHlOP3CbplnZdubn
-# 8Ac1JkQ98Ly/21c+260Crl0p/HI5AnmwB7kMR2GjHtTnkWD2ga4yVPh7/EnN1hwk
-# 99zfA+uIAO4cPDa4Fz6cMY4PzYgCAMUpyqbfiZ7ONy/TtGamSiP5H908RoyFGIWB
-# oPlpt7rKdA5373g10G6Sfs4+HraOe8MnP9J1r17m93EHOuYvuFRIc54qOXpAxNlR
-# HKBipGfGOQuyY2jZaO7cRJfXkkpK+m5Ei5o1kniZw5RCYA9mBUQ4D5jDK5dRUPkX
-# hnWB6od6X8vTGF4oWoqf1kx+ilIr1hTvNxZ7VQckb9W3r30EJ1utphHtqg6ekUR2
-# njSOP35CmMIulPVKsuhUOcLk5xWAijWJUvq3YZYTzekeWAuKiW0+otEpJ48OZ4/2
-# n++CqLeh8jUuw0xvbXVWkuNZyGg4ZlnY6wkCdc+5UEWQ2k0L4S6ZNn3cxTAuLYC/
-# kl1/F5kBQBZi1c9u7fZ1xqzvnvc04QOMzl5TsTiUJt5B3OCTmDnBTnIE0ixnIdUO
-# lX7hSzB2qXfYBkGs2NN729FHJpR+ktbgQDVxtDhoBu3mpiAfotAHXZWSt+5tFwG3
-# SKmWwLycFdUZN+L3VI3ToYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
+# CisGAQQBgjcCAQQwLwYJKoZIhvcNAQkEMSIEIIJt16cab8MKf+LNVvxZuo3+wVih
+# YWuUdI4DR42+Tf+DMA0GCSqGSIb3DQEBAQUABIICAGEqtXkl86lmbLhJ16iYEQwH
+# bpdxTl4YQYq37jkQekYk9GnGDBfLEKHXnbqyS/N6m+BL6g2eiJXubvvA8KkgP1ef
+# m3qHrwL1VkxX7dXOS62X8JZgXM+fY1m64ZdkWw8PkK1XR3ICTSeIUMXrMHTIgCIu
+# RX8tbzXH+u0LTRClihzZadhE82C25lF5WenNYEBsu+CHK++HpzxeqL+vOrvGooOx
+# CdyzQmvzkVARKctYIpM7Q8r1k8nXYM1XvRU5oMp2nfks47vGrmBMnGt9cYsChbdu
+# LO33UOuvEEN3BXjPgToJ9rpQ1LtCjkpzCAnCcL27zNGqh0AnLROj+Z3JEpSWAYaE
+# 1IY6059Y1cOF6zzO6EJTgXmMYRKalMImx3W9kMbD4RBrI/y0Ep3o5IgXaNW9zumd
+# gStpm40EVrL/4npiNBEjRJ683Qq4LH4DNt1nr9BUkbOB4QzsRg1SKVLU9tjOB0Ah
+# qaHtp1DxSW2Q7ygzcbByMXNtK/m21bOqfQu3lOLuMMsqw55ZQCgdSX2NxqICd8ZZ
+# 9fDygivmJfjuP3JyXIE969z9ILUFvnRX/kFxJjgqDIVnhrYq8ItuVK4LcRu+WLop
+# V4kxQ4D+Y+dwgYgXWRrVKAUQi41nnBFkQ1/FQOE/L1K73jvPQ7d0joIOJP3J/hMN
+# CBU5Hrv5IwoLgAALBEXioYIDbDCCA2gGCSqGSIb3DQEJBjGCA1kwggNVAgEBMG8w
 # WzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExMTAvBgNV
 # BAMTKEdsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gU0hBMzg0IC0gRzQCEAFI
 # kD3CirynoRlNDBxXuCkwCwYJYIZIAWUDBAIBoIIBPTAYBgkqhkiG9w0BCQMxCwYJ
-# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTUwNDA2MTVaMCsGCSqGSIb3
+# KoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MTYxOTI5MDdaMCsGCSqGSIb3
 # DQEJNDEeMBwwCwYJYIZIAWUDBAIBoQ0GCSqGSIb3DQEBCwUAMC8GCSqGSIb3DQEJ
-# BDEiBCDnw7Rr2eZUSudKeol3Ci0Tqln88cokC5YYjbiSbcIpAzCBpAYLKoZIhvcN
+# BDEiBCChqE5KOMoDHqybH0FHxJ/uqhek2pEBTzH1L8eMgqMmKTCBpAYLKoZIhvcN
 # AQkQAgwxgZQwgZEwgY4wgYsEFDEDDhdqpFkuqyyLregymfy1WF3PMHMwX6RdMFsx
 # CzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 # EyhHbG9iYWxTaWduIFRpbWVzdGFtcGluZyBDQSAtIFNIQTM4NCAtIEc0AhABSJA9
-# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgFTEzYC51YJveN9f7eQnmbZS
-# +jFD4sCq0wq64lrP0SOgS4wW/2c+mvUuT+JgSTkJ0HtDROMW52SWUh7hEVmiVsFk
-# LUFPr83uN1nakYhOGkAOeGtmIR6qFGbYSqM/jfftTo98xuRJedmysfDWB1j1dNjo
-# 55nT5cKzOP6psJjvs3mx+jH0QaCQbtDQa171FS5aw3fXK4Me38tdvaESGn0kKSs2
-# 2i4BK5QerxJyaJY+cCTvgmGzw5Gm8HUJy2DUaYjGBdUuiBNYeH2sncj//kN9Q8n/
-# 0HazU5Nh26ZkBWgcYFWe471qpEoMt3xQhNpqs5NRfgEPkp1uLipFIq+3sEQqgFhQ
-# 7OlP+QlJ374OyhV5W7IlIDeX2PDTngkeplPjRBWutRXOlCFXAD71qm93cyQWGN4M
-# 4ntOHRKM4sJdDqZuLkDGpWNV1h/uLrH3EN8oAlmftMKcRvray3A9hZFWxUcjsJzJ
-# zRIhk4T7yNadzijixUXfBrHAq1uANEKlQEVo/Vy3qA==
+# woq8p6EZTQwcV7gpMA0GCSqGSIb3DQEBCwUABIIBgJxtRlguPJDzz+/4ZcOtrvB1
+# dcMygp2Jk+MrSJJk570lPrDYw1jBBWueedj/mgDEYBnNtvgqkLghpFCwEoaLZGHO
+# 18sceVtQRJ7958JEASHGDhLr73okpWoDwxlkNK1VWwqsmCZVlnTrhLr7N8PEqER6
+# fuyn0eCT6Q4cj6l8fkXksIha0s4Nu56FUetQ+9ixi4Pfr2akQhKATZEjXD816xf6
+# PbY8KzuYBH5lL0cOixIjOYzOI7Yua3G3QiSiYFgtekInx92lQwy8f0PCkwqbt12e
+# A0IDVxZWeOntdAklrHqSAjMD/twdI7fCJO85uv+x4+yxlgARguib7glaBRA5OLqx
+# QiPpItK3c6KSOWDFQGF2625u0XqFg/ejG0AB9lyx+Ey2bqDfe/8TZ0agxuZTyHVW
+# 4FgzIN7InzWAaiPXDa3pqYWUx4X75wgOG7Uo+WPLW6zGJA8jetJ6RzsyRYxP/Tzd
+# vcAgpyuxroCXLJmwSIUZhmQpO66CGDzUIM41r2EpmA==
 # SIG # End signature block
