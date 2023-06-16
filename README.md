@@ -21,12 +21,17 @@ Right-click -> `Run with PowerShell` and let it ride!
 
 ## Usage Examples
 
-As of version [4.0](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/4.0), all you have to is run the script by itself without any arguments, unless you want to leverage `-silent` or `-DoNotUpdate`.
+As of version [4.0](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/4.0) and newer, all you have to is run the script by itself without any arguments, unless you want to leverage `-silent` or `-DoNotUpdate`.
 
-An example of the current switches:  
+### Current Switches
 
-* `-silent` - Disable the progress bar and exit the script without pausing in the end
+* `-silent` - Disable the progress bar and exit the script without pausing in the end 
+
+Example: `.\KAPE-EZToolsAncillaryUpdater.ps1 -silent`
+
 * `-DoNotUpdate` - Use this if you do not want to check for and update this script (KAPE-EZToolsAncillaryUpdater.ps1)
+
+Example: `.\KAPE-EZToolsAncillaryUpdater.ps1 -DoNotUpdate`
 
 ## Disclaimer (.NET 6)
 
