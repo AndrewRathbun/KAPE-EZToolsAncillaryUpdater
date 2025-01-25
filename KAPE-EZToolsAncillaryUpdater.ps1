@@ -29,7 +29,7 @@
 		4.0 - (June 13, 2023) Made adjustments to script based on Get-ZimmermanTools.ps1 update - https://github.com/EricZimmerman/Get-ZimmermanTools/commit/c40e8ddc8df5a210c5d9155194e602a81532f23d, script now defaults to .NET 6, modifed lots of comments, variables, etc, and overall made the script more readable and maintainable
 		4.1 - (June 16, 2023) Minor adjustments based on feedback from version 4.0. Additionally, added script info to the log output
 		4.2 - (August 04, 2023) Added PowerShell 5 requirement to avoid any potential complications
-		4.3 - (January 25, 2025) Added netVersion parameter, with options for .NET 6 or .NET 9 tools, with a default to .NET 9. Simplify and consolidate GitHub sync functions.
+		4.3 - (January 25, 2025) Added net parameter, with options for .NET 6 or .NET 9 tools, with a default to .NET 9. Simplify and consolidate GitHub sync functions. Update Get-ZimmermanTools.ps1 URL. Improve code readability and maintainability throughout.
 	
 	.PARAMETER silent
 		Disable the progress bar and exit the script without pausing in the end
@@ -169,19 +169,16 @@ function Set-Variables
 	$script:kapeModulesFolder = Join-Path -Path $PSScriptRoot -ChildPath 'Modules' # .\KAPE\Modules
 	$script:kapeModulesBin = Join-Path -Path $kapeModulesFolder -ChildPath 'bin' # .\KAPE\Modules\bin
 	$script:getZimmermanToolsFolderKape = Join-Path -Path $kapeModulesBin -ChildPath 'ZimmermanTools' # .\KAPE\Modules\bin\ZimmermanTools, also serves as our .NET 4 folder, if needed
-	if ($net = '6')
+	$script:dotNetText = ".NET $net"
+	
+	switch ($net)
 	{
-		$script:dotNetText = '.NET 6'
-		$script:getZimmermanToolsFolderKapeNetVersion = Join-Path -Path $getZimmermanToolsFolderKape -ChildPath 'net6' # .\KAPE\Modules\bin\ZimmermanTools\net6
-	}
-	elseif ($net = '9')
-	{
-		$script:dotNetText = '.NET 9'
-		$script:getZimmermanToolsFolderKapeNetVersion = Join-Path -Path $getZimmermanToolsFolderKape -ChildPath 'net9' # .\KAPE\Modules\bin\ZimmermanTools\net9
+		'6' { $script:getZimmermanToolsFolderKapeNetVersion = Join-Path -Path $getZimmermanToolsFolderKape -ChildPath 'net6' }
+		'9' { $script:getZimmermanToolsFolderKapeNetVersion = Join-Path -Path $getZimmermanToolsFolderKape -ChildPath 'net9' }
 	}
 	
 	$script:ZTZipFile = 'Get-ZimmermanTools.zip'
-	$script:ZTdlUrl = "https://f001.backblazeb2.com/file/EricZimmermanTools/$ZTZipFile" # https://f001.backblazeb2.com/file/EricZimmermanTools\Get-ZimmermanTools.zip
+	$script:ZTdlUrl = "https://download.ericzimmermanstools.com/$ZTZipFile" # https://download.ericzimmermanstools.com/Get-ZimmermanTools.zip
 	$script:getZimmermanToolsFolderKapeZip = Join-Path -Path $getZimmermanToolsFolderKape -ChildPath $ZTZipFile # .\KAPE\Modules\bin\ZimmermanTools\Get-ZimmermanTools.zip - this currently doesn't get used...
 	$script:kapeDownloadUrl = 'https://www.kroll.com/en/services/cyber-risk/incident-response-litigation-support/kroll-artifact-parser-extractor-kape'
 	$script:kapeEzToolsAncillaryUpdaterFileName = 'KAPE-EZToolsAncillaryUpdater.ps1'
@@ -327,14 +324,26 @@ function Get-LatestKAPEEZToolsAncillaryUpdater
 <#
 	.SYNOPSIS
 		Downloads all EZ Tools!
-
+	
 	.DESCRIPTION
 		Downloads Get-ZimmermanTools.zip, extracts Get-ZimmermanTools.ps1 from the ZIP file into .\KAPE\Modules\bin\ZimmermanTools
+	
+	.PARAMETER netVersion
+		A description of the netVersion parameter.
+	
+	.NOTES
+		Additional information about the function.
 #>
 function Get-ZimmermanTools
 {
 	[CmdletBinding()]
-	param ()
+	param
+	(
+		[Parameter(Mandatory = $true,
+				   Position = 1)]
+		[ValidateSet('6', '9')]
+		[string]$netVersion
+	)
 	
 	Log -logFilePath $logFilePath -msg ' --- Get-ZimmermanTools.ps1 ---'
 	
@@ -381,7 +390,7 @@ function Get-ZimmermanTools
 	# Get-ZimmermanTools.ps1 -Dest .\KAPE\Modules\bin\ZimmermanTools -NetVersion $net
 	$scriptArgs = @{
 		Dest = "$getZimmermanToolsFolderKape"
-		NetVersion = $net
+		NetVersion = $netVersion
 	}
 	
 	Log -logFilePath $logFilePath -msg "Downloading $ZTZipFile from $ZTdlUrl to $kapeModulesBin" # message saying we're downloading Get-ZimmermanTools.zip to .\KAPE\Modules\bin
@@ -500,6 +509,7 @@ function Sync-WithGitHub
 	# Sync the tool with GitHub
 	Log -logFilePath $logFilePath -msg "Syncing $Tool with GitHub for the latest $syncTarget"
 	Start-Process $toolExe -ArgumentList '--sync' -NoNewWindow -Wait
+	Log -logFilePath $logFilePath -msg "Finished syncing $Tool with GitHub for the latest $syncTarget"
 	Start-Sleep -Seconds 3
 }
 
@@ -625,7 +635,7 @@ try
 	& Get-KAPEUpdateEXE
 	
 	# Let's download Get-ZimmermanTools.zip and extract Get-ZimmermanTools.ps1
-	& Get-ZimmermanTools
+	& Get-ZimmermanTools -netVersion $net
 	
 	# Let's move all EZ Tools and place them into .\KAPE\Modules\bin
 	Move-EZTools
@@ -661,8 +671,8 @@ finally
 # SIG # Begin signature block
 # MIIvngYJKoZIhvcNAQcCoIIvjzCCL4sCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBjyv+kK8NC93ZQ
-# MCPC98aG+Ci6VgXLlnYllI79L1i8mKCCKKMwggQyMIIDGqADAgECAgEBMA0GCSqG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCARCoFD7WBVjPoG
+# sXzoouCocQnVXsdmU2ns/rmO9lt31aCCKKMwggQyMIIDGqADAgECAgEBMA0GCSqG
 # SIb3DQEBBQUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQIDBJHcmVhdGVyIE1hbmNo
 # ZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoMEUNvbW9kbyBDQSBMaW1p
 # dGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2VydmljZXMwHhcNMDQwMTAx
@@ -882,36 +892,36 @@ finally
 # 9lAXRaV/0x/qHtrv6DGCBlEwggZNAgEBMGgwVDELMAkGA1UEBhMCR0IxGDAWBgNV
 # BAoTD1NlY3RpZ28gTGltaXRlZDErMCkGA1UEAxMiU2VjdGlnbyBQdWJsaWMgQ29k
 # ZSBTaWduaW5nIENBIFIzNgIQNZ6LJbr/UQt8TtHttsJpJDANBglghkgBZQMEAgEF
-# AKBMMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMC8GCSqGSIb3DQEJBDEiBCDx
-# +ZtsaUKr0ukuq0SYfd4FiG95pzatBWmea6OvfIJEOjANBgkqhkiG9w0BAQEFAASC
-# AgBVrN8Qy8s4H/QYTsSITJ9fpjIZUVLGeJevdoOf1FQVh4RcnNShxdal8JKLwwq0
-# efKKOueuvB2AvRymW7LlTSIJM6qY5E2sCZbstf0zgw5unNNRDUrDEjF5G+0DmhMB
-# Lv7q/inWo0ec4T/vtfchS43W9lZs7rj9YIGuMX8kgDM+G5/Emxp+Gh1H+YgW7N+D
-# wPmYnM+gDxj7g0ORLnuWkHgAuWN1SFdOhOCVLsEuqaRS09tkLZRrlz+GTNCJ3LAA
-# dWaQtGR/H6K6NBCQ7tI5Ga3hux2qeBB7NN92H6YU0SS3V6LEWNW0BpMSs4K8cEEk
-# wgzhT23/OSR23U9x6fa949FyxqO7E8+HOJ3llVWKV2geqElxbS5n4Zof0/0DPmhL
-# Rj9lUIExzCf9RixOzNWVGobYiniIMPlw+6LWYxdasDcM0K67gfXIvLbKqYVPz4kp
-# dLMd8gKJ/2aBVcT/3cZp4JlcVO+hQtAfh6l2BW2N9KJM8z1QkPXC8+vL5QilKl29
-# SJZS+Y6aLYkdRfVGHLaBiekQtTpfOi9O7J2dpFmfDiqCbPONYS31q1d+qtipR4tf
-# gOhP/ATxeTijQYh/nhlHqo4ZSs0vAAb5uo7N4XpLMm5DHyVeWii4EkR0NmeRYMYE
-# DS4UMSEb/vxxqt2Z/0rEkPJd7jlDQ2DnDIslYpMAsMG34KGCA2wwggNoBgkqhkiG
+# AKBMMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMC8GCSqGSIb3DQEJBDEiBCDk
+# +OpsuD5+xNnWttfj3+lr+WcIlv3XrgfPXlbVnUZBQDANBgkqhkiG9w0BAQEFAASC
+# AgAmI1Xcvd+qnMHXU3dGAaWbMy+gubrlwQAqQsjTnWN3Sb9+P5IkQo7PTLNaaJVA
+# lTp9YOmQbIsa+lqSCaTpdLvyiSC8+/5m4hsU46w0KFaIXSROS2+7WGK4oSI/fXrz
+# wAs+gVVilwA5qz/kwyIbFL4aPqf169FycvdGK4hO8lOo3OaTLyBPyfpfyvYztQww
+# vmH5SLIvTqbXhwNrl3Fz0ta+TQadddiB7VRkm5w1QmaJL5XmYqcpRXAlOpCIMW+D
+# CinakWWKCqrt0mE4ab28a6e3b/Rfimr8R3Hc86a8/8IXaobqPdGNW12h7cgZfnl9
+# t1Sn1Yznwc+1A/krcwhZRZRHsq1wmH3k1lXRGz9d4N8f1qWiOdrRw3FbTi7Uc9pg
+# xPIx2/F6onanTVeMQ5uhtbtODcrJBvRsR3TVT5LclVvLDGzAJxCmtsVQSD6QJ/EJ
+# 3nC8Bzv9dL6q1UGl4ppt/NVNuRdlBQsS0TREVB1tIkpSqW1Os09m7XabeEYzI6zm
+# SjEIH/Mz2d6Y1I61HAazr8OUSe3FQgBnsjDX77naCHVvtTddFZlUzBVA+mlwD7XM
+# 1FtLeKZ5H8SmteDX3qVXXFDmBGpAzbDurIkznD47pJ+p7OjNTOwb4qSqpCPAFnrA
+# DT8l92G5gZwQ5gB2zxg6TJQjO8/617M+9iS93Vcw70AaNqGCA2wwggNoBgkqhkiG
 # 9w0BCQYxggNZMIIDVQIBATBvMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9i
 # YWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIFRpbWVzdGFtcGluZyBD
 # QSAtIFNIQTM4NCAtIEc0AhABB2SbCLCn/n3WVKjy9Cn2MAsGCWCGSAFlAwQCAaCC
 # AT0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjUw
-# MTI1MTYyMTIzWjArBgkqhkiG9w0BCTQxHjAcMAsGCWCGSAFlAwQCAaENBgkqhkiG
-# 9w0BAQsFADAvBgkqhkiG9w0BCQQxIgQgo8DrSYZFi5YQIwDRIH5asJ3kMjo4PzLw
-# 4KnlKlrA37AwgaQGCyqGSIb3DQEJEAIMMYGUMIGRMIGOMIGLBBRE05OczRuIf4Z6
+# MTI1MTY0NDU4WjArBgkqhkiG9w0BCTQxHjAcMAsGCWCGSAFlAwQCAaENBgkqhkiG
+# 9w0BAQsFADAvBgkqhkiG9w0BCQQxIgQgNHFgvcljSR8GiDApMG+FppMAbRCv79J8
+# wq7KgbFwXsYwgaQGCyqGSIb3DQEJEAIMMYGUMIGRMIGOMIGLBBRE05OczRuIf4Z6
 # zNqB7K8PZfzSWTBzMF+kXTBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFs
 # U2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBUaW1lc3RhbXBpbmcgQ0Eg
 # LSBTSEEzODQgLSBHNAIQAQdkmwiwp/591lSo8vQp9jANBgkqhkiG9w0BAQsFAASC
-# AYCtEJj6oOuNj35+rj81vpE0M8pINoacxXbWckKYA6gxiFB067sny6Q6eCCcGI2h
-# +I6L64Pv+qJnTQdKINMl2YDjqdA3PE1MtKv4dkagi5BhHe01NRhiKwiYSwzoVMr8
-# 0BCpyXxiyE+qm/cQQ+PhDC3ZaefzaYSWRggR6xoJpgMdrDg+OL4LGSVrtNGO8zra
-# XbsDyvU26xaYIHNjyaGJRF0O21ttHqH2QT1WsBNxJN5uov/w98TK2PS9Nf1NCMRT
-# HQsRkN/yH7b6VmQviaJxInxEV8z6V3upbBlEo79l077Hw36VEwHX4JFjTw0zNFp0
-# Zlz00QkCQKRlQmI6bQuLrw65df+FRHw9rVrOo7NcXj709so22G0Ro1te8FJxFym4
-# dbWgcSgqvHlH/93EY1L6LYWksbsSJhUWbJciqXi4I/TS7HiPHq1AQAcmVcmvVwfx
-# 33dnWCq6ZyNihfiIaPcuGDFA3tmPZ7qU41S09Ajh7g1ZR+7MhtcnLFE93ZzyIUTM
-# zHQ=
+# AYBTmRheUOzHPayCNSJtbGbErolB35eQQgSTXq1fW4QgZr/Lnh4ZcNgK/G1d9iPi
+# 9RW7mG/0QguBinVnoTRDxywyyAs8Aeo5mm0VEu7eZSi90R3jyR4REX7MaVUCrY3a
+# /Wc9ZgMiRcPX+TZlXDpzUQwiwdkcVSVu/OzSPasdrBZH7iXkFYkbmvh8GuwjQlfA
+# LodOErO2JclSBG+hta3Kmj+onCPvZXkpNJL3nX370tRhJ6K639pDNmPDTMbRwb37
+# 8BwFyQI7FN2Yt4Sb1Q0bX3LvBNgWLFQyGDV0lRkPVXbKI3OA4R1jJESEFjO1k1Mj
+# u4uOz5Nluy9pNfe8czGE36P5QeGhLylOcG8JQuLPsIHoXrbdANxWSOhuVa/bYDac
+# SKX+85KoXq2qMuElLUinsSRpsqrXsi7m0fLqm8+hIkmihqFvjOsSY7ax8dNp6k6I
+# 0ev1jpH7TodhTn+G7oA7h1ZsuHskmbIc7v0t1qbq3aPEXLAkWuwkoyNmcqaX6JFn
+# eAQ=
 # SIG # End signature block
