@@ -33,9 +33,9 @@ Example: `.\KAPE-EZToolsAncillaryUpdater.ps1 -silent`
 
 Example: `.\KAPE-EZToolsAncillaryUpdater.ps1 -DoNotUpdate`
 
-## Disclaimer (.NET 6)
+## Disclaimer (.NET 10)
 
-Make sure you have the [.NET 6 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed prior to using the .NET 6 version of EZ Tools with KAPE! As of version [4.0](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/4.0), this script will only download and update the .NET 6 version of EZ Tools.
+Make sure you have the [.NET 10 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) installed prior to using the .NET 10 version of EZ Tools with KAPE! As of version [4.6](https://github.com/AndrewRathbun/KAPE-EZToolsAncillaryUpdater/releases/tag/4.6), this script will only download and update the .NET 10 version of EZ Tools.
 
 # Improving the Script
 
